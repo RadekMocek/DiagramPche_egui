@@ -1,0 +1,4 @@
+mod canvas;
+mod modal;
+mod panel_central;
+mod panel_top;
