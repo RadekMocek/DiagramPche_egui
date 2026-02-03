@@ -4,4 +4,6 @@ mod app;
 pub use app::App;
 
 mod gui;
+mod logic;
+mod model;
 mod style;

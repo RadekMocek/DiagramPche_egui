@@ -1,8 +1,8 @@
-use FontFamily::{Monospace, Proportional};
 use egui::{FontFamily, FontId, TextStyle};
 use std::collections::BTreeMap;
+use FontFamily::{Monospace, Proportional};
 
-pub fn conf_style_init(ctx: &egui::Context) {
+pub(super) fn conf_style_init(ctx: &egui::Context) {
     let text_styles: BTreeMap<TextStyle, FontId> = [
         (TextStyle::Heading, FontId::new(30.0, Proportional)),
         (
@@ -23,7 +23,7 @@ pub fn conf_style_init(ctx: &egui::Context) {
     ctx.all_styles_mut(|style| style.text_styles = text_styles.clone());
 }
 
-pub fn conf_style_panel_top_begin(ctx: &egui::Context) {
+pub(super) fn conf_style_panel_top_begin(ctx: &egui::Context) {
     ctx.all_styles_mut(|style| {
         style
             .text_styles
@@ -31,7 +31,7 @@ pub fn conf_style_panel_top_begin(ctx: &egui::Context) {
     });
 }
 
-pub fn conf_style_panel_top_end(ctx: &egui::Context) {
+pub(super) fn conf_style_panel_top_end(ctx: &egui::Context) {
     ctx.all_styles_mut(|style| {
         style
             .text_styles

@@ -1,3 +1,5 @@
+use crate::logic::parser::Parser;
+
 /// We derive Deserialize/Serialize so we can persist app state on shutdown.
 /*
 #[derive(serde::Deserialize, serde::Serialize)]
@@ -6,6 +8,7 @@
 pub struct App {
     // Text editor
     pub source: String,
+    pub parser: Parser,
     // Canvas
     pub zoom_level: f32,
     pub is_canvas_dragged: bool,
@@ -18,6 +21,19 @@ impl Default for App {
     fn default() -> Self {
         Self {
             // Text editor
+            parser: Parser::default(),
+
+            source: String::from(
+                r#"[variables]
+w = 110
+h = 72
+
+[node.test]
+xy = [70, 70]
+                "#,
+            ),
+
+            /*
             source: String::from(
                 r#"[variables]
 w = 110
@@ -78,7 +94,7 @@ points=[
   ["","",500,"","",500],
 ]
 tips="<>""#,
-            ),
+            ),*/
             // Canvas
             zoom_level: 1.0,
             is_canvas_dragged: false,
@@ -116,8 +132,10 @@ impl eframe::App for App {
         // Put your widgets into a `SidePanel`, `TopBottomPanel`, `CentralPanel`, `Window` or `Area`.
         // For inspiration and more examples, go to https://emilk.github.io/egui
 
+        self.parser.parse(&self.source);
         self.gui_panel_top(&ctx);
-        self.gui_panel_central(&ctx);
+        self.gui_panel_bottom(&ctx);
+        self.gui_panel_central(&ctx); // Central called after bottom oterwise bottom would cover a little bit of central
     }
 
     /*
