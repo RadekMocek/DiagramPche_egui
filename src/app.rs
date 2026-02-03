@@ -95,7 +95,7 @@ impl App {
         // This is also where you can customize the look and feel of egui using
         // `cc.egui_ctx.set_visuals` and `cc.egui_ctx.set_fonts`.
         cc.egui_ctx.set_visuals(egui::Visuals::light());
-        crate::style::configure_text_styles(&cc.egui_ctx);
+        crate::style::conf_style_init(&cc.egui_ctx);
 
         // Load previous app state (if any).
         // Note that you must enable the `persistence` feature for this to work.
