@@ -9,11 +9,7 @@ impl App {
                 egui::ScrollArea::vertical()
                     .id_salt("source")
                     .show(&mut columns[0], |ui| {
-                        ui.add(
-                            egui::TextEdit::multiline(&mut self.source)
-                                .desired_width(f32::INFINITY)
-                                .font(egui::TextStyle::Monospace),
-                        );
+                        self.gui_text_editor(ui);
                     });
 
                 egui::Frame::canvas(&columns[1].style()).show(&mut columns[1], |ui| {

@@ -12,6 +12,7 @@ pub struct App {
     pub is_error_span_some: bool,
     pub error_span_line: u32,
     pub error_span_column: u32,
+    pub error_span_length: usize,
     // Canvas
     pub zoom_level: f32,
     pub is_canvas_dragged: bool,
@@ -29,7 +30,7 @@ impl Default for App {
 w = 110
 h = 72
 
-[node.test]
+[node.test
 xy = [70, 70]
 "#,
             ),
@@ -100,6 +101,7 @@ tips="<>""#,
             is_error_span_some: false,
             error_span_line: 0,
             error_span_column: 0,
+            error_span_length: 0,
             // Canvas
             zoom_level: 1.0,
             is_canvas_dragged: false,
@@ -140,27 +142,31 @@ impl eframe::App for App {
         // Parse the TOML
         self.parser.parse(&self.source);
 
-        // Convert TOML error span into line no. and column no. so it can be drawn onto a textedit
-        if let Some(error_span) = &self.parser.error_span {
-            let mut line = 0;
-            let mut column = 0;
-            for (i, ch) in self.source.char_indices() {
-                if i >= error_span.start {
-                    break;
+        // Parse the error
+        self.is_error_span_some = false;
+        if self.parser.is_error {
+            // Convert TOML error span into line no. and column no. so it can be drawn onto a textedit
+            if let Some(error_span) = &self.parser.error_span {
+                let mut line = 0;
+                let mut column = 0;
+                // TODO Column won't work properly when the error is preceded with UTF8 chars on that line (?)
+                for (i, ch) in self.source.char_indices() {
+                    if i >= error_span.start {
+                        break;
+                    }
+                    if ch == '\n' {
+                        line += 1;
+                        column = 0;
+                    } else {
+                        column += 1;
+                    }
                 }
-                if ch == '\n' {
-                    line += 1;
-                    column = 0;
-                } else {
-                    column += 1;
-                }
+                self.error_span_line = line;
+                self.error_span_column = column;
+                self.error_span_length = error_span.len() + 1;
+                self.is_error_span_some = true;
+                //println!("{error_span:?} {line} {column} {}", self.error_span_length);
             }
-            self.error_span_line = line;
-            self.error_span_column = column;
-            self.is_error_span_some = true;
-            //println!("{line} {column}");
-        } else {
-            self.is_error_span_some = false;
         }
 
         // Draw GUI

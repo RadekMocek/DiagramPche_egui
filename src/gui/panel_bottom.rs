@@ -5,7 +5,8 @@ impl App {
         egui::TopBottomPanel::bottom("bottom_panel").show(ctx, |ui| {
             if self.parser.is_error {
                 ui.label(
-                    egui::RichText::new(&self.parser.error_message).color(egui::Color32::DARK_RED),
+                    egui::RichText::new(&self.parser.error_message)
+                        .color(egui::Color32::from_rgb(211, 1, 2)),
                 );
             } else {
                 ui.label(""); // Reserve space
