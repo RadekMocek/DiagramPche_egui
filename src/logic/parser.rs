@@ -1,11 +1,12 @@
 use crate::model::node::Node;
 use std::collections::HashMap;
 use std::ops::Range;
-use toml_edit::{Document, value};
+use toml_edit::Document;
 
 pub struct Parser {
     pub is_error: bool,
     pub error_message: String,
+    pub error_span: Option<Range<usize>>,
     pub nodes: Vec<Node>,
 
     pub(super) variables: HashMap<String, i64>, //TODO pub(super) may not be needed in the future
@@ -16,6 +17,7 @@ impl Default for Parser {
         Parser {
             is_error: false,
             error_message: String::new(),
+            error_span: None,
             nodes: Vec::new(),
 
             variables: HashMap::new(),
@@ -30,7 +32,6 @@ impl Parser {
         // Try to parse the TOML input
         let toml_parsed_result = source.parse::<Document<String>>();
         let Ok(toml_parsed) = toml_parsed_result else {
-            //
             let err = toml_parsed_result
                 .err()
                 .expect("toml_parsed_result is not Ok");
@@ -81,8 +82,9 @@ impl Parser {
 
     pub(super) fn report_error(&mut self, error_message: &str, error_span: &Option<Range<usize>>) {
         if !self.is_error {
-            //self.error_message = String::from(error_message);
-            self.error_message = format!("{error_message} {error_span:?}");
+            self.error_message = String::from(error_message);
+            //self.error_message = format!("{error_message} {error_span:?}");
+            self.error_span = error_span.clone();
             self.is_error = true;
         }
     }

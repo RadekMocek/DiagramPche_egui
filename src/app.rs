@@ -9,6 +9,9 @@ pub struct App {
     // Text editor
     pub source: String,
     pub parser: Parser,
+    pub is_error_span_some: bool,
+    pub error_span_line: u32,
+    pub error_span_column: u32,
     // Canvas
     pub zoom_level: f32,
     pub is_canvas_dragged: bool,
@@ -21,8 +24,6 @@ impl Default for App {
     fn default() -> Self {
         Self {
             // Text editor
-            parser: Parser::default(),
-
             source: String::from(
                 r#"[variables]
 w = 110
@@ -30,7 +31,7 @@ h = 72
 
 [node.test]
 xy = [70, 70]
-                "#,
+"#,
             ),
 
             /*
@@ -95,6 +96,10 @@ points=[
 ]
 tips="<>""#,
             ),*/
+            parser: Parser::default(),
+            is_error_span_some: false,
+            error_span_line: 0,
+            error_span_column: 0,
             // Canvas
             zoom_level: 1.0,
             is_canvas_dragged: false,
@@ -132,7 +137,33 @@ impl eframe::App for App {
         // Put your widgets into a `SidePanel`, `TopBottomPanel`, `CentralPanel`, `Window` or `Area`.
         // For inspiration and more examples, go to https://emilk.github.io/egui
 
+        // Parse the TOML
         self.parser.parse(&self.source);
+
+        // Convert TOML error span into line no. and column no. so it can be drawn onto a textedit
+        if let Some(error_span) = &self.parser.error_span {
+            let mut line = 0;
+            let mut column = 0;
+            for (i, ch) in self.source.char_indices() {
+                if i >= error_span.start {
+                    break;
+                }
+                if ch == '\n' {
+                    line += 1;
+                    column = 0;
+                } else {
+                    column += 1;
+                }
+            }
+            self.error_span_line = line;
+            self.error_span_column = column;
+            self.is_error_span_some = true;
+            //println!("{line} {column}");
+        } else {
+            self.is_error_span_some = false;
+        }
+
+        // Draw GUI
         self.gui_panel_top(&ctx);
         self.gui_panel_bottom(&ctx);
         self.gui_panel_central(&ctx); // Central called after bottom oterwise bottom would cover a little bit of central
