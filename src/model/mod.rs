@@ -1,2 +1,4 @@
 pub(super) mod node;
-pub(super) mod position;
+mod pathpoint_type;
+pub(super) mod pivot;
+mod point;

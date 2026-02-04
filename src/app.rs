@@ -30,8 +30,12 @@ impl Default for App {
 w = 110
 h = 72
 
-[node.test
+[node.test]
 xy = [70, 70]
+value = "ahoj"
+pivot = "center"
+color = [0,0,0,0]
+size = ["w","h"]
 "#,
             ),
 
@@ -150,6 +154,7 @@ impl eframe::App for App {
                 let mut line = 0;
                 let mut column = 0;
                 // TODO Column won't work properly when the error is preceded with UTF8 chars on that line (?)
+                // TODO error_span_length breaks with UTF8
                 for (i, ch) in self.source.char_indices() {
                     if i >= error_span.start {
                         break;

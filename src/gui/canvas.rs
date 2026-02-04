@@ -1,4 +1,3 @@
-use crate::model::position::Position;
 use crate::App;
 
 impl App {
@@ -45,11 +44,8 @@ impl App {
         // .:================:.
 
         for node in &self.parser.nodes {
-            let Position::Absolute(x, y) = node.position else {
-                continue;
-            };
-            let x = x as f32;
-            let y = y as f32;
+            let x = node.position.x as f32;
+            let y = node.position.y as f32;
 
             painter.rect_stroke(
                 egui::Rect {
