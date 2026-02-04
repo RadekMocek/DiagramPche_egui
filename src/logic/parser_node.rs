@@ -1,15 +1,16 @@
 use crate::logic::parser::Parser;
 use crate::model::node::Node;
 use crate::model::position::Position;
-use toml::{Table, Value};
+use toml_edit::{Table, Value};
 
 impl Parser {
     pub(super) fn parse_node(&mut self, node_table: &Table, curr_node: &mut Node) {
-        const ERR_MSG_EXPECTED_ARRAY: &str = "An array ([X, Y] or [Parent, Pivot, X, Y]) expected";
-
         for (key, value) in node_table {
-            match key as &str {
+            match key {
                 "xy" => {
+                    const ERR_MSG_EXPECTED_ARRAY: &str =
+                        "An array ([X, Y] or [Parent, Pivot, X, Y]) expected";
+
                     if let Some(value_arr) = value.as_array() {
                         match value_arr.len() {
                             2 => {
@@ -24,13 +25,13 @@ impl Parser {
                             4 => {
                                 //
                             }
-                            _ => self.report_error(ERR_MSG_EXPECTED_ARRAY),
+                            _ => self.report_error(ERR_MSG_EXPECTED_ARRAY, &value.span()),
                         }
                     } else {
-                        self.report_error(ERR_MSG_EXPECTED_ARRAY);
+                        self.report_error(ERR_MSG_EXPECTED_ARRAY, &value.span());
                     }
                 }
-                _ => self.report_error(&format!("Unknown key '{key}'")),
+                _ => self.report_error(&format!("Unknown key '{key}'"), &value.span()),
             }
         }
     }
@@ -42,15 +43,17 @@ impl Parser {
             value_int
         } else if let Some(value_str) = value.as_str() {
             let Some(result) = self.variables.get(value_str) else {
-                self.report_error(&format!(
-                    "Variable '{value_str}' does not exist (expecting [X, Y])"
-                ));
+                self.report_error(
+                    &format!("Variable '{value_str}' does not exist (expecting [X, Y])"),
+                    &value.span(),
+                );
                 return DEFAULT_VALUE;
             };
             *result
         } else {
             self.report_error(
                 "Value must be specified as an integer or a string with a variable name",
+                &value.span(),
             );
             DEFAULT_VALUE
         }
