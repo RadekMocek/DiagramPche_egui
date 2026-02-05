@@ -109,21 +109,22 @@ impl Parser {
         let mut did_anything_change = !refs.is_empty();
         while did_anything_change {
             did_anything_change = false;
-            for (key, value) in &refs {
+            for (dep_id, ref_id) in &refs {
                 // Check if the referred ID does exist
-                if !self.is_error && !self.result_nodes.contains_key(value) {
+                if !self.is_error && !self.result_nodes.contains_key(ref_id) {
                     self.report_error(
-                        &format!("Node '{key}' is referencing non existant id: '{value}'"),
-                        &self.result_nodes[key].position.parent_id_span.clone(),
+                        &format!("Node '{dep_id}' is referencing non existant id: '{ref_id}'"),
+                        &self.result_nodes[dep_id].position.parent_id_span.clone(),
                     )
                 }
-                // Borrow checker hell
-                if !stable_nodes.contains(key) && stable_nodes.contains(value) {
-                    let referred_node_batch_number =
-                        self.result_nodes[value].draw_batch_number.clone();
-                    let dependant_node = self.result_nodes.get_mut(key).expect("");
-                    dependant_node.draw_batch_number = referred_node_batch_number + 1;
-                    stable_nodes.insert(key.clone());
+                if !stable_nodes.contains(dep_id) && stable_nodes.contains(ref_id) {
+                    let ref_node_batch_number = self.result_nodes[ref_id].draw_batch_number;
+                    let dep_node = self
+                        .result_nodes
+                        .get_mut(dep_id)
+                        .expect("It was added to refs so must be in result_nodes too");
+                    dep_node.draw_batch_number = ref_node_batch_number + 1;
+                    stable_nodes.insert(dep_id.clone());
                     did_anything_change = true;
                 }
             }

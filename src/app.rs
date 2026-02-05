@@ -12,7 +12,7 @@ pub struct App {
     pub is_error_span_some: bool,
     pub error_span_line: u32,
     pub error_span_column: u32,
-    pub error_span_length: usize,
+    pub error_span_length: u32,
     // Canvas
     pub zoom_level: f32,
     pub is_canvas_dragged: bool,
@@ -157,24 +157,32 @@ impl eframe::App for App {
             if let Some(error_span) = &self.parser.error_span {
                 let mut line = 0;
                 let mut column = 0;
-                // TODO Column won't work properly when the error is preceded with UTF8 chars on that line (?)
-                // TODO error_span_length breaks with UTF8
+                let mut column_end = 0;
+                let mut is_end_column_processed = false;
+                // UTF8 shenanigans
                 for (i, ch) in self.source.char_indices() {
-                    if i >= error_span.start {
-                        break;
-                    }
-                    if ch == '\n' {
-                        line += 1;
-                        column = 0;
+                    if !is_end_column_processed {
+                        if i >= error_span.start {
+                            column_end = column;
+                            is_end_column_processed = true;
+                        }
+                        if ch == '\n' {
+                            line += 1;
+                            column = 0;
+                        } else {
+                            column += 1;
+                        }
                     } else {
-                        column += 1;
+                        if i >= error_span.end {
+                            break;
+                        }
+                        column_end += 1;
                     }
                 }
                 self.error_span_line = line;
                 self.error_span_column = column;
-                self.error_span_length = error_span.len() + 1;
+                self.error_span_length = column_end - column + 1;
                 self.is_error_span_some = true;
-                //println!("{error_span:?} {line} {column} {}", self.error_span_length);
             }
         }
 
