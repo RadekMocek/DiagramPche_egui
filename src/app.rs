@@ -1,4 +1,6 @@
 use crate::logic::parser::Parser;
+use crate::model::canvas_node::CanvasNode;
+use std::collections::HashMap;
 
 /// We derive Deserialize/Serialize so we can persist app state on shutdown.
 /*
@@ -17,6 +19,7 @@ pub struct App {
     pub zoom_level: f32,
     pub is_canvas_dragged: bool,
     pub scrolling: egui::Pos2,
+    pub canvas_nodes: HashMap<String, CanvasNode>,
     // Non-main window
     pub do_open_modal_about: bool,
 }
@@ -25,25 +28,6 @@ impl Default for App {
     fn default() -> Self {
         Self {
             // Text editor
-            source: String::from(
-                r#"[variables]
-w = 110
-h = 72
-
-[node.test]
-xy = [70, 70]
-value = "ahoj"
-pivot = "center"
-color = [0,0,0,0]
-size = ["w","h"]
-
-[node.sth]
-pivot = "top"
-xy = ["test", "bottom", 0, 0]
-"#,
-            ),
-
-            /*
             source: String::from(
                 r#"[variables]
 w = 110
@@ -104,7 +88,7 @@ points=[
   ["","",500,"","",500],
 ]
 tips="<>""#,
-            ),*/
+            ),
             parser: Parser::default(),
             is_error_span_some: false,
             error_span_line: 0,
@@ -114,6 +98,7 @@ tips="<>""#,
             zoom_level: 1.0,
             is_canvas_dragged: false,
             scrolling: egui::pos2(0.0, 0.0),
+            canvas_nodes: HashMap::new(),
             // Non-main window
             do_open_modal_about: false,
         }
@@ -165,6 +150,7 @@ impl eframe::App for App {
                         if i >= error_span.start {
                             column_end = column;
                             is_end_column_processed = true;
+                            continue;
                         }
                         if ch == '\n' {
                             line += 1;

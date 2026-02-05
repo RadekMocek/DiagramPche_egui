@@ -130,7 +130,16 @@ impl Parser {
             }
         }
 
-        //TODO error circular reference
+        // Check circular reference
+        if !self.is_error && stable_nodes.len() < self.result_nodes.len() {
+            let mut error_message = String::from("Circular reference somewhere among:");
+            for (key, _) in &self.result_nodes {
+                if !stable_nodes.contains(key) {
+                    error_message.push_str(&format!(" '{key}'"));
+                }
+            }
+            self.report_error(&error_message, &None);
+        }
 
         // .: Paths :.
         // .:=======:.

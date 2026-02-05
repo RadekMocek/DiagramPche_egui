@@ -40,7 +40,7 @@ impl App {
 
         // .: Draw on canvas :.
         // .:================:.
-
+        self.canvas_nodes.clear();
         self.gui_canvas_draw_nodes(&painter, &origin);
 
         //
