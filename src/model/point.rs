@@ -1,11 +1,12 @@
 use crate::model::pivot::Pivot;
+use std::ops::Range;
 
 pub struct Point {
     pub parent_id: String,
     pub parent_pivot: Pivot,
     pub x: i64,
     pub y: i64,
-    //TODO parent_id_source_region for better error highlighting (?)
+    pub parent_id_span: Option<Range<usize>>,
 }
 
 impl Default for Point {
@@ -15,6 +16,7 @@ impl Default for Point {
             parent_pivot: Pivot::Center,
             x: 0,
             y: 0,
+            parent_id_span: None,
         }
     }
 }

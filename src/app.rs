@@ -36,6 +36,10 @@ value = "ahoj"
 pivot = "center"
 color = [0,0,0,0]
 size = ["w","h"]
+
+[node.sth]
+pivot = "top"
+xy = ["test", "bottom", 0, 0]
 "#,
             ),
 

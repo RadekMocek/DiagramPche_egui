@@ -1,5 +1,5 @@
 use crate::model::node::Node;
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 use std::ops::Range;
 use toml_edit::Document;
 
@@ -7,7 +7,7 @@ pub struct Parser {
     pub is_error: bool,
     pub error_message: String,
     pub error_span: Option<Range<usize>>,
-    pub nodes: Vec<Node>,
+    pub result_nodes: HashMap<String, Node>,
 
     pub(super) variables: HashMap<String, i64>, //TODO pub(super) may not be needed in the future
 }
@@ -18,7 +18,7 @@ impl Default for Parser {
             is_error: false,
             error_message: String::new(),
             error_span: None,
-            nodes: Vec::new(),
+            result_nodes: HashMap::new(),
 
             variables: HashMap::new(),
         }
@@ -58,7 +58,9 @@ impl Parser {
 
         // .: Nodes :.
         // .:=======:.
-        self.nodes.clear();
+        self.result_nodes.clear();
+        let mut refs: HashMap<String, String> = HashMap::new();
+        let mut stable_nodes: HashSet<String> = HashSet::new();
 
         if let Some(node) = toml_parsed.get("node") {
             if let Some(node_table) = node.as_table() {
@@ -68,16 +70,70 @@ impl Parser {
                         if node_key.is_empty() {
                             self.report_error("Node id cannot be empty", &node_value_table.span());
                         }
+
                         // Currently processed Node
                         let mut curr_node = Node::default();
+                        curr_node.id = String::from(node_key);
+
                         // Parse `node_value_table` data and set `curr_node` members; or set error message
                         self.parse_node(&node_value_table, &mut curr_node);
+
+                        // Check if the node is not referencing itself
+                        if curr_node.id == curr_node.position.parent_id {
+                            self.report_error(
+                                &format!("Node with id '{}' is referencing itself", curr_node.id),
+                                &curr_node.position.parent_id_span,
+                            );
+                        }
+
+                        // If user doesn't set any text value explicitly, we use node's ID (can be rejected by setting `value=""`)
+                        if !curr_node.is_value_explicitly_set {
+                            curr_node.value = curr_node.id.clone();
+                        }
+
+                        // Empty parent means stable node; otherwise dependant node
+                        if !curr_node.position.parent_id.is_empty() {
+                            refs.insert(curr_node.id.clone(), curr_node.position.parent_id.clone());
+                        } else {
+                            stable_nodes.insert(curr_node.id.clone());
+                        }
+
                         // Add node to the result collection
-                        self.nodes.push(curr_node);
+                        self.result_nodes.insert(curr_node.id.clone(), curr_node);
                     }
                 }
             }
         }
+
+        // Check the refs
+        let mut did_anything_change = !refs.is_empty();
+        while did_anything_change {
+            did_anything_change = false;
+            for (key, value) in &refs {
+                // Check if the referred ID does exist
+                if !self.is_error && !self.result_nodes.contains_key(value) {
+                    self.report_error(
+                        &format!("Node '{key}' is referencing non existant id: '{value}'"),
+                        &self.result_nodes[key].position.parent_id_span.clone(),
+                    )
+                }
+                // Borrow checker hell
+                if !stable_nodes.contains(key) && stable_nodes.contains(value) {
+                    let referred_node_batch_number =
+                        self.result_nodes[value].draw_batch_number.clone();
+                    let dependant_node = self.result_nodes.get_mut(key).expect("");
+                    dependant_node.draw_batch_number = referred_node_batch_number + 1;
+                    stable_nodes.insert(key.clone());
+                    did_anything_change = true;
+                }
+            }
+        }
+
+        //TODO error circular reference
+
+        // .: Paths :.
+        // .:=======:.
+        //TODO
     }
 
     pub(super) fn report_error(&mut self, error_message: &str, error_span: &Option<Range<usize>>) {

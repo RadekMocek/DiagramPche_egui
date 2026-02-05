@@ -33,6 +33,11 @@ impl Parser {
                                 );
                             }
                             4 => {
+                                let parent_id_span = item_arr
+                                    .get(0)
+                                    .expect("item_arr should have len of 4")
+                                    .span();
+
                                 // Parent
                                 if let Some(item_str) = item_arr
                                     .get(0)
@@ -43,9 +48,11 @@ impl Parser {
                                     if item_str.is_empty() {
                                         self.report_error(
                                             "Parent reference can't be empty",
-                                            &item.span(),
+                                            &parent_id_span,
                                         );
                                     }
+                                    // Better error reporting (self reference/non existing reference) for better diagram developer experience :)
+                                    curr_node.position.parent_id_span = parent_id_span;
                                 }
                                 // Pivot
                                 curr_node.position.parent_pivot = self.get_pivot_from_value(
