@@ -1,5 +1,8 @@
 pub(super) mod canvas_node;
+pub(super) mod color;
 pub(super) mod node;
-mod pathpoint_type;
+pub(super) mod path;
+pub(super) mod pathpoint;
+pub(super) mod pathpoint_type;
 pub(super) mod pivot;
-mod point;
+pub(super) mod point;

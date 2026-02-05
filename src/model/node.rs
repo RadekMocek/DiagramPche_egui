@@ -1,3 +1,4 @@
+use crate::model::color::Color;
 use crate::model::pivot::Pivot;
 use crate::model::point::Point;
 
@@ -16,7 +17,7 @@ pub struct Node {
     pub pivot: Pivot,
 
     // = Color =
-    pub color: (u8, u8, u8, u8),
+    pub color: Color,
 
     // = Size =
     pub width: i64,
@@ -49,7 +50,7 @@ impl Default for Node {
             pivot: Pivot::TopLeft,
 
             // = Color =
-            color: (255, 255, 255, 255),
+            color: Color::new(255, 255, 255, 255),
 
             // = Size =
             width: 0,

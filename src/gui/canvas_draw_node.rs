@@ -6,30 +6,8 @@ use egui::{pos2, Painter, Pos2};
 impl App {
     pub(super) fn gui_canvas_draw_nodes(&mut self, painter: &Painter, origin: &Pos2) {
         const COLOR_BLACK: egui::Color32 = egui::Color32::BLACK;
-        const COLOR_WHITE: egui::Color32 = egui::Color32::WHITE;
         const NODE_BORDER_OFFSET_BASE: f32 = 10.0;
         let node_padding = NODE_BORDER_OFFSET_BASE * self.zoom_level;
-
-        /*
-        for (_key, node) in &self.parser.result_nodes {
-            let x = node.position.x as f32;
-            let y = node.position.y as f32;
-
-            painter.rect_stroke(
-                egui::Rect {
-                    min: pos2(origin.x + x - node_padding, origin.y + y - node_padding),
-                    max: pos2(origin.x + x + node_padding, origin.y + y + node_padding),
-                },
-                2.0,
-                egui::Stroke {
-                    width: 2.0 * self.zoom_level,
-                    color: COLOR_BLACK,
-                },
-                egui::StrokeKind::Inside,
-            );
-        }
-        */
-        // ========================================================================================
 
         let mut current_draw_batch_number = 0;
         while self.parser.result_nodes.len() != self.canvas_nodes.len() {
@@ -111,7 +89,7 @@ impl App {
                     painter.rect(
                         egui::Rect::from_min_max(draw_top_left, draw_bottom_right),
                         0,
-                        COLOR_WHITE,
+                        node.color.to_egui_color(),
                         egui::Stroke::new(self.zoom_level, COLOR_BLACK),
                         egui::StrokeKind::Inside,
                     );

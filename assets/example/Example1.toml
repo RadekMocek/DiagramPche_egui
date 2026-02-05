@@ -1,0 +1,134 @@
+[variables]
+w = 110
+h = 72
+bg_h = 380
+io_w = 130
+space = 35
+
+[node.bg_cpu]
+value = "Procesor"
+size = [340, "bg_h"]
+label_pos = "bottom-left"
+color = [183, 183, 183, 255]
+
+[node.bg_mb]
+value = "Základní deska"
+pivot = "left"
+xy = ["bg_cpu", "right", -1, 0]
+size = [340, "bg_h"]
+label_pos = "bottom-left"
+color = [238, 238, 238, 255]
+
+[node.cache]
+value = "Cache"
+xy = ["bg_cpu", "top-left", 35, 35]
+size = ["w", "h"]
+
+[node.alu]
+value = "ALU"
+pivot = "top"
+xy = ["cache", "bottom", 0, "space"]
+size = ["w", "h"]
+
+[node.cu]
+value = "Řídící\njednotka"
+pivot = "top"
+xy = ["alu", "bottom", 0, "space"]
+size = ["w", "h"]
+
+[node.datareg]
+value = "Datové\nregistry"
+pivot = "left"
+xy = ["alu", "right", "space", 0]
+size = ["w", "h"]
+
+[node.statusreg]
+value = "Stavové\nregistry"
+pivot = "left"
+xy = ["cu", "right", "space", 0]
+size = ["w", "h"]
+
+[node.ram]
+value = "Operační paměť"
+pivot = "top-left"
+xy = ["bg_mb", "top-left", 20, 20]
+size = [0, 110]
+
+[node.buses]
+value = "Sběrnice\n(USB, …)"
+pivot = "top"
+xy = ["bg_mb", "top-right", 0, 20]
+size = ["io_w", "h"]
+
+[node.ins]
+value = "Vstupy\n(klávesnice,\nmyš, …)"
+pivot = "top"
+xy = ["buses", "bottom", 0, 20]
+size = ["io_w", "h"]
+
+[node.outs]
+value = "Výstupy\n(obrazovka,\nzvuk, …)"
+pivot = "top"
+xy = ["ins", "bottom", 0, 20]
+size = ["io_w", "h"]
+
+[[path]]
+start = ["cache", "left", 0, 0]
+ends = [
+    ["alu", "left", 0, 0],
+    ["cu", "left", 0, 0],
+]
+shift = 18
+color = [208, 208, 208, 255]
+tips = "<>"
+
+[[path]]
+start = ["cache", "bottom", 0, 0]
+end = ["alu", "top", 0, 0]
+tips = "<>"
+
+[[path]]
+start = ["alu", "bottom", 0, 0]
+end = ["cu", "top", 0, 0]
+tips = "<>"
+
+[[path]]
+start = ["cache", "right", 0, 0]
+end = ["ram", "left", 0, -4]
+tips = "<>"
+
+[[path]]
+start = ["alu", "right", 0, 0]
+end = ["datareg", "left", 0, 0]
+tips = "<>"
+
+[[path]]
+start = ["datareg", "right", 0, 0]
+end = ["ram", "bottom", 0, 0]
+points = [["", "end", 0, "", "start", 0]]
+tips = "<>"
+
+[[path]]
+start = ["statusreg", "top", 0, 0]
+end = ["alu", "bottom", 0, 17]
+points = [["", "start", 0, "", "end", 0]]
+tips = "<>"
+
+[[path]]
+start = ["statusreg", "right", 0, 0]
+end = ["ram", "right", 30, 0]
+points = [["", "end", 0, "", "start", 0]]
+tips = "<>"
+
+[[path]]
+start = ["ram", "right", 0, 0]
+ends = [
+    ["buses", "left", 0, 0],
+    ["ins", "left", 0, 0],
+    ["outs", "left", 0, 0],
+]
+points = [
+    ["", "start", 50, "", "start", 0],
+    ["", "prev", 0, "", "end", 0]
+]
+tips = "<>"

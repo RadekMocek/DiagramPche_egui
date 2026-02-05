@@ -1,6 +1,6 @@
 use std::str::FromStr;
 
-enum PathpointType {
+pub enum PathpointType {
     Reference,
     Absolute,
     Start,

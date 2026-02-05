@@ -16,6 +16,13 @@ impl App {
                 });
                 // .: Help :.
                 ui.menu_button("Help", |ui| {
+                    // . Examples .
+                    ui.menu_button("Examples", |ui| {
+                        // Example 1
+                        if ui.button("Example 1").clicked() {
+                            self.load_source_from_example();
+                        }
+                    });
                     // . About .
                     if ui.button("About...").clicked() {
                         self.do_open_modal_about = true;

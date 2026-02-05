@@ -1,15 +1,21 @@
+use crate::model::color::Color;
 use crate::model::node::Node;
+use crate::model::path::Path;
+use crate::model::pivot::Pivot;
+use crate::model::point::Point;
 use std::collections::{HashMap, HashSet};
 use std::ops::Range;
-use toml_edit::Document;
+use std::str::FromStr;
+use toml_edit::{Document, Item, Value};
 
 pub struct Parser {
     pub is_error: bool,
     pub error_message: String,
     pub error_span: Option<Range<usize>>,
     pub result_nodes: HashMap<String, Node>,
+    pub result_paths: Vec<Path>,
 
-    pub(super) variables: HashMap<String, i64>, //TODO pub(super) may not be needed in the future
+    variables: HashMap<String, i64>,
 }
 
 impl Default for Parser {
@@ -19,6 +25,7 @@ impl Default for Parser {
             error_message: String::new(),
             error_span: None,
             result_nodes: HashMap::new(),
+            result_paths: Vec::new(),
 
             variables: HashMap::new(),
         }
@@ -143,7 +150,132 @@ impl Parser {
 
         // .: Paths :.
         // .:=======:.
-        //TODO
+        self.result_paths.clear();
+
+        if let Some(paths) = toml_parsed.get("path") {
+            if let Some(paths_table_array) = paths.as_array_of_tables() {
+                for path_table in paths_table_array {
+                    let mut curr_path = Path::default();
+                    self.parse_path(&path_table, &mut curr_path);
+                    self.result_paths.push(curr_path);
+                }
+            }
+        }
+    }
+
+    pub(super) fn get_pivot_from_value(&mut self, value: &Value) -> Pivot {
+        const DEFAULT_VALUE: Pivot = Pivot::TopLeft;
+        const ERR_MSG_NOT_STRING: &str = "Pivot value must be specified by a string";
+        const ERR_MSG_WRONG_STRING: &str = "Allowed pivot values are: 'top-left', 'top', 'top-right', 'right', 'bottom-right', 'bottom', 'bottom-left', 'left', 'center'";
+
+        if let Some(value_str) = value.as_str() {
+            if let Ok(result) = Pivot::from_str(value_str) {
+                return result;
+            } else {
+                self.report_error(ERR_MSG_WRONG_STRING, &value.span());
+            }
+        } else {
+            self.report_error(ERR_MSG_NOT_STRING, &value.span());
+        }
+
+        DEFAULT_VALUE
+    }
+
+    pub(super) fn get_int_from_int_or_var(&mut self, value: &Value) -> i64 {
+        const DEFAULT_VALUE: i64 = 0;
+
+        if let Some(value_int) = value.as_integer() {
+            value_int
+        } else if let Some(value_str) = value.as_str() {
+            let Some(result) = self.variables.get(value_str) else {
+                self.report_error(
+                    &format!("Variable '{value_str}' does not exist (expecting [X, Y])"),
+                    &value.span(),
+                );
+                return DEFAULT_VALUE;
+            };
+            *result
+        } else {
+            self.report_error(
+                "Value must be specified as an integer or a string with a variable name",
+                &value.span(),
+            );
+            DEFAULT_VALUE
+        }
+    }
+
+    pub(super) fn set_position_point_from_array(&mut self, value: &Value, to_set: &mut Point) {
+        const ERR_MSG_EXPECTED_ARRAY: &str = "An array ([X, Y] or [Parent, Pivot, X, Y]) expected";
+
+        if let Some(value_arr) = value.as_array() {
+            match value_arr.len() {
+                2 => {
+                    to_set.x = self.get_int_from_int_or_var(
+                        value_arr.get(0).expect("value_arr should have len of 2"),
+                    );
+                    to_set.y = self.get_int_from_int_or_var(
+                        value_arr.get(1).expect("value_arr should have len of 2"),
+                    );
+                }
+                4 => {
+                    let parent_id_span = value_arr
+                        .get(0)
+                        .expect("value_arr should have len of 4")
+                        .span();
+
+                    // Parent
+                    if let Some(value_str) = value_arr
+                        .get(0)
+                        .expect("value_arr should have len of 4")
+                        .as_str()
+                    {
+                        to_set.parent_id = String::from(value_str);
+                        if value_str.is_empty() {
+                            self.report_error("Parent reference can't be empty", &parent_id_span);
+                        }
+                        // Better error reporting (self reference or non existing reference) for better diagram developer experience :)
+                        to_set.parent_id_span = parent_id_span;
+                    }
+                    // Pivot
+                    to_set.parent_pivot = self.get_pivot_from_value(
+                        value_arr.get(1).expect("value_arr should have len of 4"),
+                    );
+                    // X
+                    to_set.x = self.get_int_from_int_or_var(
+                        value_arr.get(2).expect("value_arr should have len of 4"),
+                    );
+                    // Y
+                    to_set.y = self.get_int_from_int_or_var(
+                        value_arr.get(3).expect("value_arr should have len of 4"),
+                    );
+                }
+                _ => self.report_error(ERR_MSG_EXPECTED_ARRAY, &value.span()),
+            }
+        } else {
+            self.report_error(ERR_MSG_EXPECTED_ARRAY, &value.span());
+        }
+    }
+
+    pub(super) fn set_color_from_array(&mut self, item: &Item, to_set: &mut Color) {
+        const ERR_MSG_EXPECTED_ARRAY: &str =
+            "An array of four uchars (0–255) must follow after 'color='";
+
+        if let Some(item_arr) = item.as_array()
+            && item_arr.len() == 4
+        {
+            let c: Vec<_> = item_arr
+                .iter()
+                .filter_map(|item| item.as_integer())
+                .map(|item| item as u8)
+                .collect();
+            if c.len() == 4 {
+                *to_set = Color::new(c[0], c[1], c[2], c[3]);
+            } else {
+                self.report_error(ERR_MSG_EXPECTED_ARRAY, &item.span());
+            }
+        } else {
+            self.report_error(ERR_MSG_EXPECTED_ARRAY, &item.span());
+        }
     }
 
     pub(super) fn report_error(&mut self, error_message: &str, error_span: &Option<Range<usize>>) {

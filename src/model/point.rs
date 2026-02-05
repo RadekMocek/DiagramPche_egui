@@ -11,7 +11,7 @@ pub struct Point {
 
 impl Default for Point {
     fn default() -> Self {
-        Point {
+        Self {
             parent_id: String::from(""),
             parent_pivot: Pivot::Center,
             x: 0,
