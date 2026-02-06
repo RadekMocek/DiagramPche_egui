@@ -63,6 +63,7 @@ impl App {
         // .:================:.
         self.canvas_nodes.clear();
         self.gui_canvas_draw_nodes(&painter, &origin);
+        self.gui_canvas_draw_paths(&painter, &origin);
 
         //
         response
