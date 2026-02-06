@@ -19,23 +19,44 @@ impl App {
 
         // .: User interaction :.
         // .:==================:.
-        /*
-        // Handle mouse events
-        let pointer_pos_in_canvas;
-        if let Some(pointer_pos) = response.interact_pointer_pos() {
-            pointer_pos_in_canvas = pointer_pos - origin;
-        }
-        */
+        if response.hovered() {
+            /*
+            // Handle mouse events
+            let pointer_pos_in_canvas;
+            if let Some(pointer_pos) = response.interact_pointer_pos() {
+                pointer_pos_in_canvas = pointer_pos - origin;
+            }
+            */
 
-        // RMB to move canvas ("scrolling")
-        if response.drag_started_by(egui::PointerButton::Secondary) {
-            self.is_canvas_dragged = true;
-        }
-        if self.is_canvas_dragged {
-            self.scrolling += response.drag_delta();
-        }
-        if response.drag_stopped_by(egui::PointerButton::Secondary) {
-            self.is_canvas_dragged = false;
+            // MW to zoom
+            let scroll = ui.input(|i| {
+                i.events.iter().find_map(|e| match e {
+                    egui::Event::MouseWheel {
+                        unit: _,
+                        delta,
+                        modifiers: _,
+                    } => Some(*delta),
+                    _ => None,
+                })
+            });
+            if let Some(scroll) = scroll {
+                const ZOOM_STEP: f32 = 0.2;
+                const ZOOM_MIN: f32 = 0.3;
+                const ZOOM_MAX: f32 = 2.0;
+                self.zoom_level =
+                    (self.zoom_level + scroll.y * ZOOM_STEP).clamp(ZOOM_MIN, ZOOM_MAX);
+            }
+
+            // RMB to move canvas ("scrolling")
+            if response.drag_started_by(egui::PointerButton::Secondary) {
+                self.is_canvas_dragged = true;
+            }
+            if self.is_canvas_dragged {
+                self.scrolling += response.drag_delta();
+            }
+            if response.drag_stopped_by(egui::PointerButton::Secondary) {
+                self.is_canvas_dragged = false;
+            }
         }
 
         // .: Draw on canvas :.
