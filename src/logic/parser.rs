@@ -3,7 +3,7 @@ use crate::model::node::Node;
 use crate::model::path::Path;
 use crate::model::pivot::Pivot;
 use crate::model::point::Point;
-use std::collections::{HashMap, HashSet};
+use std::collections::{BTreeMap, HashMap, HashSet};
 use std::ops::Range;
 use std::str::FromStr;
 use toml_edit::{Document, Item, Value};
@@ -66,7 +66,7 @@ impl Parser {
         // .: Nodes :.
         // .:=======:.
         self.result_nodes.clear();
-        let mut refs: HashMap<String, String> = HashMap::new();
+        let mut refs: BTreeMap<String, String> = BTreeMap::new();
         let mut stable_nodes: HashSet<String> = HashSet::new();
 
         if let Some(node) = toml_parsed.get("node") {
