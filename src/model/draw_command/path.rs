@@ -1,3 +1,4 @@
+use crate::helper::draw::draw_arrow_tip;
 use crate::model::draw_command::command::DrawCommand;
 use egui::{Color32, Painter, Pos2};
 
@@ -30,6 +31,26 @@ impl DrawCommand for PathDrawCommand {
 
         for result_path in &self.paths {
             painter.line(result_path.clone(), stroke);
+
+            if self.do_end_arrow && result_path.len() >= 2 {
+                draw_arrow_tip(
+                    painter,
+                    result_path[result_path.len() - 2],
+                    result_path[result_path.len() - 1],
+                    zoom_level,
+                    self.color,
+                );
+            }
+        }
+
+        if self.do_start_arrow && self.paths.len() >= 1 && self.paths[0].len() >= 2 {
+            draw_arrow_tip(
+                painter,
+                self.paths[0][1],
+                self.paths[0][0],
+                zoom_level,
+                self.color,
+            );
         }
     }
 }
