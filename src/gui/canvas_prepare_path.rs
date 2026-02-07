@@ -4,10 +4,9 @@ use crate::model::pivot::Pivot;
 use crate::App;
 use eframe::emath::Pos2;
 use egui::{pos2, Painter, Stroke};
-//TODO Proper arrows
 
 impl App {
-    pub(super) fn gui_canvas_draw_paths(&mut self, painter: &Painter, origin: &Pos2) {
+    pub(super) fn gui_canvas_prepare_paths(&mut self, painter: &Painter, origin: &Pos2) {
         for path in &self.parser.result_paths {
             let stroke = Stroke::new(self.zoom_level, path.color.to_egui_color());
             let shift = path.shift;

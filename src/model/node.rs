@@ -30,7 +30,7 @@ pub struct Node {
     pub z: i64,
 
     // = Other internal =
-    pub draw_batch_number: u32,
+    pub preparation_batch_number: u32,
 }
 
 impl Default for Node {
@@ -63,7 +63,7 @@ impl Default for Node {
             z: crate::config::DRAW_LIST_CHANNEL_DEFAULT_NODE,
 
             // = Other internal =
-            draw_batch_number: 0,
+            preparation_batch_number: 0,
         }
     }
 }

@@ -1,6 +1,6 @@
 use crate::logic::parser::Parser;
 use crate::model::canvas_node::CanvasNode;
-use crate::model::draw_command::DrawCommandOrd;
+use crate::model::draw_command::command::DrawCommandOrd;
 use std::collections::{BinaryHeap, HashMap};
 
 /// We derive Deserialize/Serialize so we can persist app state on shutdown.

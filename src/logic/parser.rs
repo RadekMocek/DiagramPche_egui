@@ -125,12 +125,12 @@ impl Parser {
                     )
                 }
                 if !stable_nodes.contains(dep_id) && stable_nodes.contains(ref_id) {
-                    let ref_node_batch_number = self.result_nodes[ref_id].draw_batch_number;
+                    let ref_node_batch_number = self.result_nodes[ref_id].preparation_batch_number;
                     let dep_node = self
                         .result_nodes
                         .get_mut(dep_id)
                         .expect("It was added to refs so must be in result_nodes too");
-                    dep_node.draw_batch_number = ref_node_batch_number + 1;
+                    dep_node.preparation_batch_number = ref_node_batch_number + 1;
                     stable_nodes.insert(dep_id.clone());
                     did_anything_change = true;
                 }

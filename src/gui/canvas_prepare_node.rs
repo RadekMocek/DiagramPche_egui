@@ -1,26 +1,27 @@
 use crate::model::canvas_node::CanvasNode;
-use crate::model::draw_command::{DrawCommandOrd, NodeRectangleDrawCommand};
+use crate::model::draw_command::command::DrawCommandOrd;
+use crate::model::draw_command::node_rectangle::NodeRectangleDrawCommand;
 use crate::model::pivot::Pivot;
 use crate::App;
 use egui::{pos2, Painter, Pos2};
 
 impl App {
-    pub(super) fn gui_canvas_draw_nodes(&mut self, painter: &Painter, origin: &Pos2) {
+    pub(super) fn gui_canvas_prepare_nodes(&mut self, painter: &Painter, origin: &Pos2) {
         const NODE_BORDER_OFFSET_BASE: f32 = 10.0;
         let node_padding = NODE_BORDER_OFFSET_BASE * self.zoom_level;
 
-        let mut current_draw_batch_number = 0;
+        let mut current_preparation_batch_number = 0;
         while self.parser.result_nodes.len() != self.canvas_nodes.len() {
             for (_, node) in &self.parser.result_nodes {
-                if node.draw_batch_number == current_draw_batch_number {
+                if node.preparation_batch_number == current_preparation_batch_number {
                     // Determine size of the label
-                    // (Lay out the text, ready it for painting. After this we can get the size of text, which will be painted.)
-                    let text_galley = painter.layout_no_wrap(
+                    // (Lay out the text, ready it for drawing. After this we can get the size of label, which will be drawed.)
+                    let label_galley = painter.layout_no_wrap(
                         node.value.clone(),
                         egui::FontId::monospace(18.0 * self.zoom_level), // TODO font size
                         egui::Color32::PLACEHOLDER,
                     );
-                    let label_rect = text_galley.rect;
+                    let label_rect = label_galley.rect;
                     let label_size_x = label_rect.width();
                     let label_size_y = label_rect.height();
 
@@ -85,18 +86,8 @@ impl App {
                     let draw_bottom_right = *origin + aabr_bottom_right.to_vec2();
                     let draw_center = *origin + aabr_center.to_vec2(); // Helper variable for custom label placement inside a node
 
-                    // Do the actual drawing of the rectangle
-                    /*
-                    painter.rect(
-                        egui::Rect::from_min_max(draw_top_left, draw_bottom_right),
-                        0,
-                        node.color.to_egui_color(),
-                        egui::Stroke::new(self.zoom_level, egui::Color32::BLACK),
-                        egui::StrokeKind::Inside,
-                    );
-                    */
-
-                    // Draw the label
+                    // Do the drawing preparation of the rectangle
+                    // Prepare the label
                     let label_left_x = draw_top_left.x + node_padding;
                     let label_top_y = draw_top_left.y + node_padding;
                     let draw_label_position_default = pos2(label_left_x, label_top_y);
@@ -134,21 +125,19 @@ impl App {
                         draw_label_position_default
                     };
 
-                    //painter.galley(draw_label_position, text_galley, egui::Color32::BLACK);
-
-                    self.draw_commands_ord.push(DrawCommandOrd {
-                        ord: -node.z,
-                        draw_command: Box::new(NodeRectangleDrawCommand {
-                            rect_top_left: draw_top_left,
-                            rect_bottom_right: draw_bottom_right,
-                            rect_color: node.color.to_egui_color(),
-                            label_position: draw_label_position,
-                            label_galley: text_galley,
-                        }),
-                    })
+                    self.draw_commands_ord.push(DrawCommandOrd::new(
+                        -node.z,
+                        Box::new(NodeRectangleDrawCommand::new(
+                            draw_top_left,
+                            draw_bottom_right,
+                            node.color.to_egui_color(),
+                            draw_label_position,
+                            label_galley,
+                        )),
+                    ));
                 }
             }
-            current_draw_batch_number += 1;
+            current_preparation_batch_number += 1;
         }
     }
 }

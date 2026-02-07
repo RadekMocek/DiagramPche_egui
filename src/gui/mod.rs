@@ -1,6 +1,6 @@
 mod canvas;
-mod canvas_draw_node;
-mod canvas_draw_path;
+mod canvas_prepare_node;
+mod canvas_prepare_path;
 mod modal;
 mod panel_bottom;
 mod panel_central;
