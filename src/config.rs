@@ -1,3 +1,1 @@
-pub const N_DRAW_LIST_CHANNELS: i64 = 9;
-pub const DRAW_LIST_CHANNEL_DEFAULT_NODE: i64 = 4;
-pub const DRAW_LIST_CHANNEL_DEFAULT_PATH: i64 = 5;
+// Nothing here rn

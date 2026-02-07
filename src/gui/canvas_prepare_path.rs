@@ -1,12 +1,12 @@
-use crate::App;
+use crate::helper::draw_layer::dl_user_channel_to_real_channel;
 use crate::model::draw_command::command::DrawCommandOrd;
 use crate::model::draw_command::path::PathDrawCommand;
 use crate::model::pathpoint_type::PathpointType;
-use eframe::emath::Pos2;
-use egui::{Painter, Stroke, pos2};
+use crate::App;
+use egui::{pos2, Pos2};
 
 impl App {
-    pub(super) fn gui_canvas_prepare_paths(&mut self, painter: &Painter, origin: &Pos2) {
+    pub(super) fn gui_canvas_prepare_paths(&mut self, origin: &Pos2) {
         for path in &self.parser.result_paths {
             // Get the "simple" values from path
             let shift = path.shift;
@@ -149,7 +149,7 @@ impl App {
 
             // Make a draw command
             self.draw_commands_ord.push(DrawCommandOrd::new(
-                -path.z,
+                dl_user_channel_to_real_channel(path.z, false),
                 Box::new(PathDrawCommand::new(
                     result_paths,
                     path.color.to_egui_color(),

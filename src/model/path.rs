@@ -1,3 +1,4 @@
+use crate::helper::draw_layer::*;
 use crate::model::color::Color;
 use crate::model::pathpoint::Pathpoint;
 use crate::model::pivot::Pivot;
@@ -33,7 +34,7 @@ impl Default for Path {
             do_start_arrow: false,
             do_end_arrow: true,
 
-            z: crate::config::DRAW_LIST_CHANNEL_DEFAULT_PATH,
+            z: DL_USER_CHANNEL_DEFAULT_PATH,
         }
     }
 }

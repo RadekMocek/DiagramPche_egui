@@ -1,3 +1,4 @@
+use crate::helper::draw_layer::dl_user_channel_to_real_channel;
 use crate::model::canvas_node::CanvasNode;
 use crate::model::draw_command::command::DrawCommandOrd;
 use crate::model::draw_command::node_rectangle::NodeRectangleDrawCommand;
@@ -126,7 +127,7 @@ impl App {
                     };
 
                     self.draw_commands_ord.push(DrawCommandOrd::new(
-                        -node.z,
+                        dl_user_channel_to_real_channel(node.z, true),
                         Box::new(NodeRectangleDrawCommand::new(
                             draw_top_left,
                             draw_bottom_right,

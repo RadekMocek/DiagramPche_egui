@@ -63,7 +63,7 @@ impl App {
         // .:================:.
         self.canvas_nodes.clear();
         self.gui_canvas_prepare_nodes(&painter, &origin);
-        self.gui_canvas_prepare_paths(&painter, &origin);
+        self.gui_canvas_prepare_paths(&origin);
 
         while !self.draw_commands_ord.is_empty() {
             if let Some(draw_command_ord) = self.draw_commands_ord.pop() {

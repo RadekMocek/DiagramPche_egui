@@ -1,3 +1,4 @@
+use crate::helper::draw_layer::*;
 use crate::model::color::Color;
 use crate::model::node::Node;
 use crate::model::path::Path;
@@ -282,12 +283,12 @@ impl Parser {
 
     pub(super) fn get_z_from_int(&mut self, item: &Item, is_node: bool) -> i64 {
         const MIN: i64 = 0;
-        const MAX: i64 = crate::config::N_DRAW_LIST_CHANNELS - 1;
+        const MAX: i64 = N_DL_USER_CHANNELS - 1;
         let err_msg_range = format!("An integer between {MIN} and {MAX} must follow after 'z='");
         let default_result = if is_node {
-            crate::config::DRAW_LIST_CHANNEL_DEFAULT_NODE
+            DL_USER_CHANNEL_DEFAULT_NODE
         } else {
-            crate::config::DRAW_LIST_CHANNEL_DEFAULT_PATH
+            DL_USER_CHANNEL_DEFAULT_PATH
         };
 
         if let Some(result) = item.as_integer() {

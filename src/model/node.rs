@@ -1,3 +1,4 @@
+use crate::helper::draw_layer::*;
 use crate::model::color::Color;
 use crate::model::pivot::Pivot;
 use crate::model::point::Point;
@@ -60,7 +61,7 @@ impl Default for Node {
             label_position: Pivot::Center,
 
             // = Z =
-            z: crate::config::DRAW_LIST_CHANNEL_DEFAULT_NODE,
+            z: DL_USER_CHANNEL_DEFAULT_NODE,
 
             // = Other internal =
             preparation_batch_number: 0,
