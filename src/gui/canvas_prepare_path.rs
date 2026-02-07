@@ -1,154 +1,155 @@
-use crate::model::path::Path;
-use crate::model::pathpoint_type::PathpointType;
-use crate::model::pivot::Pivot;
 use crate::App;
+use crate::model::pathpoint_type::PathpointType;
 use eframe::emath::Pos2;
-use egui::{pos2, Painter, Stroke};
+use egui::{Painter, Stroke, pos2};
 
 impl App {
     pub(super) fn gui_canvas_prepare_paths(&mut self, painter: &Painter, origin: &Pos2) {
         for path in &self.parser.result_paths {
+            // Get the "simple" values from path
             let stroke = Stroke::new(self.zoom_level, path.color.to_egui_color());
             let shift = path.shift;
 
+            // Prepare the start point
             let mut start = pos2(
                 path.start.x as f32 * self.zoom_level,
                 path.start.y as f32 * self.zoom_level,
             );
-            let mut is_start_arrow_satisfied = !path.do_start_arrow;
-            if !path.start.parent_id.is_empty() {
-                if let Some(parent_node) = self.canvas_nodes.get(&path.start.parent_id) {
-                    start += parent_node
-                        .get_exact_point_from_pivot(&path.start.parent_pivot)
-                        .to_vec2();
-                    if shift != 0 {
-                        self.path_shift(
-                            &mut start,
-                            &mut is_start_arrow_satisfied,
-                            path,
-                            &path.start.parent_pivot,
-                            painter,
-                            origin,
-                            &stroke,
-                        );
-                    }
+
+            let mut do_start_shift = false;
+            if !path.start.parent_id.is_empty()
+                && let Some(parent_node) = self.canvas_nodes.get(&path.start.parent_id)
+            {
+                start += parent_node
+                    .get_exact_point_from_pivot(&path.start.parent_pivot)
+                    .to_vec2();
+                if shift != 0 {
+                    do_start_shift = true;
                 }
             }
 
-            for path_end in &path.ends {
+            // Start is now "originated" (takes canvas origin into account)
+            start += origin.to_vec2();
+
+            // One path can have multiple ends defined by the user => one [[path]] can define multiple result_paths.
+            // Every result_path will be defined as vector of points Vec<Pos2> (start point, maybe some Pathpoints, end point).
+            // Vector of these vectors will be given to the draw command.
+            let mut result_paths: Vec<Vec<Pos2>>;
+
+            // Each inner vector starts with the start point, or OG start point followed by a shifted start point, if shift != 0 && start point is relative
+            if !do_start_shift {
+                result_paths = vec![vec![start]; path.ends.len()]
+            } else {
+                let shifted_start =
+                    start + path.get_shift_vector(&path.start.parent_pivot, self.zoom_level);
+
+                result_paths = vec![vec![start, shifted_start]; path.ends.len()];
+
+                start = shifted_start; // Do this so Pathpoints relative to start are relative to this
+            };
+
+            // Foreach end point
+            for (index, path_end) in path.ends.iter().enumerate() {
+                let result_pathpoints = &mut result_paths[index];
+
+                // Ready the current end point
                 let mut end = pos2(
                     path_end.x as f32 * self.zoom_level,
                     path_end.y as f32 * self.zoom_level,
                 );
-                let mut is_end_arrow_satisfied = !path.do_end_arrow;
-                if !path_end.parent_id.is_empty() {
-                    if let Some(parent_node) = self.canvas_nodes.get(&path_end.parent_id) {
-                        end += parent_node
-                            .get_exact_point_from_pivot(&path_end.parent_pivot)
-                            .to_vec2();
-                        if shift != 0 {
-                            self.path_shift(
-                                &mut end,
-                                &mut is_end_arrow_satisfied,
-                                path,
-                                &path_end.parent_pivot,
-                                painter,
-                                origin,
-                                &stroke,
-                            );
-                        }
+
+                let mut do_end_shift = false;
+                if !path_end.parent_id.is_empty()
+                    && let Some(parent_node) = self.canvas_nodes.get(&path_end.parent_id)
+                {
+                    end += parent_node
+                        .get_exact_point_from_pivot(&path_end.parent_pivot)
+                        .to_vec2();
+                    if shift != 0 {
+                        do_end_shift = true;
                     }
                 }
 
-                let mut prev = start;
+                // End is now "originated"
+                end += origin.to_vec2();
+
+                let shifted_end = if !do_end_shift {
+                    end
+                } else {
+                    end + path.get_shift_vector(&path_end.parent_pivot, self.zoom_level)
+                };
+
+                // Pathpoints (defined as a collection [[path]].points) are points between start and end.
+                // They are not mandatory: if no Pathpoints are specified, then path is just a single line from start to end.
+                // If there are some, we iterate them and add them to the result collection.
+                let mut prev = start; // This is for the "prev" to work (Pathpoint relative to previous Pathpoint)
+
                 for pathpoint in &path.pathpoints {
+                    // Currently processed Pathpoint (not "originated" yet)
                     let mut curr = pos2(
                         pathpoint.x as f32 * self.zoom_level,
                         pathpoint.y as f32 * self.zoom_level,
                     );
+                    // Apply the Pathpoint type for both coordinates
+                    // X
                     match pathpoint.x_type {
+                        // AABRs in `self.canvas_nodes` are stored "zoomed and absolute", so they take zoom_level into account, but not origin.
+                        // So we have to add origin here, later code depends on "originated" Pathpoint.
                         PathpointType::Reference => {
                             if let Some(parent_node) = self.canvas_nodes.get(&pathpoint.x_parent_id)
                             {
                                 curr.x += parent_node
                                     .get_exact_point_from_pivot(&pathpoint.x_parent_pivot)
-                                    .x;
+                                    .x
+                                    + origin.x;
                             }
                         }
-                        PathpointType::Absolute => {}
+                        // Absolute coordinates are, by definition, not "originated"
+                        PathpointType::Absolute => curr.x += origin.x,
+                        // Start, End, and Prev are "originated", so we mustn't add origin here
                         PathpointType::Start => curr.x += start.x,
-                        PathpointType::End => curr.x += end.x,
+                        PathpointType::End => curr.x += shifted_end.x,
                         PathpointType::Previous => curr.x += prev.x,
                     }
+                    // Same for Y
                     match pathpoint.y_type {
                         PathpointType::Reference => {
                             if let Some(parent_node) = self.canvas_nodes.get(&pathpoint.y_parent_id)
                             {
                                 curr.y += parent_node
                                     .get_exact_point_from_pivot(&pathpoint.y_parent_pivot)
-                                    .y;
+                                    .y
+                                    + origin.y;
                             }
                         }
-                        PathpointType::Absolute => {}
+                        PathpointType::Absolute => curr.y += origin.y,
                         PathpointType::Start => curr.y += start.y,
-                        PathpointType::End => curr.y += end.y,
+                        PathpointType::End => curr.y += shifted_end.y,
                         PathpointType::Previous => curr.y += prev.y,
                     }
 
-                    let p1 = prev + origin.to_vec2();
-                    let p2 = curr + origin.to_vec2();
-                    painter.line_segment([p1, p2], stroke);
+                    // Pathpoint is prepared
+                    result_pathpoints.push(curr);
 
-                    if !is_start_arrow_satisfied {
-                        painter.arrow(p2, p1 - p2, stroke);
-                        is_start_arrow_satisfied = true;
-                    }
-
+                    // Ready for the next iteration
                     prev = curr;
                 }
 
-                let p1 = prev + origin.to_vec2();
-                let p2 = end + origin.to_vec2();
-                painter.line_segment([p1, p2], stroke);
+                // After the Pathpoints are ready...
 
-                if !is_end_arrow_satisfied {
-                    painter.arrow(p1, p2 - p1, stroke);
-                    //is_end_arrow_satisfied = true; // Next iteration will set it to true so no need to do it here
-                }
+                // This is the end point Pathpoints related to
+                result_pathpoints.push(shifted_end);
 
-                if !is_start_arrow_satisfied {
-                    painter.arrow(p2, p1 - p2, stroke);
-                    is_start_arrow_satisfied = true;
+                // If there was a shift at play, we still have a "real" end point to push
+                if do_end_shift {
+                    result_pathpoints.push(end);
                 }
             }
+
+            // Make a draw command
+            for result_path in result_paths {
+                painter.line(result_path, stroke);
+            }
         }
-    }
-
-    fn path_shift(
-        &self,
-        point: &mut Pos2,
-        is_arrow_satisfied: &mut bool,
-        path: &Path,
-        pivot: &Pivot,
-        painter: &Painter,
-        origin: &Pos2,
-        stroke: &Stroke,
-    ) {
-        // This will be the new position of the given point
-        let shifted_start = *point + path.get_shift_vector(pivot, self.zoom_level);
-
-        // Draw a line from the old position to the new position
-        let p1 = *point + origin.to_vec2();
-        let p2 = shifted_start + origin.to_vec2();
-        painter.line_segment([p1, p2], *stroke);
-
-        // Draw arrow if required
-        if !*is_arrow_satisfied {
-            painter.arrow(p2, p1 - p2, *stroke);
-            *is_arrow_satisfied = true;
-        }
-
-        // Apply
-        *point = shifted_start;
     }
 }

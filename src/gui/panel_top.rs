@@ -23,8 +23,8 @@ impl App {
                 });
                 // .: Debug :.
                 ui.menu_button("Debug", |ui| {
-                    // .: Debug diagrams :.
-                    ui.menu_button("Debug diagrams", |ui| {
+                    // .: Render tests :.
+                    ui.menu_button("Render tests", |ui| {
                         // . Z-axis, out-of-order .
                         if ui.button("Z-axis, out-of-order").clicked() {
                             self.load_source_from_example("debug1");
