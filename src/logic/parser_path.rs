@@ -158,9 +158,8 @@ impl Parser {
                     &format!("Pathpoint's x is referencing non existant id: '{id_str}'"),
                     &pathpoint_arr.get(0 + arr_offset).unwrap().span(),
                 );
-                pivot_to_set =
-                    self.get_pivot_from_value(pathpoint_arr.get(1 + arr_offset).unwrap());
             }
+            pivot_to_set = self.get_pivot_from_value(pathpoint_arr.get(1 + arr_offset).unwrap());
         }
         let coor_to_set = self.get_int_from_int_or_var(pathpoint_arr.get(2 + arr_offset).unwrap());
         if is_x {
