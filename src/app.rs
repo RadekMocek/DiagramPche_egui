@@ -1,6 +1,7 @@
 use crate::logic::parser::Parser;
 use crate::model::canvas_node::CanvasNode;
-use std::collections::HashMap;
+use crate::model::draw_command::DrawCommandOrd;
+use std::collections::{BinaryHeap, HashMap};
 
 /// We derive Deserialize/Serialize so we can persist app state on shutdown.
 /*
@@ -20,6 +21,7 @@ pub struct App {
     pub is_canvas_dragged: bool,
     pub scrolling: egui::Pos2,
     pub canvas_nodes: HashMap<String, CanvasNode>,
+    pub draw_commands_ord: BinaryHeap<DrawCommandOrd>,
     // Non-main window
     pub do_open_modal_about: bool,
 }
@@ -100,6 +102,7 @@ tips="<>""##,
             is_canvas_dragged: false,
             scrolling: egui::pos2(0.0, 0.0),
             canvas_nodes: HashMap::new(),
+            draw_commands_ord: BinaryHeap::new(),
             // Non-main window
             do_open_modal_about: false,
         }

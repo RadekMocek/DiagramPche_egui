@@ -1,11 +1,11 @@
 use crate::model::canvas_node::CanvasNode;
+use crate::model::draw_command::{DrawCommandOrd, NodeRectangleDrawCommand};
 use crate::model::pivot::Pivot;
 use crate::App;
 use egui::{pos2, Painter, Pos2};
 
 impl App {
     pub(super) fn gui_canvas_draw_nodes(&mut self, painter: &Painter, origin: &Pos2) {
-        const COLOR_BLACK: egui::Color32 = egui::Color32::BLACK;
         const NODE_BORDER_OFFSET_BASE: f32 = 10.0;
         let node_padding = NODE_BORDER_OFFSET_BASE * self.zoom_level;
 
@@ -86,13 +86,15 @@ impl App {
                     let draw_center = *origin + aabr_center.to_vec2(); // Helper variable for custom label placement inside a node
 
                     // Do the actual drawing of the rectangle
+                    /*
                     painter.rect(
                         egui::Rect::from_min_max(draw_top_left, draw_bottom_right),
                         0,
                         node.color.to_egui_color(),
-                        egui::Stroke::new(self.zoom_level, COLOR_BLACK),
+                        egui::Stroke::new(self.zoom_level, egui::Color32::BLACK),
                         egui::StrokeKind::Inside,
                     );
+                    */
 
                     // Draw the label
                     let label_left_x = draw_top_left.x + node_padding;
@@ -132,7 +134,18 @@ impl App {
                         draw_label_position_default
                     };
 
-                    painter.galley(draw_label_position, text_galley, COLOR_BLACK);
+                    //painter.galley(draw_label_position, text_galley, egui::Color32::BLACK);
+
+                    self.draw_commands_ord.push(DrawCommandOrd {
+                        ord: -node.z,
+                        draw_command: Box::new(NodeRectangleDrawCommand {
+                            rect_top_left: draw_top_left,
+                            rect_bottom_right: draw_bottom_right,
+                            rect_color: node.color.to_egui_color(),
+                            label_position: draw_label_position,
+                            label_galley: text_galley,
+                        }),
+                    })
                 }
             }
             current_draw_batch_number += 1;

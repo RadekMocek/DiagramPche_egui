@@ -1,5 +1,6 @@
 pub(super) mod canvas_node;
 pub(super) mod color;
+pub(super) mod draw_command;
 pub(super) mod node;
 pub(super) mod path;
 pub(super) mod pathpoint;
