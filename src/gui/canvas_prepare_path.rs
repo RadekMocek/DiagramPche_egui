@@ -1,4 +1,6 @@
 use crate::App;
+use crate::model::draw_command::command::DrawCommandOrd;
+use crate::model::draw_command::path::PathDrawCommand;
 use crate::model::pathpoint_type::PathpointType;
 use eframe::emath::Pos2;
 use egui::{Painter, Stroke, pos2};
@@ -7,7 +9,6 @@ impl App {
     pub(super) fn gui_canvas_prepare_paths(&mut self, painter: &Painter, origin: &Pos2) {
         for path in &self.parser.result_paths {
             // Get the "simple" values from path
-            let stroke = Stroke::new(self.zoom_level, path.color.to_egui_color());
             let shift = path.shift;
 
             // Prepare the start point
@@ -147,9 +148,15 @@ impl App {
             }
 
             // Make a draw command
-            for result_path in result_paths {
-                painter.line(result_path, stroke);
-            }
+            self.draw_commands_ord.push(DrawCommandOrd::new(
+                -path.z,
+                Box::new(PathDrawCommand::new(
+                    result_paths,
+                    path.color.to_egui_color(),
+                    path.do_start_arrow,
+                    path.do_end_arrow,
+                )),
+            ));
         }
     }
 }
