@@ -111,6 +111,8 @@ impl Parser {
                         self.report_error("A string must follow after 'tips='", &item.span());
                     }
                 }
+                // == z ==
+                "z" => curr_path.z = self.get_z_from_int(item, false),
                 // == Unknown key ==
                 _ => self.report_error(&format!("Unknown key '{key}'"), &item.span()),
             }

@@ -136,7 +136,7 @@ impl App {
         stroke: &Stroke,
     ) {
         // This will be the new position of the given point
-        let shifted_start = *point + path.get_shift_direction(pivot, self.zoom_level);
+        let shifted_start = *point + path.get_shift_vector(pivot, self.zoom_level);
 
         // Draw a line from the old position to the new position
         let p1 = *point + origin.to_vec2();

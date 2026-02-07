@@ -51,9 +51,7 @@ impl Parser {
                     }
                 }
                 // == z ==
-                "z" => {
-                    //TODO
-                }
+                "z" => curr_node.z = self.get_z_from_int(item, true),
                 // == Unknown key ==
                 _ => self.report_error(&format!("Unknown key '{key}'"), &item.span()),
             }

@@ -15,6 +15,8 @@ pub struct Path {
 
     pub do_start_arrow: bool,
     pub do_end_arrow: bool,
+
+    pub z: i64,
 }
 
 impl Default for Path {
@@ -30,12 +32,14 @@ impl Default for Path {
 
             do_start_arrow: false,
             do_end_arrow: true,
+
+            z: crate::config::DRAW_LIST_CHANNEL_DEFAULT_PATH,
         }
     }
 }
 
 impl Path {
-    pub fn get_shift_direction(&self, pivot: &Pivot, zoom_level: f32) -> Vec2 {
+    pub fn get_shift_vector(&self, pivot: &Pivot, zoom_level: f32) -> Vec2 {
         let sf = self.shift as f32 * zoom_level;
         match pivot {
             Pivot::TopLeft => vec2(-sf, -sf),

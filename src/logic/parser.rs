@@ -258,7 +258,7 @@ impl Parser {
 
     pub(super) fn set_color_from_array(&mut self, item: &Item, to_set: &mut Color) {
         const ERR_MSG_EXPECTED_ARRAY: &str =
-            "An array of four uchars (0–255) must follow after 'color='";
+            "An array of four uchars (0–255) or RGBA hex string must follow after 'color='";
 
         if let Some(item_arr) = item.as_array()
             && item_arr.len() == 4
@@ -273,9 +273,37 @@ impl Parser {
             } else {
                 self.report_error(ERR_MSG_EXPECTED_ARRAY, &item.span());
             }
+        } else if let Some(item_str) = item.as_str() {
+            *to_set = Color::from_str(item_str);
         } else {
             self.report_error(ERR_MSG_EXPECTED_ARRAY, &item.span());
         }
+    }
+
+    pub(super) fn get_z_from_int(&mut self, item: &Item, is_node: bool) -> i64 {
+        const MIN: i64 = 0;
+        const MAX: i64 = crate::config::N_DRAW_LIST_CHANNELS - 1;
+        let err_msg_range = format!("An integer between {MIN} and {MAX} must follow after 'z='");
+        let default_result = if is_node {
+            crate::config::DRAW_LIST_CHANNEL_DEFAULT_NODE
+        } else {
+            crate::config::DRAW_LIST_CHANNEL_DEFAULT_PATH
+        };
+
+        if let Some(result) = item.as_integer() {
+            if result < MIN {
+                self.report_error(&err_msg_range, &item.span());
+                return MIN;
+            }
+            if result > MAX {
+                self.report_error(&err_msg_range, &item.span());
+                return MAX;
+            }
+            return result;
+        }
+
+        self.report_error(&err_msg_range, &item.span());
+        default_result
     }
 
     pub(super) fn report_error(&mut self, error_message: &str, error_span: &Option<Range<usize>>) {

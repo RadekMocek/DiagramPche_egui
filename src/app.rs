@@ -29,7 +29,7 @@ impl Default for App {
         Self {
             // Text editor
             source: String::from(
-                r#"[variables]
+                r##"[variables]
 w = 110
 h = 72
 
@@ -44,6 +44,7 @@ pivot = "top"
 xy = ["Cache", "bottom", 0, 35]
 size = ["w", "h"]
 z = 6
+color = "#006db6FF"
 
 [node."Řídící\njednotka"]
 pivot = "top"
@@ -87,7 +88,7 @@ points=[
   ["","",500,"","",400],
   ["","",500,"","",500],
 ]
-tips="<>""#,
+tips="<>""##,
             ),
             parser: Parser::default(),
             is_error_span_some: false,

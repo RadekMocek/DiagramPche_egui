@@ -3,6 +3,7 @@
 mod app;
 pub use app::App;
 
+mod config;
 mod gui;
 mod logic;
 mod model;

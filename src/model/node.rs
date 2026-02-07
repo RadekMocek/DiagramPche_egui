@@ -60,7 +60,7 @@ impl Default for Node {
             label_position: Pivot::Center,
 
             // = Z =
-            z: 0,
+            z: crate::config::DRAW_LIST_CHANNEL_DEFAULT_NODE,
 
             // = Other internal =
             draw_batch_number: 0,
