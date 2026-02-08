@@ -8,8 +8,7 @@ use egui::{pos2, Painter, Pos2};
 
 impl App {
     pub(super) fn gui_canvas_prepare_nodes(&mut self, painter: &Painter, origin: &Pos2) {
-        const NODE_BORDER_OFFSET_BASE: f32 = 18.0;
-        let node_padding = NODE_BORDER_OFFSET_BASE * self.zoom_level;
+        let node_padding = crate::config::NODE_BORDER_OFFSET_BASE * self.zoom_level;
 
         while !self.parser.result_order.is_empty() {
             if let Some(order_pair) = self.parser.result_order.pop()

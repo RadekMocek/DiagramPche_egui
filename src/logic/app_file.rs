@@ -14,5 +14,7 @@ impl App {
         };
 
         self.source = cow.to_string().replace("\r\n", "\n");
+        
+        self.scrolling = crate::config::SCROLLING_DEFAULT;
     }
 }

@@ -1,10 +1,8 @@
 use crate::App;
-use egui::{pos2, vec2, Color32, Rect, TextEdit, TextStyle, Vec2};
+use egui::{pos2, vec2, Rect, TextEdit, TextStyle, Vec2};
 
 impl App {
     pub(super) fn gui_text_editor(&mut self, ui: &mut egui::Ui) {
-        const COLOR_ERROR_HIGHLIGHT: Color32 = Color32::from_rgba_unmultiplied_const(211, 1, 2, 80);
-
         // The text editor itself
         let response = ui.add(
             TextEdit::multiline(&mut self.source)
@@ -32,7 +30,7 @@ impl App {
                     vec2(char_width * self.error_span_length as f32, text_line_height),
                 ),
                 0,
-                COLOR_ERROR_HIGHLIGHT,
+                crate::config::COLOR_ERROR_HIGHLIGHT,
             );
         }
     }

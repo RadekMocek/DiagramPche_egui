@@ -1,5 +1,15 @@
 # DiagramPche :: egui
 
+## TODO
+
+* Font size based zooming
+* Resizable textedit
+* Tooltip showing node's id on hover
+* Error highlight breaks:
+  * On tab
+  * On too thin textedit because it wraps lines!
+* Test all error message scenarios
+
 ## Dependencies
 
 * [egui](https://github.com/emilk/egui) ([MIT](https://github.com/emilk/egui/blob/main/LICENSE-MIT))

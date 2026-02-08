@@ -6,7 +6,7 @@ impl App {
             if self.parser.is_error {
                 ui.label(
                     egui::RichText::new(&self.parser.error_message.replace('\n', " "))
-                        .color(egui::Color32::from_rgb(211, 1, 2)),
+                        .color(crate::config::COLOR_ERROR),
                 );
             } else {
                 ui.label(""); // Reserve space

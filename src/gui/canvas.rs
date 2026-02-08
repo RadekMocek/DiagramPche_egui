@@ -15,8 +15,8 @@ impl App {
 
         // Draw grid
         if self.do_show_grid {
-            let grid_step = CANVAS_GRID_STEP_BASE * self.zoom_level;
-            let grid_stroke = egui::Stroke::new(1.0, COLOR_CANVAS_GRID_LINE);
+            let grid_step = GRID_STEP_BASE * self.zoom_level;
+            let grid_stroke = egui::Stroke::new(1.0, COLOR_GRID_LINE);
 
             let mut x = self.scrolling.x.rem_euclid(grid_step);
             while x < response_rect.width() {

@@ -103,7 +103,7 @@ tips="<>""##,
             // Canvas
             zoom_level: 1.0,
             is_canvas_dragged: false,
-            scrolling: egui::pos2(0.0, 0.0),
+            scrolling: crate::config::SCROLLING_DEFAULT,
             canvas_nodes: HashMap::new(),
             draw_commands_ord: BinaryHeap::new(),
             do_show_grid: true,
