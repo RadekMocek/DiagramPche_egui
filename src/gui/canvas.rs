@@ -3,10 +3,6 @@ use crate::App;
 
 impl App {
     pub(super) fn gui_canvas(&mut self, ui: &mut egui::Ui) -> egui::Response {
-        // .: Options and state :.
-        // .:===================:.
-        // ...
-
         // .: Canvas init :.
         // .:=============:.
         // Painter is our canvas
@@ -60,11 +56,11 @@ impl App {
                 })
             });
             if let Some(scroll) = scroll {
-                const ZOOM_STEP: f32 = 0.2;
-                const ZOOM_MIN: f32 = 0.3;
-                const ZOOM_MAX: f32 = 2.0;
-                self.zoom_level =
-                    (self.zoom_level + scroll.y * ZOOM_STEP).clamp(ZOOM_MIN, ZOOM_MAX);
+                self.canvas_font_size = (self.canvas_font_size
+                    + scroll.y as i32 * CANVAS_FONT_SIZE_STEP)
+                    .clamp(CANVAS_FONT_SIZE_MIN, CANVAS_FONT_SIZE_MAX);
+
+                self.zoom_level = self.canvas_font_size as f32 / CANVAS_FONT_SIZE_BASE as f32;
             }
 
             // RMB to move canvas ("scrolling")

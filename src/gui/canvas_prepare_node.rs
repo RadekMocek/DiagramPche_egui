@@ -18,7 +18,7 @@ impl App {
                 // (Lay out the text, ready it for drawing. After this we can get the size of label, which will be drawed.)
                 let label_galley = painter.layout_no_wrap(
                     node.value.clone(),
-                    egui::FontId::monospace(18.0 * self.zoom_level), // TODO font size
+                    egui::FontId::monospace(self.canvas_font_size as f32),
                     egui::Color32::PLACEHOLDER,
                 );
                 let label_rect = label_galley.rect;

@@ -2,7 +2,7 @@
 
 ## TODO
 
-* Font size based zooming
+* ~~Font size based zooming~~
 * Resizable textedit
 * Tooltip showing node's id on hover
 * Error highlight breaks:

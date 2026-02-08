@@ -10,23 +10,24 @@ use std::collections::{BinaryHeap, HashMap};
 */
 pub struct App {
     // Text editor
-    pub source: String,
-    pub parser: Parser,
-    pub is_error_span_some: bool,
-    pub error_span_line: u32,
-    pub error_span_column: u32,
-    pub error_span_length: u32,
+    pub source: String, // Text editor content, the TOML source code that user writes
+    pub parser: Parser, // Parses the source into collections of structs which then our app uses to draw the diagram
+    pub is_error_span_some: bool, // Did the parser encounter any error?
+    pub error_span_line: u32, // On which line of source is the error (we have to compute this)
+    pub error_span_column: u32, // At which column of the particular line does the error start (we have to compute this)
+    pub error_span_length: u32, // How many chars from the error start should be highlighted (we have to compute this)
     // Canvas
-    pub zoom_level: f32,
-    pub is_canvas_dragged: bool,
-    pub scrolling: egui::Pos2,
-    pub canvas_nodes: HashMap<String, CanvasNode>,
-    pub draw_commands_ord: BinaryHeap<DrawCommandOrd>,
-    pub do_show_grid: bool,
+    pub canvas_font_size: i32,   // Zoom level is based on this
+    pub zoom_level: f32,         // Makes rendered diagram smaller/bigger
+    pub is_canvas_dragged: bool, // Is user holding RMB on canvas (dragging the rendered diagram)
+    pub scrolling: egui::Pos2,   // How was the canvas moved by dragging
+    pub canvas_nodes: HashMap<String, CanvasNode>, // Storing info about rendered nodes for references etc. to work
+    pub draw_commands_ord: BinaryHeap<DrawCommandOrd>, // Commands for egui painter to do the drawing
+    pub do_show_grid: bool,                            // Show canvas grid
     // Non-main window
-    pub do_open_modal_about: bool,
+    pub do_open_modal_about: bool, // Show the help → about window
     // Misc
-    pub font_char_size: egui::Vec2,
+    pub font_char_size: egui::Vec2, // Cache for error highlight, how big is the character (counting on monospace font)
 }
 
 impl Default for App {
@@ -101,6 +102,7 @@ tips="<>""##,
             error_span_column: 0,
             error_span_length: 0,
             // Canvas
+            canvas_font_size: crate::config::CANVAS_FONT_SIZE_BASE,
             zoom_level: 1.0,
             is_canvas_dragged: false,
             scrolling: crate::config::SCROLLING_DEFAULT,
