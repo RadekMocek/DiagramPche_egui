@@ -5,7 +5,7 @@ impl App {
         egui::TopBottomPanel::bottom("bottom_panel").show(ctx, |ui| {
             if self.parser.is_error {
                 ui.label(
-                    egui::RichText::new(&self.parser.error_message)
+                    egui::RichText::new(&self.parser.error_message.replace('\n', " "))
                         .color(egui::Color32::from_rgb(211, 1, 2)),
                 );
             } else {

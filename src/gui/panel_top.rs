@@ -17,9 +17,7 @@ impl App {
                 // .: View :.
                 ui.menu_button("View", |ui| {
                     // . Grid .
-                    if ui.button("Grid").clicked() {
-                        //todo
-                    }
+                    ui.checkbox(&mut self.do_show_grid, "Grid");
                 });
                 // .: Debug :.
                 ui.menu_button("Debug", |ui| {

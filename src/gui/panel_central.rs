@@ -12,9 +12,11 @@ impl App {
                         self.gui_text_editor(ui);
                     });
 
-                egui::Frame::canvas(&columns[1].style()).show(&mut columns[1], |ui| {
-                    self.gui_canvas(ui);
-                });
+                egui::Frame::canvas(&columns[1].style())
+                    .fill(crate::config::COLOR_CANVAS_BACKGROUND)
+                    .show(&mut columns[1], |ui| {
+                        self.gui_canvas(ui);
+                    });
             });
 
             self.gui_modal(&mut ui);

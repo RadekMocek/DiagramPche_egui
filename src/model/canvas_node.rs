@@ -1,5 +1,5 @@
 use crate::model::pivot::Pivot;
-use egui::{pos2, Pos2};
+use egui::{pos2, Pos2, Vec2};
 
 pub struct CanvasNode {
     top_left: Pos2,
@@ -28,5 +28,12 @@ impl CanvasNode {
             Pivot::Left => pos2(self.top_left.x, self.center.y),
             Pivot::Center => self.center,
         }
+    }
+
+    pub fn is_point_inside_incl(&self, point: Vec2) -> bool {
+        point.x >= self.top_left.x
+            && point.x <= self.bottom_right.x
+            && point.y >= self.top_left.y
+            && point.y <= self.bottom_right.y
     }
 }

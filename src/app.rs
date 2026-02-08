@@ -22,8 +22,11 @@ pub struct App {
     pub scrolling: egui::Pos2,
     pub canvas_nodes: HashMap<String, CanvasNode>,
     pub draw_commands_ord: BinaryHeap<DrawCommandOrd>,
+    pub do_show_grid: bool,
     // Non-main window
     pub do_open_modal_about: bool,
+    // Misc
+    pub font_char_size: egui::Vec2,
 }
 
 impl Default for App {
@@ -46,7 +49,7 @@ pivot = "top"
 xy = ["Cache", "bottom", 0, 35]
 size = ["w", "h"]
 z = 6
-color = "#006db6FF"
+color = "#006db6AF"
 
 [node."Řídící\njednotka"]
 pivot = "top"
@@ -103,8 +106,11 @@ tips="<>""##,
             scrolling: egui::pos2(0.0, 0.0),
             canvas_nodes: HashMap::new(),
             draw_commands_ord: BinaryHeap::new(),
+            do_show_grid: true,
             // Non-main window
             do_open_modal_about: false,
+            // Misc
+            font_char_size: egui::Vec2::ZERO,
         }
     }
 }
@@ -115,6 +121,7 @@ impl App {
         // This is also where you can customize the look and feel of egui using
         // `cc.egui_ctx.set_visuals` and `cc.egui_ctx.set_fonts`.
         cc.egui_ctx.set_visuals(egui::Visuals::light());
+        crate::style::replace_fonts(&cc.egui_ctx);
         crate::style::conf_style_init(&cc.egui_ctx);
 
         // Load previous app state (if any).
@@ -127,6 +134,22 @@ impl App {
         }
         */
         Default::default()
+    }
+
+    /// (Expecting monospace font)
+    pub fn update_font_char_size(&mut self, ui: &egui::Ui) {
+        self.font_char_size = ui
+            .painter()
+            .layout_no_wrap(
+                String::from("A"),
+                egui::FontId::new(
+                    crate::config::FONT_SIZE_DEFAULT,
+                    eframe::epaint::FontFamily::Monospace,
+                ),
+                egui::Color32::PLACEHOLDER,
+            )
+            .rect
+            .size();
     }
 }
 
