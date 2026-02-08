@@ -4,7 +4,7 @@ use crate::model::node::Node;
 use crate::model::path::Path;
 use crate::model::pivot::Pivot;
 use crate::model::point::Point;
-use std::collections::{BTreeMap, HashMap, HashSet};
+use std::collections::{BTreeMap, BinaryHeap, HashMap, HashSet};
 use std::ops::Range;
 use std::str::FromStr;
 use toml_edit::{Document, Item, Value};
@@ -14,6 +14,7 @@ pub struct Parser {
     pub error_message: String,
     pub error_span: Option<Range<usize>>,
     pub result_nodes: HashMap<String, Node>,
+    pub result_order: BinaryHeap<(i32, String)>,
     pub result_paths: Vec<Path>,
 
     variables: HashMap<String, i64>,
@@ -26,6 +27,7 @@ impl Default for Parser {
             error_message: String::new(),
             error_span: None,
             result_nodes: HashMap::new(),
+            result_order: BinaryHeap::new(),
             result_paths: Vec::new(),
 
             variables: HashMap::new(),
@@ -50,8 +52,9 @@ impl Parser {
 
         // .: Variables :.
         // .:===========:.
+        // Variables can be used to have multiple nodes with shared coordinates and/or size
         self.variables.clear();
-
+        // They are set in table [variables]
         if let Some(vars) = toml_parsed.get("variables") {
             if let Some(vars_table) = vars.as_table() {
                 for (key, value) in vars_table {
@@ -66,10 +69,33 @@ impl Parser {
 
         // .: Nodes :.
         // .:=======:.
+        // This map is used to store nodes while they are being parsed and then for checking node references (more info below).
         self.result_nodes.clear();
+
+        // Each node can have its coordinates defined absolutely (xy=[10,10]) or relatively (xy=["some_id","center",10,10]).
+        // For the relative option, `xy`'s first two parameters are parent node's ID and parent node's pivot.
+
+        // Dependand node will be drawn relative to parent node's pivot; to know the pivot's location, the parent node must be prepared first!
+        // Canvas will do such preparation and then create a collection of draw commands.
+
+        // For this to work, every node has to have some ID.
+        // We have to tell the canvas which nodes must be drawn earlier and which later – for each node ID we will store its "batch number".
+        let mut batch_nums: HashMap<String, i32> = HashMap::new();
+
+        // So we set parent's batch number to 0 and dependant's to 1? But how do we know that the parent node is not also dependant on some other node?
+        // What if the parent node wasn't parsed yet? Or it does not exist? Or there is a circular dependency?
+
+        // First we traverse the TOML and set batch_num to 0 regardless of references (except for one optimization introduced later),
+        // but we remember all the references and we will update batch number of dependant nodes later.
+
+        // Pairs dependant→parent
         let mut refs: BTreeMap<String, String> = BTreeMap::new();
+
+        // IDs of nodes that are not dependant on any other node or their batch_num is final => "stable nodes"
         let mut stable_nodes: HashSet<String> = HashSet::new();
 
+        // Nodes are defined as [node."id1"], [node."id2"] etc., this gives us a structure that would look like this in JSON land:
+        // "node": { "id1": { ... }, "id2": { ... } }
         if let Some(node) = toml_parsed.get("node") {
             if let Some(node_table) = node.as_table() {
                 for (node_key, node_value) in node_table {
@@ -86,35 +112,54 @@ impl Parser {
                         // Parse `node_value_table` data and set `curr_node` members; or set error message
                         self.parse_node(&node_value_table, &mut curr_node);
 
+                        let curr_id = &curr_node.id; // Just to make the name shorter :)
+
                         // Check if the node is not referencing itself
-                        if curr_node.id == curr_node.position.parent_id {
+                        if *curr_id == curr_node.position.parent_id {
                             self.report_error(
-                                &format!("Node with id '{}' is referencing itself", curr_node.id),
+                                &format!("Node with id '{}' is referencing itself", curr_id),
                                 &curr_node.position.parent_id_span,
                             );
                         }
 
                         // If user doesn't set any text value explicitly, we use node's ID (can be rejected by setting `value=""`)
                         if !curr_node.is_value_explicitly_set {
-                            curr_node.value = curr_node.id.clone();
+                            curr_node.value = curr_id.clone();
                         }
+
+                        // Initial batch_num is 0
+                        batch_nums.insert(curr_id.clone(), 0);
 
                         // Empty parent means stable node; otherwise dependant node
                         if !curr_node.position.parent_id.is_empty() {
-                            refs.insert(curr_node.id.clone(), curr_node.position.parent_id.clone());
+                            // (Optimization) If dependant's node parent is stable, we can mark dependant node also as stable, and set the batch_num one higher
+                            // than that of the parent. (We'll be doing this later for every reference pair that does not undergo this optimization.)
+                            let parent_id = &curr_node.position.parent_id;
+                            if stable_nodes.contains(parent_id) {
+                                *batch_nums.get_mut(curr_id).unwrap() = batch_nums[parent_id] + 1;
+                                stable_nodes.insert(curr_id.clone());
+                            } else {
+                                refs.insert(curr_id.clone(), parent_id.clone());
+                            }
                         } else {
-                            stable_nodes.insert(curr_node.id.clone());
+                            stable_nodes.insert(curr_id.clone());
                         }
 
                         // Add node to the result collection
-                        self.result_nodes.insert(curr_node.id.clone(), curr_node);
+                        self.result_nodes.insert(curr_id.clone(), curr_node);
                     }
                 }
             }
         }
 
-        // Check the refs
+        // Now we irate over `refs` (pairs dependant→parent(referred); p1→p2 for short):
+        // If p2 is stable and p1 is unstable, we make p1's batch_num one greater than p2's batch_num and mark p1 as stable.
+        // Don't stop until there is a whole iteration, where we don't do this action ↑
+        // (So if we have dependecies (C→B) (B→A), first iter makes B stable, second iter makes C stable, third iter does nothing => break)
+
+        // Have we done such action in this iteration (updating the batch_num and marking node as stable)?
         let mut did_anything_change = !refs.is_empty();
+
         while did_anything_change {
             did_anything_change = false;
             for (dep_id, ref_id) in &refs {
@@ -125,20 +170,17 @@ impl Parser {
                         &self.result_nodes[dep_id].position.parent_id_span.clone(),
                     )
                 }
+                // Is p1 unstable and p2 stable? Update the batch_num and mark as stable.
                 if !stable_nodes.contains(dep_id) && stable_nodes.contains(ref_id) {
-                    let ref_node_batch_number = self.result_nodes[ref_id].preparation_batch_number;
-                    let dep_node = self
-                        .result_nodes
-                        .get_mut(dep_id)
-                        .expect("It was added to refs so must be in result_nodes too");
-                    dep_node.preparation_batch_number = ref_node_batch_number + 1;
+                    *batch_nums.get_mut(dep_id).unwrap() = batch_nums[ref_id] + 1;
                     stable_nodes.insert(dep_id.clone());
                     did_anything_change = true;
                 }
             }
         }
 
-        // Check circular reference
+        // At this point, if there are still some unresolved references, that means we have a circular reference
+        // Pinpointing the exact loop would need aditional logic so we'll just fill the error message with all unstable node IDs
         if !self.is_error && stable_nodes.len() < self.result_nodes.len() {
             let mut error_message = String::from("Circular reference somewhere among:");
             for (key, _) in &self.result_nodes {
@@ -147,6 +189,13 @@ impl Parser {
                 }
             }
             self.report_error(&error_message, &None);
+        }
+
+        // Sort the batch_nums: flip the pairs and put them in a priority queue; this is what canvas will use to prepare nodes in correct order
+        self.result_order.clear();
+        for (k, v) in batch_nums {
+            // Minus because it's max heap but we prioritize lower numbers
+            self.result_order.push((-v, k));
         }
 
         // .: Paths :.

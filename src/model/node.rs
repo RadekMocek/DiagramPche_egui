@@ -29,9 +29,6 @@ pub struct Node {
 
     // = Z =
     pub z: i64,
-
-    // = Other internal =
-    pub preparation_batch_number: u32,
 }
 
 impl Default for Node {
@@ -62,9 +59,6 @@ impl Default for Node {
 
             // = Z =
             z: DL_USER_CHANNEL_DEFAULT_NODE,
-
-            // = Other internal =
-            preparation_batch_number: 0,
         }
     }
 }
