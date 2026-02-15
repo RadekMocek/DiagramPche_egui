@@ -3,11 +3,12 @@
 ## TODO
 
 * ~~Font size based zooming~~
-* Resizable textedit
+* ~~Resizable textedit~~
 * Tooltip showing node's id on hover
 * Error highlight breaks:
   * On tab
   * On too thin textedit because it wraps lines!
+* All nodes disappear instead of showing last valid nodes when TOML parsing error occurs
 * Test all error message scenarios
 
 ## Dependencies

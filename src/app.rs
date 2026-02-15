@@ -9,6 +9,8 @@ use std::collections::{BinaryHeap, HashMap};
 #[serde(default)] // if we add new fields, give them default values when deserializing old state
 */
 pub struct App {
+    // Central panel
+    pub central_split_ratio: f32, // Textedit on left, canvas on right; this is ratio if their widths user can change
     // Text editor
     pub source: String, // Text editor content, the TOML source code that user writes
     pub parser: Parser, // Parses the source into collections of structs which then our app uses to draw the diagram
@@ -34,68 +36,7 @@ impl Default for App {
     fn default() -> Self {
         Self {
             // Text editor
-            source: String::from(
-                r##"[variables]
-w = 110
-h = 72
-
-[node."0,0"]
-
-[node.Cache]
-xy = [70, 70]
-size = ["w", "h"]
-
-[node.ALU]
-pivot = "top"
-xy = ["Cache", "bottom", 0, 35]
-size = ["w", "h"]
-z = 6
-color = "#006db6AF"
-
-[node."Řídící\njednotka"]
-pivot = "top"
-xy = ["ALU", "bottom", 0, 35]
-size = ["w", "h"]
-
-[node."Datové\nregistry"]
-pivot = "left"
-xy = ["ALU", "right", 35, 0]
-size = ["w", "h"]
-
-[node."Stavové\nregistry"]
-pivot = "left"
-xy = ["Řídící\njednotka", "right", 35, 0]
-size = ["w", "h"]
-
-[[path]]
-start=["Cache", "left", 0, 0]
-ends=[
-  ["ALU", "left", 0, 0],
-  ["Řídící\njednotka", "bottom",0,0]
-]
-shift = 30
-points=[
-  ["", "start", -25, "", "start", -15],
-  ["Datové\nregistry", "top", 0, "", "", 5],
-  ["", "prev", 0, "", "end", 0]
-]
-tips="<>"
-
-[[path]]
-start=["Cache","top-left",0,0]
-end=["Cache","bottom-right",0,0]
-color=[150,0,0,255]
-tips="<>"
-
-[[path]]
-start=[400,400]
-end=[400,500]
-points=[
-  ["","",500,"","",400],
-  ["","",500,"","",500],
-]
-tips="<>""##,
-            ),
+            source: String::from(crate::config::SOURCE_INITIAL_VALUE),
             parser: Parser::default(),
             is_error_span_some: false,
             error_span_line: 0,
@@ -113,6 +54,7 @@ tips="<>""##,
             do_open_modal_about: false,
             // Misc
             font_char_size: egui::Vec2::ZERO,
+            central_split_ratio: 0.5,
         }
     }
 }

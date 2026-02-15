@@ -1,9 +1,9 @@
+use crate::App;
 use crate::helper::draw_layer::dl_user_channel_to_real_channel;
 use crate::model::draw_command::command::DrawCommandOrd;
 use crate::model::draw_command::path::PathDrawCommand;
 use crate::model::pathpoint_type::PathpointType;
-use crate::App;
-use egui::{pos2, Pos2};
+use egui::{Pos2, pos2};
 
 impl App {
     pub(super) fn gui_canvas_prepare_paths(&mut self, origin: &Pos2) {
@@ -21,9 +21,11 @@ impl App {
             if !path.start.parent_id.is_empty()
                 && let Some(parent_node) = self.canvas_nodes.get(&path.start.parent_id)
             {
+                // Move start point so it's relative to parent's pivot
                 start += parent_node
                     .get_exact_point_from_pivot(&path.start.parent_pivot)
                     .to_vec2();
+                // Path shift makes sense only when the start/end point is relative to some node
                 if shift != 0 {
                     do_start_shift = true;
                 }
@@ -37,7 +39,7 @@ impl App {
             // Vector of these vectors will be given to the draw command.
             let mut result_paths: Vec<Vec<Pos2>>;
 
-            // Each inner vector starts with the start point, or OG start point followed by a shifted start point, if shift != 0 && start point is relative
+            // Each inner vector starts with the start point; or, if shift != 0 && start point is relative, with OG start point followed by a shifted start point
             if !do_start_shift {
                 result_paths = vec![vec![start]; path.ends.len()]
             } else {
@@ -74,9 +76,12 @@ impl App {
                 // End is now "originated"
                 end += origin.to_vec2();
 
+                // `shifted_end` is the end point, that all the Pathpoints relate to
                 let shifted_end = if !do_end_shift {
+                    // If there is no a shift, it is just the original end
                     end
                 } else {
+                    // If there is a shift, we apply it; we still remember the original end and in this case it will be the last point added to current collection
                     end + path.get_shift_vector(&path_end.parent_pivot, self.zoom_level)
                 };
 
@@ -129,19 +134,15 @@ impl App {
                         PathpointType::Previous => curr.y += prev.y,
                     }
 
-                    // Pathpoint is prepared
+                    // Pathpoint is ready now
                     result_pathpoints.push(curr);
 
                     // Ready for the next iteration
                     prev = curr;
                 }
 
-                // After the Pathpoints are ready...
-
-                // This is the end point Pathpoints related to
+                // After the Pathpoints are ready add the endpoint(s)
                 result_pathpoints.push(shifted_end);
-
-                // If there was a shift at play, we still have a "real" end point to push
                 if do_end_shift {
                     result_pathpoints.push(end);
                 }

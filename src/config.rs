@@ -1,4 +1,4 @@
-use egui::{pos2, Color32, Pos2};
+use egui::{Color32, Pos2, pos2};
 
 pub const FONT_SIZE_DEFAULT: f32 = 20.0;
 pub const FONT_SIZE_MAIN_MENU_BAR: f32 = 16.0;
@@ -20,3 +20,65 @@ pub const CANVAS_FONT_SIZE_MIN: i32 = 6;
 pub const CANVAS_FONT_SIZE_MAX: i32 = 30;
 
 pub const NODE_BORDER_OFFSET_BASE: f32 = 18.0;
+
+// == Temporary ======================================
+pub const SOURCE_INITIAL_VALUE: &str = r##"[variables]
+w = 110
+h = 72
+
+[node."0,0"]
+
+[node.Cache]
+xy = [70, 70]
+size = ["w", "h"]
+
+[node.ALU]
+pivot = "top"
+xy = ["Cache", "bottom", 0, 35]
+size = ["w", "h"]
+z = 6
+color = "#006db6AF"
+
+[node."Řídící\njednotka"]
+pivot = "top"
+xy = ["ALU", "bottom", 0, 35]
+size = ["w", "h"]
+
+[node."Datové\nregistry"]
+pivot = "left"
+xy = ["ALU", "right", 35, 0]
+size = ["w", "h"]
+
+[node."Stavové\nregistry"]
+pivot = "left"
+xy = ["Řídící\njednotka", "right", 35, 0]
+size = ["w", "h"]
+
+[[path]]
+start=["Cache", "left", 0, 0]
+ends=[
+  ["ALU", "left", 0, 0],
+  ["Řídící\njednotka", "bottom",0,0]
+]
+shift = 30
+points=[
+  ["", "start", -25, "", "start", -15],
+  ["Datové\nregistry", "top", 0, "", "", 5],
+  ["", "prev", 0, "", "end", 0]
+]
+tips="<>"
+
+[[path]]
+start=["Cache","top-left",0,0]
+end=["Cache","bottom-right",0,0]
+color=[150,0,0,255]
+tips="<>"
+
+[[path]]
+start=[400,400]
+end=[400,500]
+points=[
+  ["","",500,"","",400],
+  ["","",500,"","",500],
+]
+tips="<>""##;

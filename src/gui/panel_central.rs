@@ -3,21 +3,58 @@ use crate::App;
 impl App {
     pub fn gui_panel_central(&mut self, ctx: &egui::Context) {
         egui::CentralPanel::default().show(ctx, |mut ui| {
-            // The central panel the region left after adding TopPanel's and SidePanel's
+            let available_space = ui.available_rect_before_wrap();
+            let split_position =
+                available_space.left() + available_space.width() * self.central_split_ratio;
 
-            ui.columns(2, |columns| {
-                egui::ScrollArea::vertical()
-                    .id_salt("source")
-                    .show(&mut columns[0], |ui| {
-                        self.gui_text_editor(ui);
-                    });
+            // Left panel :: text editor
+            let left_rect = egui::Rect::from_min_max(
+                available_space.min,
+                egui::pos2(split_position - 2.0, available_space.max.y),
+            );
+            // Right panel :: canvas
+            let right_rect = egui::Rect::from_min_max(
+                egui::pos2(split_position + 2.0, available_space.min.y),
+                available_space.max,
+            );
+            // Separator
+            let separator_rect = egui::Rect::from_min_max(
+                egui::pos2(split_position - 2.0, available_space.min.y),
+                egui::pos2(split_position + 2.0, available_space.max.y),
+            );
+            let separator_response = ui.interact(
+                separator_rect,
+                ui.id().with("separator"),
+                egui::Sense::drag(),
+            );
 
-                egui::Frame::canvas(&columns[1].style())
-                    .fill(crate::config::COLOR_CANVAS_BACKGROUND)
-                    .show(&mut columns[1], |ui| {
-                        self.gui_canvas(ui);
-                    });
-            });
+            // Handle separator dragging
+            if separator_response.dragged() {
+                self.central_split_ratio = (self.central_split_ratio
+                    + separator_response.drag_delta().x / available_space.width())
+                .clamp(0.1, 0.9);
+            }
+
+            // Change cursor when hovering separator
+            if separator_response.hovered() || separator_response.dragged() {
+                ui.ctx().set_cursor_icon(egui::CursorIcon::ResizeHorizontal);
+            }
+
+            // Draw left panel (text editor)
+            let mut left_ui = ui.new_child(egui::UiBuilder::new().max_rect(left_rect));
+            egui::ScrollArea::vertical()
+                .id_salt("source")
+                .show(&mut left_ui, |ui| {
+                    self.gui_text_editor(ui);
+                });
+
+            // Draw right panel (canvas)
+            let mut right_ui = ui.new_child(egui::UiBuilder::new().max_rect(right_rect));
+            egui::Frame::canvas(&right_ui.style())
+                .fill(crate::config::COLOR_CANVAS_BACKGROUND)
+                .show(&mut right_ui, |ui| {
+                    self.gui_canvas(ui);
+                });
 
             self.gui_modal(&mut ui);
         });
