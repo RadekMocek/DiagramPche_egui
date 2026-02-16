@@ -7,20 +7,22 @@ impl App {
             let split_position =
                 available_space.left() + available_space.width() * self.central_split_ratio;
 
+            const SEPARATOR_HALF_WIDTH: f32 = 8.0 / 2.0;
+
             // Left panel :: text editor
             let left_rect = egui::Rect::from_min_max(
                 available_space.min,
-                egui::pos2(split_position - 2.0, available_space.max.y),
+                egui::pos2(split_position - SEPARATOR_HALF_WIDTH, available_space.max.y),
             );
             // Right panel :: canvas
             let right_rect = egui::Rect::from_min_max(
-                egui::pos2(split_position + 2.0, available_space.min.y),
+                egui::pos2(split_position + SEPARATOR_HALF_WIDTH, available_space.min.y),
                 available_space.max,
             );
             // Separator
             let separator_rect = egui::Rect::from_min_max(
-                egui::pos2(split_position - 2.0, available_space.min.y),
-                egui::pos2(split_position + 2.0, available_space.max.y),
+                egui::pos2(split_position - SEPARATOR_HALF_WIDTH, available_space.min.y),
+                egui::pos2(split_position + SEPARATOR_HALF_WIDTH, available_space.max.y),
             );
             let separator_response = ui.interact(
                 separator_rect,

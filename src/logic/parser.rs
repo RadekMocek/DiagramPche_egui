@@ -46,7 +46,9 @@ impl Parser {
                 .err()
                 .expect("toml_parsed_result is not Ok");
             self.report_error(err.message(), &err.span());
-            // By returning here, last valid TOML will be drawn (result collections weren't cleared yet)
+            // By returning here, last valid TOML could be drawn.
+            // But priority queue has been popped empty, so, in current state, it cannot be drawn.
+            // This is true for nodes, paths will be still drawn thanks to this return.
             return;
         };
 

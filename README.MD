@@ -2,14 +2,14 @@
 
 ## TODO
 
-* ~~Font size based zooming~~
-* ~~Resizable textedit~~
+* Test all error message scenarios
 * Tooltip showing node's id on hover
+
+## Problems
+
 * Error highlight breaks:
   * On tab
   * On too thin textedit because it wraps lines!
-* All nodes disappear instead of showing last valid nodes when TOML parsing error occurs
-* Test all error message scenarios
 
 ## Dependencies
 
