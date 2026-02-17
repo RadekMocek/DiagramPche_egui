@@ -32,25 +32,26 @@ impl DrawCommand for PathDrawCommand {
         for result_path in &self.paths {
             painter.line(result_path.clone(), stroke);
 
-            if self.do_end_arrow && result_path.len() >= 2 {
-                draw_arrow_tip(
-                    painter,
-                    result_path[result_path.len() - 2],
-                    result_path[result_path.len() - 1],
-                    zoom_level,
-                    self.color,
-                );
+            if result_path.len() >= 2 {
+                if self.do_start_arrow {
+                    draw_arrow_tip(
+                        painter,
+                        result_path[1],
+                        result_path[0],
+                        zoom_level,
+                        self.color,
+                    );
+                }
+                if self.do_end_arrow {
+                    draw_arrow_tip(
+                        painter,
+                        result_path[result_path.len() - 2],
+                        result_path[result_path.len() - 1],
+                        zoom_level,
+                        self.color,
+                    );
+                }
             }
-        }
-
-        if self.do_start_arrow && self.paths.len() >= 1 && self.paths[0].len() >= 2 {
-            draw_arrow_tip(
-                painter,
-                self.paths[0][1],
-                self.paths[0][0],
-                zoom_level,
-                self.color,
-            );
         }
     }
 }
