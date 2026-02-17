@@ -9,6 +9,10 @@ impl App {
             egui::MenuBar::new().ui(ui, |ui| {
                 // .: File :.
                 ui.menu_button("File", |ui| {
+                    // . Export to SVG .
+                    if ui.button("Export to SVG (WIP)").clicked() {
+                        //
+                    }
                     // . Exit .
                     if ui.button("Exit").clicked() {
                         ctx.send_viewport_cmd(egui::ViewportCommand::Close);

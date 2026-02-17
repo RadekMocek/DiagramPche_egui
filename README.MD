@@ -2,8 +2,10 @@
 
 ## TODO
 
-* Test all error message scenarios
-* Tooltip showing node's id on hover
+* [ ] Test all error message scenarios
+* [ ] Tooltip showing node's id on hover
+* [ ] SVG export ability (Nodes, Multiline text, Paths, Arrow tips)
+* [ ] SVG export proper dialog
 
 ## Problems
 
