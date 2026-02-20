@@ -14,7 +14,15 @@ impl App {
         };
 
         self.source = cow.to_string().replace("\r\n", "\n");
-        
+
         self.scrolling = crate::config::SCROLLING_DEFAULT;
+    }
+}
+
+pub fn open_file(filename: &str) {
+    if let Err(err) = open::that(filename) {
+        println!("{err}");
+    } else {
+        println!("open ok");
     }
 }

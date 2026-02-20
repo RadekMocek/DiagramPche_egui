@@ -1,3 +1,4 @@
+use crate::logic::svg_exporter::{SVG_PADDING, SVG_PADDING_VEC, egui_color32_to_svg_rgb};
 use crate::model::draw_command::command::DrawCommand;
 use eframe::emath::Pos2;
 use eframe::epaint::{Color32, Galley};
@@ -51,9 +52,9 @@ impl DrawCommand for NodeRectangleDrawCommand {
         );
     }
 
-    fn draw_svg(&self, document: &mut Document, origin: Pos2, zoom_level: f32) {
-        let top_left = (self.rect_top_left - origin) / zoom_level;
-        let bottom_right = (self.rect_bottom_right - origin) / zoom_level;
+    fn draw_svg(&self, document: &mut Document, origin: Pos2) {
+        let top_left = ((self.rect_top_left - origin) / self.zoom_level) + SVG_PADDING_VEC;
+        let bottom_right = ((self.rect_bottom_right - origin) / self.zoom_level) + SVG_PADDING_VEC;
         let width = bottom_right.x - top_left.x;
         let height = bottom_right.y - top_left.y;
 
@@ -63,7 +64,30 @@ impl DrawCommand for NodeRectangleDrawCommand {
                 .set("y", top_left.y)
                 .set("width", width)
                 .set("height", height)
-                .set("fill", "green"),
+                .set("fill", egui_color32_to_svg_rgb(self.rect_color))
+                .set("stroke", "rgb(0,0,0)")
+                .set("stroke-width", "1")
+                .set(
+                    "style",
+                    format!("fill-opacity:{}", self.rect_color.a() as f32 / 255.0),
+                ),
         );
+
+        const FONT_SIZE: u32 = 18;
+        let label_x = ((self.label_position.x - origin.x) / self.zoom_level) + SVG_PADDING;
+        let mut label_y = ((self.label_position.y - origin.y) / self.zoom_level) + SVG_PADDING;
+
+        label_y += (FONT_SIZE * 5 / 6) as f32; // Magic
+
+        for line in self.label_galley.job.text.lines() {
+            document.append(
+                svg::node::element::Text::new(line)
+                    .set("x", label_x)
+                    .set("y", label_y)
+                    .set("font-size", FONT_SIZE)
+                    .set("font-family", "Inconsolata"),
+            );
+            label_y += FONT_SIZE as f32;
+        }
     }
 }

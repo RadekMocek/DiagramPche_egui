@@ -59,7 +59,7 @@ impl DrawCommand for PathDrawCommand {
         }
     }
 
-    fn draw_svg(&self, document: &mut Document, origin: Pos2, zoom_level: f32) {
+    fn draw_svg(&self, document: &mut Document, origin: Pos2) {
         //
     }
 }

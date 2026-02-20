@@ -3,7 +3,7 @@ use std::cmp::Ordering;
 
 pub trait DrawCommand {
     fn draw(&self, painter: &Painter);
-    fn draw_svg(&self, document: &mut svg::Document, origin: Pos2, zoom_level: f32);
+    fn draw_svg(&self, document: &mut svg::Document, origin: Pos2);
 }
 
 pub struct DrawCommandOrd {

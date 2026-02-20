@@ -91,11 +91,9 @@ impl App {
                 draw_command_ord.draw_command.draw(&painter);
 
                 if self.do_svg_export_this_iter {
-                    draw_command_ord.draw_command.draw_svg(
-                        &mut self.svg_exporter.svg_document,
-                        origin,
-                        self.zoom_level,
-                    );
+                    draw_command_ord
+                        .draw_command
+                        .draw_svg(&mut self.svg_exporter.svg_document, origin);
                 }
             }
         }
@@ -103,6 +101,7 @@ impl App {
         if self.do_svg_export_this_iter {
             self.do_svg_export_this_iter = false;
             self.svg_exporter.save();
+            crate::logic::app_file::open_file("./diagram.svg");
         }
 
         // .: User AABR interaction :.

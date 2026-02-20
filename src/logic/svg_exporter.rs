@@ -1,7 +1,14 @@
 use svg::Node;
 
-const SVG_PADDING: f32 = 50.0;
+// == Helper functions and values ==
+pub fn egui_color32_to_svg_rgb(c: egui::Color32) -> String {
+    format!("rgb({}, {}, {})", c.r(), c.g(), c.b())
+}
 
+pub const SVG_PADDING: f32 = 25.0;
+pub const SVG_PADDING_VEC: egui::Vec2 = egui::Vec2::new(SVG_PADDING, SVG_PADDING);
+
+// == Exporter struct ==
 pub struct Exporter {
     // Boundaries take origin/scrolling and zoom_level into account, it will be "corrected" just before creating the svg,
     // so we don't have to subtract and divide with each `update_boundaries` call.
@@ -58,7 +65,7 @@ impl Exporter {
         if let Err(err) = result {
             println!("{err}");
         } else {
-            println!("ok");
+            println!("svg ok");
         }
     }
 }
