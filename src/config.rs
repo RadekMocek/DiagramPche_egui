@@ -21,6 +21,9 @@ pub const CANVAS_FONT_SIZE_MAX: i32 = 30;
 
 pub const NODE_BORDER_OFFSET_BASE: f32 = 18.0;
 
+pub const TIP_ARROW_LENGTH: f32 = 12.0;
+pub const TIP_ARROW_SPAN: f32 = 4.0;
+
 // == Temporary ======================================
 pub const SOURCE_INITIAL_VALUE: &str = r##"[variables]
 w = 110

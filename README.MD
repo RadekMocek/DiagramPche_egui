@@ -4,9 +4,10 @@
 
 * [ ] Test all error message scenarios
 * [ ] Tooltip showing node's id on hover
-* [ ] SVG export ability (~~Nodes, Multiline text~~, Paths, Arrow tips, Transparency, Correct canvas size)
+* [x] SVG export ability
 * [ ] SVG fix: colors
-* [ ] SVG fix: dependant on zoom_level and wrong dimensions
+* [ ] SVG fix: wrong dimensions
+* [ ] SVG fix: dependant on zoom_level
 * [ ] SVG export proper dialog
 
 ## Problems

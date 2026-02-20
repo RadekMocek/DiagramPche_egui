@@ -1,7 +1,11 @@
+use crate::config::{TIP_ARROW_LENGTH, TIP_ARROW_SPAN};
 use crate::helper::draw::draw_arrow_tip;
+use crate::logic::svg_exporter::{
+    SVG_PADDING, SVG_PADDING_VEC, egui_color32_to_svg_rgb, egui_vec2_to_svg_point,
+};
 use crate::model::draw_command::command::DrawCommand;
-use egui::{Color32, Painter, Pos2};
-use svg::Document;
+use egui::{Color32, Painter, Pos2, Vec2};
+use svg::{Document, Node};
 
 pub struct PathDrawCommand {
     paths: Vec<Vec<Pos2>>,
@@ -26,6 +30,28 @@ impl PathDrawCommand {
             do_start_arrow,
             do_end_arrow,
         }
+    }
+
+    fn get_svg_arrow_tip(p1: Vec2, p2: Vec2, color: Color32) -> svg::node::element::Polygon {
+        let p2_to_p1 = crate::helper::draw::vec2_normalized(p1 - p2);
+        let point_slightly_before_p2 = p2 + p2_to_p1 * TIP_ARROW_LENGTH;
+        let p2_orthogonal_addition =
+            crate::helper::draw::vec2_orthogonalized(p2_to_p1) * TIP_ARROW_SPAN;
+        svg::node::element::Polygon::new()
+            .set(
+                "points",
+                format!(
+                    "{} {} {}",
+                    egui_vec2_to_svg_point(p2),
+                    egui_vec2_to_svg_point(point_slightly_before_p2 - p2_orthogonal_addition),
+                    egui_vec2_to_svg_point(point_slightly_before_p2 + p2_orthogonal_addition)
+                ),
+            )
+            .set("fill", egui_color32_to_svg_rgb(color))
+            .set(
+                "style",
+                format!("fill-opacity:{}", color.a() as f32 / 255.0),
+            )
     }
 }
 
@@ -60,6 +86,45 @@ impl DrawCommand for PathDrawCommand {
     }
 
     fn draw_svg(&self, document: &mut Document, origin: Pos2) {
-        //
+        for result_path in &self.paths {
+            document.append(
+                svg::node::element::Polyline::new()
+                    .set(
+                        "points",
+                        result_path.iter().fold(String::new(), |acc, vec| {
+                            format!(
+                                "{} {},{}",
+                                acc,
+                                vec.x - origin.x + SVG_PADDING,
+                                vec.y - origin.y + SVG_PADDING
+                            )
+                        }),
+                    )
+                    .set("fill", "none")
+                    .set("stroke", egui_color32_to_svg_rgb(self.color))
+                    .set("stroke-width", "1")
+                    .set(
+                        "style",
+                        format!("stroke-opacity:{}", self.color.a() as f32 / 255.0),
+                    ),
+            );
+
+            if result_path.len() >= 2 {
+                if self.do_start_arrow {
+                    document.append(Self::get_svg_arrow_tip(
+                        result_path[1] - origin + SVG_PADDING_VEC,
+                        result_path[0] - origin + SVG_PADDING_VEC,
+                        self.color,
+                    ))
+                }
+                if self.do_end_arrow {
+                    document.append(Self::get_svg_arrow_tip(
+                        result_path[result_path.len() - 2] - origin + SVG_PADDING_VEC,
+                        result_path[result_path.len() - 1] - origin + SVG_PADDING_VEC,
+                        self.color,
+                    ))
+                }
+            }
+        }
     }
 }

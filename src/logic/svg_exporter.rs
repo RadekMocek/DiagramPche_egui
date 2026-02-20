@@ -5,6 +5,10 @@ pub fn egui_color32_to_svg_rgb(c: egui::Color32) -> String {
     format!("rgb({}, {}, {})", c.r(), c.g(), c.b())
 }
 
+pub fn egui_vec2_to_svg_point(v: egui::Vec2) -> String {
+    format!("{},{}", v.x, v.y)
+}
+
 pub const SVG_PADDING: f32 = 25.0;
 pub const SVG_PADDING_VEC: egui::Vec2 = egui::Vec2::new(SVG_PADDING, SVG_PADDING);
 
