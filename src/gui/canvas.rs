@@ -88,9 +88,7 @@ impl App {
 
         while !self.draw_commands_ord.is_empty() {
             if let Some(draw_command_ord) = self.draw_commands_ord.pop() {
-                draw_command_ord
-                    .draw_command
-                    .draw(&painter, self.zoom_level);
+                draw_command_ord.draw_command.draw(&painter);
 
                 if self.do_svg_export_this_iter {
                     draw_command_ord.draw_command.draw_svg(

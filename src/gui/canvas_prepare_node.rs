@@ -131,6 +131,7 @@ impl App {
                         draw_top_left,
                         draw_bottom_right,
                         node.color.to_egui_color(),
+                        self.zoom_level,
                         draw_label_position,
                         label_galley,
                     )),

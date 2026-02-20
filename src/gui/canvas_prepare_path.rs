@@ -168,6 +168,7 @@ impl App {
                 Box::new(PathDrawCommand::new(
                     result_paths,
                     path.color.to_egui_color(),
+                    self.zoom_level,
                     path.do_start_arrow,
                     path.do_end_arrow,
                 )),
