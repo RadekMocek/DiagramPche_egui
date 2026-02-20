@@ -1,4 +1,4 @@
-use crate::logic::parser::Parser;
+use crate::logic::toml::parser::Parser;
 use crate::model::node::Node;
 use toml_edit::Table;
 

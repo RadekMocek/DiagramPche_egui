@@ -1,10 +1,10 @@
+use crate::App;
 use crate::helper::draw_layer::dl_user_channel_to_real_channel;
 use crate::model::canvas_node::CanvasNode;
 use crate::model::draw_command::command::DrawCommandOrd;
 use crate::model::draw_command::node_rectangle::NodeRectangleDrawCommand;
 use crate::model::pivot::Pivot;
-use crate::App;
-use egui::{pos2, Painter, Pos2};
+use egui::{Painter, Pos2, pos2};
 
 impl App {
     pub(super) fn gui_canvas_prepare_nodes(&mut self, painter: &Painter, origin: &Pos2) {
@@ -135,6 +135,15 @@ impl App {
                         label_galley,
                     )),
                 ));
+
+                if self.do_svg_export_this_iter {
+                    self.svg_exporter.update_boundaries(
+                        aabr_top_left.x,
+                        aabr_top_left.y,
+                        aabr_bottom_right.x,
+                        aabr_bottom_right.y,
+                    );
+                }
             }
         }
     }

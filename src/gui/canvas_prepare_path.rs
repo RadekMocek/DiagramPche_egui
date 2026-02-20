@@ -148,6 +148,20 @@ impl App {
                 }
             }
 
+            // SVG export?
+            if self.do_svg_export_this_iter {
+                for result_path in &result_paths {
+                    for result_point in result_path {
+                        self.svg_exporter.update_boundaries(
+                            result_point.x,
+                            result_point.y,
+                            result_point.x,
+                            result_point.y,
+                        );
+                    }
+                }
+            }
+
             // Make a draw command
             self.draw_commands_ord.push(DrawCommandOrd::new(
                 dl_user_channel_to_real_channel(path.z, false),

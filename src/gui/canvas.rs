@@ -1,5 +1,5 @@
-use crate::config::*;
 use crate::App;
+use crate::config::*;
 
 impl App {
     pub(super) fn gui_canvas(&mut self, ui: &mut egui::Ui) -> egui::Response {
@@ -81,17 +81,35 @@ impl App {
         self.gui_canvas_prepare_nodes(&painter, &origin);
         self.gui_canvas_prepare_paths(&origin);
 
+        if self.do_svg_export_this_iter {
+            self.svg_exporter
+                .apply_boundaries(origin.x, origin.y, self.zoom_level);
+        }
+
         while !self.draw_commands_ord.is_empty() {
             if let Some(draw_command_ord) = self.draw_commands_ord.pop() {
                 draw_command_ord
                     .draw_command
                     .draw(&painter, self.zoom_level);
+
+                if self.do_svg_export_this_iter {
+                    draw_command_ord.draw_command.draw_svg(
+                        &mut self.svg_exporter.svg_document,
+                        origin,
+                        self.zoom_level,
+                    );
+                }
             }
+        }
+
+        if self.do_svg_export_this_iter {
+            self.do_svg_export_this_iter = false;
+            self.svg_exporter.save();
         }
 
         // .: User AABR interaction :.
         // .:=======================:.
-        // TODO NOT IDEAL
+        // NOT IDEAL
         /*
         if let Some(pointer_pos) = response.interact_pointer_pos() {
             let pointer_pos_in_canvas = pointer_pos - origin;

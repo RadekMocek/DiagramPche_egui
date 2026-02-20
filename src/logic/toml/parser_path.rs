@@ -1,4 +1,4 @@
-use crate::logic::parser::Parser;
+use crate::logic::toml::parser::Parser;
 use crate::model::path::Path;
 use crate::model::pathpoint::Pathpoint;
 use crate::model::pathpoint_type::PathpointType;

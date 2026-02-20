@@ -1,4 +1,5 @@
-use crate::logic::parser::Parser;
+use crate::logic::svg_exporter::Exporter;
+use crate::logic::toml::parser::Parser;
 use crate::model::canvas_node::CanvasNode;
 use crate::model::draw_command::command::DrawCommandOrd;
 use std::collections::{BinaryHeap, HashMap};
@@ -26,6 +27,9 @@ pub struct App {
     pub canvas_nodes: HashMap<String, CanvasNode>, // Storing info about rendered nodes for references etc. to work
     pub draw_commands_ord: BinaryHeap<DrawCommandOrd>, // Commands for egui painter to do the drawing
     pub do_show_grid: bool,                            // Show canvas grid
+    // SVG export
+    pub svg_exporter: Exporter,
+    pub do_svg_export_this_iter: bool,
     // Non-main window
     pub do_open_modal_about: bool, // Show the help → about window
     // Misc
@@ -35,6 +39,8 @@ pub struct App {
 impl Default for App {
     fn default() -> Self {
         Self {
+            // Central panel
+            central_split_ratio: 0.5,
             // Text editor
             source: String::from(crate::config::SOURCE_INITIAL_VALUE),
             parser: Parser::default(),
@@ -52,9 +58,11 @@ impl Default for App {
             do_show_grid: true,
             // Non-main window
             do_open_modal_about: false,
+            // SVG export
+            svg_exporter: Exporter::default(),
+            do_svg_export_this_iter: false,
             // Misc
             font_char_size: egui::Vec2::ZERO,
-            central_split_ratio: 0.5,
         }
     }
 }

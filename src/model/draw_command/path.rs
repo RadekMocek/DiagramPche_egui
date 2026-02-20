@@ -1,6 +1,7 @@
 use crate::helper::draw::draw_arrow_tip;
 use crate::model::draw_command::command::DrawCommand;
 use egui::{Color32, Painter, Pos2};
+use svg::Document;
 
 pub struct PathDrawCommand {
     paths: Vec<Vec<Pos2>>,
@@ -53,5 +54,9 @@ impl DrawCommand for PathDrawCommand {
                 }
             }
         }
+    }
+
+    fn draw_svg(&self, document: &mut Document, origin: Pos2, zoom_level: f32) {
+        //
     }
 }

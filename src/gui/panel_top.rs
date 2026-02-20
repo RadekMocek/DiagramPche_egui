@@ -11,7 +11,8 @@ impl App {
                 ui.menu_button("File", |ui| {
                     // . Export to SVG .
                     if ui.button("Export to SVG (WIP)").clicked() {
-                        //
+                        self.svg_exporter.reset();
+                        self.do_svg_export_this_iter = true;
                     }
                     // . Exit .
                     if ui.button("Exit").clicked() {
