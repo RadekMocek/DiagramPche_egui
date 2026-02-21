@@ -2,7 +2,8 @@ use svg::Node;
 
 // == Helper functions and values ==
 pub fn egui_color32_to_svg_rgb(c: egui::Color32) -> String {
-    format!("rgb({}, {}, {})", c.r(), c.g(), c.b())
+    let s = c.to_srgba_unmultiplied();
+    format!("rgb({}, {}, {})", s[0], s[1], s[2])
 }
 
 pub fn egui_vec2_to_svg_point(v: egui::Vec2) -> String {
@@ -19,6 +20,8 @@ pub struct Exporter {
     boundaries_min: (f32, f32),
     boundaries_max: (f32, f32),
     //
+    pub offset: egui::Vec2,
+    //
     pub svg_document: svg::Document,
 }
 
@@ -27,6 +30,7 @@ impl Default for Exporter {
         Self {
             boundaries_min: (f32::MAX, f32::MAX),
             boundaries_max: (f32::MIN, f32::MIN),
+            offset: egui::Vec2::new(0.0, 0.0),
             svg_document: svg::Document::new(),
         }
     }
@@ -58,9 +62,10 @@ impl Exporter {
         let y_min = (self.boundaries_min.1 - origin_y) / zoom_level;
         let y_max = (self.boundaries_max.1 - origin_y) / zoom_level;
         self.svg_document
-            .assign("width", x_max - x_min + SVG_PADDING);
+            .assign("width", x_max - x_min + 2.0 * SVG_PADDING);
         self.svg_document
-            .assign("height", y_max - y_min + SVG_PADDING);
+            .assign("height", y_max - y_min + 2.0 * SVG_PADDING);
+        self.offset = egui::Vec2::new(x_min, y_min);
     }
 
     pub fn save(&mut self) {

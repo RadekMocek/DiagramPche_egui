@@ -5,9 +5,6 @@
 * [ ] Test all error message scenarios
 * [ ] Tooltip showing node's id on hover
 * [x] SVG export ability
-* [ ] SVG fix: colors
-* [ ] SVG fix: wrong dimensions
-* [ ] SVG fix: dependant on zoom_level
 * [ ] SVG export proper dialog
 
 ## Problems

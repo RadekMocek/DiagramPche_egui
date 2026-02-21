@@ -91,9 +91,11 @@ impl App {
                 draw_command_ord.draw_command.draw(&painter);
 
                 if self.do_svg_export_this_iter {
-                    draw_command_ord
-                        .draw_command
-                        .draw_svg(&mut self.svg_exporter.svg_document, origin);
+                    draw_command_ord.draw_command.draw_svg(
+                        &mut self.svg_exporter.svg_document,
+                        origin,
+                        self.svg_exporter.offset,
+                    );
                 }
             }
         }

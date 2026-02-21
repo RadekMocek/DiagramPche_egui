@@ -139,10 +139,10 @@ impl App {
 
                 if self.do_svg_export_this_iter {
                     self.svg_exporter.update_boundaries(
-                        aabr_top_left.x,
-                        aabr_top_left.y,
-                        aabr_bottom_right.x,
-                        aabr_bottom_right.y,
+                        draw_top_left.x,
+                        draw_top_left.y,
+                        draw_bottom_right.x,
+                        draw_bottom_right.y,
                     );
                 }
             }

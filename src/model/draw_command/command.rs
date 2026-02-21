@@ -1,9 +1,9 @@
-use egui::{Painter, Pos2};
+use egui::{Painter, Pos2, Vec2};
 use std::cmp::Ordering;
 
 pub trait DrawCommand {
     fn draw(&self, painter: &Painter);
-    fn draw_svg(&self, document: &mut svg::Document, origin: Pos2);
+    fn draw_svg(&self, document: &mut svg::Document, origin: Pos2, offset: Vec2);
 }
 
 pub struct DrawCommandOrd {

@@ -85,8 +85,10 @@ impl DrawCommand for PathDrawCommand {
         }
     }
 
-    fn draw_svg(&self, document: &mut Document, origin: Pos2) {
+    fn draw_svg(&self, document: &mut Document, origin: Pos2, offset: Vec2) {
+        // == SVG [[path]] ==
         for result_path in &self.paths {
+            // == SVG path for each end point ==
             document.append(
                 svg::node::element::Polyline::new()
                     .set(
@@ -95,8 +97,8 @@ impl DrawCommand for PathDrawCommand {
                             format!(
                                 "{} {},{}",
                                 acc,
-                                vec.x - origin.x + SVG_PADDING,
-                                vec.y - origin.y + SVG_PADDING
+                                (vec.x - origin.x) / self.zoom_level + SVG_PADDING - offset.x,
+                                (vec.y - origin.y) / self.zoom_level + SVG_PADDING - offset.y
                             )
                         }),
                     )
@@ -110,17 +112,23 @@ impl DrawCommand for PathDrawCommand {
             );
 
             if result_path.len() >= 2 {
+                // == SVG start arrow ==
                 if self.do_start_arrow {
                     document.append(Self::get_svg_arrow_tip(
-                        result_path[1] - origin + SVG_PADDING_VEC,
-                        result_path[0] - origin + SVG_PADDING_VEC,
+                        (result_path[1] - origin) / self.zoom_level + SVG_PADDING_VEC - offset,
+                        (result_path[0] - origin) / self.zoom_level + SVG_PADDING_VEC - offset,
                         self.color,
                     ))
                 }
+                // == SVG end arrow ==
                 if self.do_end_arrow {
                     document.append(Self::get_svg_arrow_tip(
-                        result_path[result_path.len() - 2] - origin + SVG_PADDING_VEC,
-                        result_path[result_path.len() - 1] - origin + SVG_PADDING_VEC,
+                        (result_path[result_path.len() - 2] - origin) / self.zoom_level
+                            + SVG_PADDING_VEC
+                            - offset,
+                        (result_path[result_path.len() - 1] - origin) / self.zoom_level
+                            + SVG_PADDING_VEC
+                            - offset,
                         self.color,
                     ))
                 }
