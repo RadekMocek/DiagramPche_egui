@@ -6,17 +6,16 @@
 * [ ] Tooltip showing node's id on hover
 * [x] SVG export ability
 * [ ] SVG export proper dialog
-  * [ ] Path input "ElideLeft"
-  * [ ] _Browse..._ button
+  * [x] _Browse..._ button
   * [ ] _Overwrite guard_ (disabling checkbox and/or export button)
   * [ ] _Show in explorer action_
-  * [ ] Nemůžu uložit na plochu (?)
 
 ## Problems
 
 * Error highlight breaks:
   * On tab
   * On too thin textedit because it wraps lines!
+* TextInput SingleLine: no equivalent to Dear ImGui's _ElideLeft_ flag (?)
 
 ## Dependencies
 
@@ -25,7 +24,7 @@
 * [Inconsolata](https://levien.com/type/myfonts/inconsolata.html) ([SIL Open Font](https://github.com/google/fonts/blob/main/ofl/inconsolata/OFL.txt))
 * [svg](https://github.com/bodoni/svg) ([MIT](https://github.com/bodoni/svg/blob/main/LICENSE.md))
 * [open](https://github.com/Byron/open-rs) ([MIT](https://github.com/Byron/open-rs/blob/main/LICENSE.md))
-* []() ([]())
+* [rfd](https://github.com/PolyMeilex/rfd) ([MIT](https://github.com/PolyMeilex/rfd/blob/master/LICENSE))
 * []() ([]())
 
 ## Building locally

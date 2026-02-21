@@ -23,6 +23,7 @@ log = "0.4.27"
 toml_edit = "0.24.0"
 svg = "0.18.0"
 open = "5.3.3"
+rfd = "0.17.2"
 
 # You only need serde if you want app persistence:
 #serde = { version = "1.0.219", features = ["derive"] }

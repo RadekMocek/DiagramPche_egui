@@ -1,4 +1,5 @@
 use crate::App;
+use crate::logic::app_dialog::save_svg_dialog;
 
 const SMALLSKIP: f32 = 9.0;
 const MEDSKIP: f32 = 13.0;
@@ -32,7 +33,9 @@ impl App {
                             .hint_text(egui::RichText::new("input path to SVG here").weak()),
                     );
                     if ui.button("Browse...").clicked() {
-                        //
+                        if let Some(new_path) = save_svg_dialog(&self.modal_export_path) {
+                            self.modal_export_path = new_path;
+                        }
                     }
                 });
 

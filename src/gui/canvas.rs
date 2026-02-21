@@ -101,18 +101,24 @@ impl App {
             }
         }
 
+        // Everything is ready for SVG export, if user pressed Export in previous iteration
         if self.do_svg_export_this_iter {
             self.do_svg_export_this_iter = false;
-            self.svg_exporter.save();
-            match self.modal_export_action_choice {
-                ActionAfterExport::DoNothing => (),
-                ActionAfterExport::OpenFolder => {}
-                ActionAfterExport::OpenFile => {
-                    if let Err(err) = crate::logic::app_file::open_file(&self.modal_export_path) {
-                        self.show_error_modal(&err.to_string());
+
+            if let Err(err) = self.svg_exporter.save(&self.modal_export_path) {
+                self.show_error_modal(&err.to_string());
+            } else {
+                match self.modal_export_action_choice {
+                    ActionAfterExport::DoNothing => (),
+                    ActionAfterExport::OpenFolder => {}
+                    ActionAfterExport::OpenFile => {
+                        if let Err(err) = crate::logic::app_file::open_file(&self.modal_export_path)
+                        {
+                            self.show_error_modal(&err.to_string());
+                        }
                     }
-                }
-            };
+                };
+            }
         }
 
         // .: User AABR interaction :.

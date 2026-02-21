@@ -68,13 +68,7 @@ impl Exporter {
         self.offset = egui::Vec2::new(x_min, y_min);
     }
 
-    pub fn save(&mut self) {
-        let result = svg::save("diagram.svg", &self.svg_document);
-
-        if let Err(err) = result {
-            println!("{err}");
-        } else {
-            println!("svg ok");
-        }
+    pub fn save(&mut self, location: &str) -> std::io::Result<()> {
+        svg::save(location, &self.svg_document)
     }
 }
