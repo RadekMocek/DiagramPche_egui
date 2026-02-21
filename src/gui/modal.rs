@@ -25,13 +25,18 @@ impl App {
         if self.do_open_modal_export {
             let modal = egui::Modal::new(egui::Id::new("modal_export")).show(ui.ctx(), |ui| {
                 ui.heading("Export to SVG");
-
+                // . Location .
                 my_header(ui, SMALLSKIP, "Location");
                 ui.horizontal(|ui| {
-                    ui.add(
+                    // Location textedit
+                    let response = ui.add(
                         egui::TextEdit::singleline(&mut self.modal_export_path)
                             .hint_text(egui::RichText::new("input path to SVG here").weak()),
                     );
+                    if response.changed() {
+                        self.modal_export_do_overwrite = false;
+                    }
+                    // Location Browse... button
                     if ui.button("Browse...").clicked() {
                         if let Some(new_path) = save_svg_dialog() {
                             self.modal_export_path = new_path;
@@ -39,10 +44,43 @@ impl App {
                     }
                 });
 
+                // . Overwrite guard .
                 my_header(ui, MEDSKIP, "Overwrite guard");
-                ui.label("Specified path is unique.");
-                ui.checkbox(&mut self.modal_export_do_overwrite, "Overwrite");
 
+                let mut can_export = true;
+                let mut is_overwrite_export_needed = false;
+                let path = std::path::Path::new(&self.modal_export_path);
+
+                if let Ok(result) = path.try_exists() {
+                    if !result {
+                        ui.label("Specified path is unique.");
+                    } else {
+                        can_export = false;
+                        if !path.is_dir() {
+                            ui.label(
+                                egui::RichText::new("File at the specified path already exists.")
+                                    .color(crate::config::COLOR_ERROR),
+                            );
+                            is_overwrite_export_needed = true;
+                            if self.modal_export_do_overwrite {
+                                can_export = true;
+                            }
+                        } else {
+                            ui.label(
+                                egui::RichText::new("The specified path is a directory.")
+                                    .color(crate::config::COLOR_ERROR),
+                            );
+                        }
+                    }
+                } else {
+                    ui.label("Path verification failed.");
+                }
+
+                ui.add_enabled_ui(is_overwrite_export_needed, |ui| {
+                    ui.checkbox(&mut self.modal_export_do_overwrite, "Overwrite");
+                });
+
+                // . Action after export .
                 my_header(ui, MEDSKIP, "Action after export");
                 ui.horizontal(|ui| {
                     ui.radio_value(
@@ -62,13 +100,16 @@ impl App {
                     );
                 });
 
+                // . Export & Cancel buttons .
                 ui.add_space(BIGSKIP);
                 ui.horizontal(|ui| {
-                    if ui.button("Export").clicked() {
-                        self.svg_exporter.reset();
-                        self.do_svg_export_this_iter = true;
-                        ui.close();
-                    }
+                    ui.add_enabled_ui(can_export, |ui| {
+                        if ui.button("Export").clicked() {
+                            self.svg_exporter.reset();
+                            self.do_svg_export_this_iter = true;
+                            ui.close();
+                        }
+                    });
                     if ui.button("Cancel").clicked() {
                         ui.close();
                     }

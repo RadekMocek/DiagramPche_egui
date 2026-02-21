@@ -5,10 +5,7 @@
 * [ ] Test all error message scenarios
 * [ ] Tooltip showing node's id on hover
 * [x] SVG export ability
-* [ ] SVG export proper dialog
-  * [x] _Browse..._ button
-  * [ ] _Overwrite guard_ (disabling checkbox and/or export button)
-  * [ ] _Show in explorer action_
+* [x] SVG export proper dialog
 
 ## Problems
 
