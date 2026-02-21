@@ -1,5 +1,6 @@
 use crate::App;
 use crate::config::*;
+use crate::gui::modal::ActionAfterExport;
 
 impl App {
     pub(super) fn gui_canvas(&mut self, ui: &mut egui::Ui) -> egui::Response {
@@ -103,7 +104,15 @@ impl App {
         if self.do_svg_export_this_iter {
             self.do_svg_export_this_iter = false;
             self.svg_exporter.save();
-            crate::logic::app_file::open_file("./diagram.svg");
+            match self.modal_export_action_choice {
+                ActionAfterExport::DoNothing => (),
+                ActionAfterExport::OpenFolder => {}
+                ActionAfterExport::OpenFile => {
+                    if let Err(err) = crate::logic::app_file::open_file(&self.modal_export_path) {
+                        self.show_error_modal(&err.to_string());
+                    }
+                }
+            };
         }
 
         // .: User AABR interaction :.

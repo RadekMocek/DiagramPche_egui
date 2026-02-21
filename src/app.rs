@@ -1,3 +1,4 @@
+use crate::gui::modal::ActionAfterExport;
 use crate::logic::svg_exporter::Exporter;
 use crate::logic::toml::parser::Parser;
 use crate::model::canvas_node::CanvasNode;
@@ -27,11 +28,19 @@ pub struct App {
     pub canvas_nodes: HashMap<String, CanvasNode>, // Storing info about rendered nodes for references etc. to work
     pub draw_commands_ord: BinaryHeap<DrawCommandOrd>, // Commands for egui painter to do the drawing
     pub do_show_grid: bool,                            // Show canvas grid
+    // Non-main window
+    pub do_open_modal_about: bool,  // Show the Help → About window
+    pub do_open_modal_export: bool, // Show the File → Export to SVG window
+    pub do_open_modal_error: bool,  // Shows error message when something went worng
+    pub modal_error_message: String,
     // SVG export
+    // - svg logic
     pub svg_exporter: Exporter,
     pub do_svg_export_this_iter: bool,
-    // Non-main window
-    pub do_open_modal_about: bool, // Show the help → about window
+    // - svg modal
+    pub modal_export_path: String,
+    pub modal_export_do_overwrite: bool,
+    pub modal_export_action_choice: ActionAfterExport,
     // Misc
     pub font_char_size: egui::Vec2, // Cache for error highlight, how big is the character (counting on monospace font)
 }
@@ -58,9 +67,17 @@ impl Default for App {
             do_show_grid: true,
             // Non-main window
             do_open_modal_about: false,
+            do_open_modal_export: false,
+            do_open_modal_error: false,
+            modal_error_message: String::from(""),
             // SVG export
+            // - svg logic
             svg_exporter: Exporter::default(),
             do_svg_export_this_iter: false,
+            // - svg modal
+            modal_export_path: crate::logic::app_file::get_default_svg_path(),
+            modal_export_do_overwrite: false,
+            modal_export_action_choice: ActionAfterExport::DoNothing,
             // Misc
             font_char_size: egui::Vec2::ZERO,
         }

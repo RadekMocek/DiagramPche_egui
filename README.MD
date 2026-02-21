@@ -6,6 +6,11 @@
 * [ ] Tooltip showing node's id on hover
 * [x] SVG export ability
 * [ ] SVG export proper dialog
+  * [ ] Path input "ElideLeft"
+  * [ ] _Browse..._ button
+  * [ ] _Overwrite guard_ (disabling checkbox and/or export button)
+  * [ ] _Show in explorer action_
+  * [ ] Nemůžu uložit na plochu (?)
 
 ## Problems
 

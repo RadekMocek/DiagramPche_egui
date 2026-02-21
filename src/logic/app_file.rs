@@ -19,10 +19,14 @@ impl App {
     }
 }
 
-pub fn open_file(filename: &str) {
-    if let Err(err) = open::that(filename) {
-        println!("{err}");
-    } else {
-        println!("open ok");
-    }
+pub fn get_default_svg_path() -> String {
+    let Ok(path) = std::env::current_dir() else {
+        return String::from("");
+    };
+
+    String::from(path.join("diagram.svg").to_str().unwrap_or(""))
+}
+
+pub fn open_file(filename: &str) -> std::io::Result<()> {
+    open::that(filename)
 }

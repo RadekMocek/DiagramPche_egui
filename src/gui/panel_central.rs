@@ -58,6 +58,7 @@ impl App {
                     self.gui_canvas(ui);
                 });
 
+            // Modals logic
             self.gui_modal(&mut ui);
         });
     }

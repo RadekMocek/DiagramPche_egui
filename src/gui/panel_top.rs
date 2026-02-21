@@ -10,9 +10,9 @@ impl App {
                 // .: File :.
                 ui.menu_button("File", |ui| {
                     // . Export to SVG .
-                    if ui.button("Export to SVG (WIP)").clicked() {
-                        self.svg_exporter.reset();
-                        self.do_svg_export_this_iter = true;
+                    if ui.button("Export to SVG").clicked() {
+                        self.modal_export_do_overwrite = false;
+                        self.do_open_modal_export = true;
                     }
                     // . Exit .
                     if ui.button("Exit").clicked() {
@@ -44,7 +44,7 @@ impl App {
                         }
                     });
                     // . About .
-                    if ui.button("About...").clicked() {
+                    if ui.button("About").clicked() {
                         self.do_open_modal_about = true;
                     }
                 });
