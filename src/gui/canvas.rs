@@ -1,6 +1,7 @@
 use crate::App;
 use crate::config::*;
 use crate::gui::modal::ActionAfterExport;
+use crate::logic::app_file::open_file;
 
 impl App {
     pub(super) fn gui_canvas(&mut self, ui: &mut egui::Ui) -> egui::Response {
@@ -110,10 +111,11 @@ impl App {
             } else {
                 match self.modal_export_action_choice {
                     ActionAfterExport::DoNothing => (),
-                    ActionAfterExport::OpenFolder => {}
+                    ActionAfterExport::OpenFolder => {
+                        showfile::show_path_in_file_manager(&self.modal_export_path);
+                    }
                     ActionAfterExport::OpenFile => {
-                        if let Err(err) = crate::logic::app_file::open_file(&self.modal_export_path)
-                        {
+                        if let Err(err) = open_file(&self.modal_export_path) {
                             self.show_error_modal(&err.to_string());
                         }
                     }

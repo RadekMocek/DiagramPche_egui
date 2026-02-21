@@ -1,7 +1,6 @@
-pub fn save_svg_dialog(default_path:&str) -> Option<String> {
+pub fn save_svg_dialog() -> Option<String> {
     let result = rfd::FileDialog::new()
         .add_filter("Scalable Vector Graphics", &["svg"])
-        .set_directory(default_path)
         .set_file_name("diagram.svg")
         .set_title("Export to SVG")
         .save_file();

@@ -33,7 +33,7 @@ impl App {
                             .hint_text(egui::RichText::new("input path to SVG here").weak()),
                     );
                     if ui.button("Browse...").clicked() {
-                        if let Some(new_path) = save_svg_dialog(&self.modal_export_path) {
+                        if let Some(new_path) = save_svg_dialog() {
                             self.modal_export_path = new_path;
                         }
                     }
