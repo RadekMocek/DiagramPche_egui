@@ -11,7 +11,6 @@ pub fn egui_vec2_to_svg_point(v: egui::Vec2) -> String {
 }
 
 pub const SVG_PADDING: f32 = 25.0;
-pub const SVG_PADDING_VEC: egui::Vec2 = egui::Vec2::new(SVG_PADDING, SVG_PADDING);
 
 // == Exporter struct ==
 pub struct Exporter {
@@ -61,10 +60,22 @@ impl Exporter {
         let x_max = (self.boundaries_max.0 - origin_x) / zoom_level;
         let y_min = (self.boundaries_min.1 - origin_y) / zoom_level;
         let y_max = (self.boundaries_max.1 - origin_y) / zoom_level;
-        self.svg_document
-            .assign("width", x_max - x_min + 2.0 * SVG_PADDING);
-        self.svg_document
-            .assign("height", y_max - y_min + 2.0 * SVG_PADDING);
+        let width = x_max - x_min;
+        let height = y_max - y_min;
+        self.svg_document.assign("width", width);
+        self.svg_document.assign("height", height);
+
+        self.svg_document.assign(
+            "viewBox",
+            format!(
+                "{} {} {} {}",
+                -SVG_PADDING,
+                -SVG_PADDING,
+                width + 2.0 * SVG_PADDING,
+                height + 2.0 * SVG_PADDING
+            ),
+        );
+
         self.offset = egui::Vec2::new(x_min, y_min);
     }
 

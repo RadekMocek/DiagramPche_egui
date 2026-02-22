@@ -1,8 +1,6 @@
 use crate::config::{TIP_ARROW_LENGTH, TIP_ARROW_SPAN};
 use crate::helper::draw::draw_arrow_tip;
-use crate::logic::svg_exporter::{
-    SVG_PADDING, SVG_PADDING_VEC, egui_color32_to_svg_rgb, egui_vec2_to_svg_point,
-};
+use crate::logic::svg_exporter::{egui_color32_to_svg_rgb, egui_vec2_to_svg_point};
 use crate::model::draw_command::command::DrawCommand;
 use egui::{Color32, Painter, Pos2, Vec2};
 use svg::{Document, Node};
@@ -97,8 +95,8 @@ impl DrawCommand for PathDrawCommand {
                             format!(
                                 "{} {},{}",
                                 acc,
-                                (vec.x - origin.x) / self.zoom_level + SVG_PADDING - offset.x,
-                                (vec.y - origin.y) / self.zoom_level + SVG_PADDING - offset.y
+                                (vec.x - origin.x) / self.zoom_level - offset.x,
+                                (vec.y - origin.y) / self.zoom_level - offset.y
                             )
                         }),
                     )
@@ -115,20 +113,16 @@ impl DrawCommand for PathDrawCommand {
                 // == SVG start arrow ==
                 if self.do_start_arrow {
                     document.append(Self::get_svg_arrow_tip(
-                        (result_path[1] - origin) / self.zoom_level + SVG_PADDING_VEC - offset,
-                        (result_path[0] - origin) / self.zoom_level + SVG_PADDING_VEC - offset,
+                        (result_path[1] - origin) / self.zoom_level - offset,
+                        (result_path[0] - origin) / self.zoom_level - offset,
                         self.color,
                     ))
                 }
                 // == SVG end arrow ==
                 if self.do_end_arrow {
                     document.append(Self::get_svg_arrow_tip(
-                        (result_path[result_path.len() - 2] - origin) / self.zoom_level
-                            + SVG_PADDING_VEC
-                            - offset,
-                        (result_path[result_path.len() - 1] - origin) / self.zoom_level
-                            + SVG_PADDING_VEC
-                            - offset,
+                        (result_path[result_path.len() - 2] - origin) / self.zoom_level - offset,
+                        (result_path[result_path.len() - 1] - origin) / self.zoom_level - offset,
                         self.color,
                     ))
                 }

@@ -1,4 +1,4 @@
-use crate::logic::svg_exporter::{SVG_PADDING, SVG_PADDING_VEC, egui_color32_to_svg_rgb};
+use crate::logic::svg_exporter::egui_color32_to_svg_rgb;
 use crate::model::draw_command::command::DrawCommand;
 use egui::{Color32, Galley, Painter, Pos2, Vec2};
 use std::sync::Arc;
@@ -52,9 +52,8 @@ impl DrawCommand for NodeRectangleDrawCommand {
 
     fn draw_svg(&self, document: &mut Document, origin: Pos2, offset: Vec2) {
         // == SVG rectangle ==
-        let top_left = ((self.rect_top_left - origin) / self.zoom_level) + SVG_PADDING_VEC - offset;
-        let bottom_right =
-            ((self.rect_bottom_right - origin) / self.zoom_level) + SVG_PADDING_VEC - offset;
+        let top_left = ((self.rect_top_left - origin) / self.zoom_level) - offset;
+        let bottom_right = ((self.rect_bottom_right - origin) / self.zoom_level) - offset;
         let width = bottom_right.x - top_left.x;
         let height = bottom_right.y - top_left.y;
 
@@ -75,10 +74,8 @@ impl DrawCommand for NodeRectangleDrawCommand {
 
         // == SVG text ==
         const FONT_SIZE: u32 = 18;
-        let label_x =
-            ((self.label_position.x - origin.x) / self.zoom_level) + SVG_PADDING - offset.x;
-        let mut label_y =
-            ((self.label_position.y - origin.y) / self.zoom_level) + SVG_PADDING - offset.y;
+        let label_x = ((self.label_position.x - origin.x) / self.zoom_level) - offset.x;
+        let mut label_y = ((self.label_position.y - origin.y) / self.zoom_level) - offset.y;
 
         label_y += (FONT_SIZE * 5 / 6) as f32; // Magic
 
