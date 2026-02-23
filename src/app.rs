@@ -51,7 +51,7 @@ impl Default for App {
             // Central panel
             central_split_ratio: 0.5,
             // Text editor
-            source: String::from(crate::config::SOURCE_INITIAL_VALUE),
+            source: String::from(crate::config::WELCOME_TOML),
             parser: Parser::default(),
             is_error_span_some: false,
             error_span_line: 0,
@@ -59,7 +59,7 @@ impl Default for App {
             error_span_length: 0,
             // Canvas
             canvas_font_size: crate::config::CANVAS_FONT_SIZE_BASE,
-            zoom_level: 1.0,
+            zoom_level: crate::config::ZOOM_LEVEL_DEFAULT,
             is_canvas_dragged: false,
             scrolling: crate::config::SCROLLING_DEFAULT,
             canvas_nodes: HashMap::new(),

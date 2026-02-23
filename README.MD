@@ -6,6 +6,7 @@
 * [ ] Tooltip showing node's id on hover
 * [x] SVG export ability
 * [x] SVG export proper dialog
+* [ ] Try reseting the scrolling and zoom_level just before SVG export ⇒ cleaner code
 
 ## Problems
 

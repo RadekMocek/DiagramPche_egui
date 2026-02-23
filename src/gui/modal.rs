@@ -40,6 +40,7 @@ impl App {
                     if ui.button("Browse...").clicked() {
                         if let Some(new_path) = save_svg_dialog() {
                             self.modal_export_path = new_path;
+                            self.modal_export_do_overwrite = false;
                         }
                     }
                 });
