@@ -6,7 +6,8 @@
 * [ ] Tooltip showing node's id on hover
 * [x] SVG export ability
 * [x] SVG export proper dialog
-* [ ] Try reseting the scrolling and zoom_level just before SVG export ⇒ cleaner code
+* [x] Try reseting the scrolling and zoom_level just before SVG export ⇒ cleaner code
+* [x] Reorder calls in canvas loop (first user interaction, then drawing) ⇒ 0 frame delay, smoother scrolling
 
 ## Problems
 

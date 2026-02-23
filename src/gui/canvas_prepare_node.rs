@@ -125,6 +125,17 @@ impl App {
                     draw_label_position_default
                 };
 
+                // SVG export?
+                if self.do_svg_export_this_iter {
+                    self.svg_exporter.update_boundaries(
+                        draw_top_left.x,
+                        draw_top_left.y,
+                        draw_bottom_right.x,
+                        draw_bottom_right.y,
+                    );
+                }
+
+                // Make a draw command
                 self.draw_commands_ord.push(DrawCommandOrd::new(
                     dl_user_channel_to_real_channel(node.z, true),
                     Box::new(NodeRectangleDrawCommand::new(
@@ -136,15 +147,6 @@ impl App {
                         label_galley,
                     )),
                 ));
-
-                if self.do_svg_export_this_iter {
-                    self.svg_exporter.update_boundaries(
-                        draw_top_left.x,
-                        draw_top_left.y,
-                        draw_bottom_right.x,
-                        draw_bottom_right.y,
-                    );
-                }
             }
         }
     }

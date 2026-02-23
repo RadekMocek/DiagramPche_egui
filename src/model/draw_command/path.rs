@@ -1,6 +1,6 @@
 use crate::config::{TIP_ARROW_LENGTH, TIP_ARROW_SPAN};
 use crate::helper::draw::draw_arrow_tip;
-use crate::logic::svg_exporter::{egui_color32_to_svg_rgb, egui_vec2_to_svg_point};
+use crate::logic::svg_exporter::{egui_color32_to_svg_rgb, egui_pos2_to_svg_point};
 use crate::model::draw_command::command::DrawCommand;
 use egui::{Color32, Painter, Pos2, Vec2};
 use svg::{Document, Node};
@@ -30,7 +30,7 @@ impl PathDrawCommand {
         }
     }
 
-    fn get_svg_arrow_tip(p1: Vec2, p2: Vec2, color: Color32) -> svg::node::element::Polygon {
+    fn get_svg_arrow_tip(p1: Pos2, p2: Pos2, color: Color32) -> svg::node::element::Polygon {
         let p2_to_p1 = crate::helper::draw::vec2_normalized(p1 - p2);
         let point_slightly_before_p2 = p2 + p2_to_p1 * TIP_ARROW_LENGTH;
         let p2_orthogonal_addition =
@@ -40,9 +40,9 @@ impl PathDrawCommand {
                 "points",
                 format!(
                     "{} {} {}",
-                    egui_vec2_to_svg_point(p2),
-                    egui_vec2_to_svg_point(point_slightly_before_p2 - p2_orthogonal_addition),
-                    egui_vec2_to_svg_point(point_slightly_before_p2 + p2_orthogonal_addition)
+                    egui_pos2_to_svg_point(p2),
+                    egui_pos2_to_svg_point(point_slightly_before_p2 - p2_orthogonal_addition),
+                    egui_pos2_to_svg_point(point_slightly_before_p2 + p2_orthogonal_addition)
                 ),
             )
             .set("fill", egui_color32_to_svg_rgb(color))
@@ -83,7 +83,7 @@ impl DrawCommand for PathDrawCommand {
         }
     }
 
-    fn draw_svg(&self, document: &mut Document, origin: Pos2, offset: Vec2) {
+    fn draw_svg(&self, document: &mut Document, offset: Vec2) {
         // == SVG [[path]] ==
         for result_path in &self.paths {
             // == SVG path for each end point ==
@@ -92,12 +92,7 @@ impl DrawCommand for PathDrawCommand {
                     .set(
                         "points",
                         result_path.iter().fold(String::new(), |acc, vec| {
-                            format!(
-                                "{} {},{}",
-                                acc,
-                                (vec.x - origin.x) / self.zoom_level - offset.x,
-                                (vec.y - origin.y) / self.zoom_level - offset.y
-                            )
+                            format!("{} {},{}", acc, vec.x - offset.x, vec.y - offset.y)
                         }),
                     )
                     .set("fill", "none")
@@ -113,16 +108,16 @@ impl DrawCommand for PathDrawCommand {
                 // == SVG start arrow ==
                 if self.do_start_arrow {
                     document.append(Self::get_svg_arrow_tip(
-                        (result_path[1] - origin) / self.zoom_level - offset,
-                        (result_path[0] - origin) / self.zoom_level - offset,
+                        result_path[1] - offset,
+                        result_path[0] - offset,
                         self.color,
                     ))
                 }
                 // == SVG end arrow ==
                 if self.do_end_arrow {
                     document.append(Self::get_svg_arrow_tip(
-                        (result_path[result_path.len() - 2] - origin) / self.zoom_level - offset,
-                        (result_path[result_path.len() - 1] - origin) / self.zoom_level - offset,
+                        result_path[result_path.len() - 2] - offset,
+                        result_path[result_path.len() - 1] - offset,
                         self.color,
                     ))
                 }

@@ -6,7 +6,7 @@ pub fn egui_color32_to_svg_rgb(c: egui::Color32) -> String {
     format!("rgb({}, {}, {})", s[0], s[1], s[2])
 }
 
-pub fn egui_vec2_to_svg_point(v: egui::Vec2) -> String {
+pub fn egui_pos2_to_svg_point(v: egui::Pos2) -> String {
     format!("{},{}", v.x, v.y)
 }
 
@@ -55,11 +55,11 @@ impl Exporter {
         }
     }
 
-    pub fn apply_boundaries(&mut self, origin_x: f32, origin_y: f32, zoom_level: f32) {
-        let x_min = (self.boundaries_min.0 - origin_x) / zoom_level;
-        let x_max = (self.boundaries_max.0 - origin_x) / zoom_level;
-        let y_min = (self.boundaries_min.1 - origin_y) / zoom_level;
-        let y_max = (self.boundaries_max.1 - origin_y) / zoom_level;
+    pub fn apply_boundaries(&mut self) {
+        let x_min = self.boundaries_min.0;
+        let x_max = self.boundaries_max.0;
+        let y_min = self.boundaries_min.1;
+        let y_max = self.boundaries_max.1;
         let width = x_max - x_min;
         let height = y_max - y_min;
         self.svg_document.assign("width", width);

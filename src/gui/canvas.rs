@@ -11,7 +11,53 @@ impl App {
         let (response, painter) = ui.allocate_painter(ui.available_size(), egui::Sense::drag());
         let response_rect = response.rect;
 
-        // Draw grid
+        // .: User interaction :.
+        // .:==================:.
+        if response.hovered() {
+            // MW to zoom
+            let scroll = ui.input(|i| {
+                i.events.iter().find_map(|e| match e {
+                    egui::Event::MouseWheel {
+                        unit: _,
+                        delta,
+                        modifiers: _,
+                    } => Some(*delta),
+                    _ => None,
+                })
+            });
+            if let Some(scroll) = scroll {
+                self.set_canvas_font_size(
+                    self.canvas_font_size + scroll.y as i32 * CANVAS_FONT_SIZE_STEP,
+                );
+            }
+
+            // RMB to move canvas ("scrolling")
+            if response.drag_started_by(egui::PointerButton::Secondary) {
+                self.is_canvas_dragged = true;
+            }
+            if self.is_canvas_dragged {
+                self.scrolling += response.drag_delta();
+            }
+            if response.drag_stopped_by(egui::PointerButton::Secondary) {
+                self.is_canvas_dragged = false;
+            }
+        }
+
+        // If we are creating a SVG this frame, we reset scrolling and zoom_level here so we don't have have to "revert it" in the SVG.
+        // This is the place to do it because we already handled the user interaction this frame (RMB scroll and MW zoom).
+        if self.do_svg_export_this_iter {
+            self.reset_canvas_scrolling_and_zoom();
+        }
+
+        // Origin ([0,0]) of the canvas in screen space coordinates, which painter uses
+        let origin = egui::pos2(
+            response_rect.min.x + self.scrolling.x,
+            response_rect.min.y + self.scrolling.y,
+        );
+
+        // .: Draw on canvas :.
+        // .:================:.
+        // == Draw grid ==
         if self.do_show_grid {
             let grid_step = GRID_STEP_BASE * self.zoom_level;
             let grid_stroke = egui::Stroke::new(1.0, COLOR_GRID_LINE);
@@ -37,55 +83,13 @@ impl App {
             }
         }
 
-        // Origin ([0,0]) of the canvas in screen space coordinates, which painter uses
-        let origin = egui::pos2(
-            response_rect.min.x + self.scrolling.x,
-            response_rect.min.y + self.scrolling.y,
-        );
-
-        // .: User interaction :.
-        // .:==================:.
-        if response.hovered() {
-            // MW to zoom
-            let scroll = ui.input(|i| {
-                i.events.iter().find_map(|e| match e {
-                    egui::Event::MouseWheel {
-                        unit: _,
-                        delta,
-                        modifiers: _,
-                    } => Some(*delta),
-                    _ => None,
-                })
-            });
-            if let Some(scroll) = scroll {
-                self.canvas_font_size = (self.canvas_font_size
-                    + scroll.y as i32 * CANVAS_FONT_SIZE_STEP)
-                    .clamp(CANVAS_FONT_SIZE_MIN, CANVAS_FONT_SIZE_MAX);
-
-                self.zoom_level = self.canvas_font_size as f32 / CANVAS_FONT_SIZE_BASE as f32;
-            }
-
-            // RMB to move canvas ("scrolling")
-            if response.drag_started_by(egui::PointerButton::Secondary) {
-                self.is_canvas_dragged = true;
-            }
-            if self.is_canvas_dragged {
-                self.scrolling += response.drag_delta();
-            }
-            if response.drag_stopped_by(egui::PointerButton::Secondary) {
-                self.is_canvas_dragged = false;
-            }
-        }
-
-        // .: Draw on canvas :.
-        // .:================:.
+        // == Draw diagram ==
         self.canvas_nodes.clear();
         self.gui_canvas_prepare_nodes(&painter, &origin);
         self.gui_canvas_prepare_paths(&origin);
 
         if self.do_svg_export_this_iter {
-            self.svg_exporter
-                .apply_boundaries(origin.x, origin.y, self.zoom_level);
+            self.svg_exporter.apply_boundaries();
         }
 
         while !self.draw_commands_ord.is_empty() {
@@ -95,7 +99,6 @@ impl App {
                 if self.do_svg_export_this_iter {
                     draw_command_ord.draw_command.draw_svg(
                         &mut self.svg_exporter.svg_document,
-                        origin,
                         self.svg_exporter.offset,
                     );
                 }
@@ -150,5 +153,15 @@ impl App {
 
         //
         response
+    }
+
+    pub fn set_canvas_font_size(&mut self, value: i32) {
+        self.canvas_font_size = value.clamp(CANVAS_FONT_SIZE_MIN, CANVAS_FONT_SIZE_MAX);
+        self.zoom_level = self.canvas_font_size as f32 / CANVAS_FONT_SIZE_BASE as f32;
+    }
+
+    pub fn reset_canvas_scrolling_and_zoom(&mut self) {
+        self.scrolling = SCROLLING_DEFAULT;
+        self.set_canvas_font_size(CANVAS_FONT_SIZE_BASE);
     }
 }

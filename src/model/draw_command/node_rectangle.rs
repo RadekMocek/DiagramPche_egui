@@ -50,10 +50,10 @@ impl DrawCommand for NodeRectangleDrawCommand {
         );
     }
 
-    fn draw_svg(&self, document: &mut Document, origin: Pos2, offset: Vec2) {
+    fn draw_svg(&self, document: &mut Document, offset: Vec2) {
         // == SVG rectangle ==
-        let top_left = ((self.rect_top_left - origin) / self.zoom_level) - offset;
-        let bottom_right = ((self.rect_bottom_right - origin) / self.zoom_level) - offset;
+        let top_left = self.rect_top_left - offset;
+        let bottom_right = self.rect_bottom_right - offset;
         let width = bottom_right.x - top_left.x;
         let height = bottom_right.y - top_left.y;
 
@@ -74,8 +74,8 @@ impl DrawCommand for NodeRectangleDrawCommand {
 
         // == SVG text ==
         const FONT_SIZE: u32 = 18;
-        let label_x = ((self.label_position.x - origin.x) / self.zoom_level) - offset.x;
-        let mut label_y = ((self.label_position.y - origin.y) / self.zoom_level) - offset.y;
+        let label_x = self.label_position.x - offset.x;
+        let mut label_y = self.label_position.y - offset.y;
 
         label_y += (FONT_SIZE * 5 / 6) as f32; // Magic
 
