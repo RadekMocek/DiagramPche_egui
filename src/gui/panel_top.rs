@@ -9,11 +9,33 @@ impl App {
             egui::MenuBar::new().ui(ui, |ui| {
                 // .: File :.
                 ui.menu_button("File", |ui| {
+                    // . New .
+                    if ui.button("New").clicked() {
+                        //todo
+                    }
+                    // . Open .
+                    if ui.button("Open").clicked() {
+                        //todo
+                    }
+                    // . Save .
+                    if ui.button("Save").clicked() {
+                        //todo
+                    }
+                    // . Save as .
+                    if ui.button("Save as").clicked() {
+                        //todo
+                    }
                     // . Export to SVG .
                     if ui.button("Export to SVG").clicked() {
                         self.modal_export_do_overwrite = false;
                         self.do_open_modal_export = true;
                     }
+                    ui.separator();
+                    // . Preferences .
+                    if ui.button("Preferences").clicked() {
+                        //todo
+                    }
+                    ui.separator();
                     // . Exit .
                     if ui.button("Exit").clicked() {
                         ctx.send_viewport_cmd(egui::ViewportCommand::Close);
@@ -23,6 +45,10 @@ impl App {
                 ui.menu_button("View", |ui| {
                     // . Grid .
                     ui.checkbox(&mut self.do_show_grid, "Grid");
+                    // . Jump to canvas origin .
+                    if ui.button("Jump to canvas origin").clicked() {
+                        self.reset_canvas_scrolling_and_zoom();
+                    }
                 });
                 // .: Debug :.
                 ui.menu_button("Debug", |ui| {

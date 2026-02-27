@@ -2,12 +2,19 @@
 
 ## TODO
 
-* [ ] Test all error message scenarios
-* [ ] Tooltip showing node's id on hover
-* [x] SVG export ability
-* [x] SVG export proper dialog
-* [x] Try reseting the scrolling and zoom_level just before SVG export ⇒ cleaner code
-* [x] Reorder calls in canvas loop (first user interaction, then drawing) ⇒ 0 frame delay, smoother scrolling
+* General:
+  * [x] View → Jump to canvas origin
+  * Saving/loading:
+    * [ ] New, Open, Save, Save as
+    * [ ] Confirm unsaved exit
+    * [ ] Confirm unsaved open, including loading a debug diagram or an example
+    * [ ] Change window name according to opened document (incl. star for unsaved)
+  * [ ] Code editor syntax highlight
+  * [ ] Klávesové zkratky (<kbd>Alt</kbd> pro navigaci v MainMenuBar, <kbd>Ctrl</kbd>+<kbd>S</kbd> pro uložení atd.)
+* Canvas features:
+  * [ ] Canvas zooming: anchor under mouse
+  * [ ] Change the cursor type while dragging the canvas
+  * [ ] Ctrl+Click to jump to node definition in editor
 
 ## Problems
 
@@ -15,6 +22,7 @@
   * On tab
   * On too thin textedit because it wraps lines!
 * TextInput SingleLine: no equivalent to Dear ImGui's _ElideLeft_ flag (?)
+* Canvas zooming on touchpad not ideal
 
 ## Dependencies
 

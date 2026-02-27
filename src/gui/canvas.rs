@@ -13,6 +13,26 @@ impl App {
 
         // .: User interaction :.
         // .:==================:.
+        // RMB to move canvas ("scrolling")
+        if response.drag_started_by(egui::PointerButton::Secondary) {
+            self.is_canvas_dragged = true;
+        }
+        if self.is_canvas_dragged {
+            self.scrolling += response.drag_delta();
+        }
+        if response.drag_stopped_by(egui::PointerButton::Secondary) {
+            self.is_canvas_dragged = false;
+        }
+
+        // Origin ([0,0]) of the canvas in screen space coordinates, which painter uses
+        let mut origin = response_rect.min + self.scrolling.to_vec2();
+
+        let mut pointer_pos_in_canvas = if let Some(pointer_pos) = response.interact_pointer_pos() {
+            pointer_pos - origin
+        } else {
+            egui::Vec2::default()
+        };
+
         if response.hovered() {
             // MW to zoom
             let scroll = ui.input(|i| {
@@ -26,20 +46,20 @@ impl App {
                 })
             });
             if let Some(scroll) = scroll {
+                let old_zoom = self.zoom_level;
                 self.set_canvas_font_size(
                     self.canvas_font_size + scroll.y as i32 * CANVAS_FONT_SIZE_STEP,
                 );
-            }
-
-            // RMB to move canvas ("scrolling")
-            if response.drag_started_by(egui::PointerButton::Secondary) {
-                self.is_canvas_dragged = true;
-            }
-            if self.is_canvas_dragged {
-                self.scrolling += response.drag_delta();
-            }
-            if response.drag_stopped_by(egui::PointerButton::Secondary) {
-                self.is_canvas_dragged = false;
+                // Zoom anchor under mouse
+                if old_zoom != self.zoom_level {
+                    let ratio = self.zoom_level / old_zoom;
+                    self.scrolling += pointer_pos_in_canvas * (1.0 - ratio);
+                    origin = response_rect.min + self.scrolling.to_vec2();
+                    if let Some(pointer_pos) = response.interact_pointer_pos() {
+                        pointer_pos_in_canvas = pointer_pos - origin;
+                    }
+                    //todo not working
+                }
             }
         }
 
@@ -48,12 +68,6 @@ impl App {
         if self.do_svg_export_this_iter {
             self.reset_canvas_scrolling_and_zoom();
         }
-
-        // Origin ([0,0]) of the canvas in screen space coordinates, which painter uses
-        let origin = egui::pos2(
-            response_rect.min.x + self.scrolling.x,
-            response_rect.min.y + self.scrolling.y,
-        );
 
         // .: Draw on canvas :.
         // .:================:.
