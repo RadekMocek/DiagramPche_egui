@@ -28,7 +28,9 @@ impl Parser {
                     }
                 }
                 // == color ==
-                "color" => self.set_color_from_array(item, &mut curr_node.color),
+                "color" => self.set_color_from_array_or_string(item, &mut curr_node.color),
+                // == color border ==
+                "color_border" => self.set_color_from_array_or_string(item, &mut curr_node.color_border),
                 // == size ==
                 "size" => {
                     if let Some(item_arr) = item.as_array()

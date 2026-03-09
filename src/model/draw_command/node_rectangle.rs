@@ -7,7 +7,8 @@ use svg::{Document, Node};
 pub struct NodeRectangleDrawCommand {
     rect_top_left: Pos2,
     rect_bottom_right: Pos2,
-    rect_color: Color32,
+    rect_fill_color: Color32,
+    rect_edge_color: Color32,
     zoom_level: f32,
     label_position: Pos2,
     label_galley: Arc<Galley>,
@@ -17,7 +18,8 @@ impl NodeRectangleDrawCommand {
     pub fn new(
         rect_top_left: Pos2,
         rect_bottom_right: Pos2,
-        rect_color: Color32,
+        rect_fill_color: Color32,
+        rect_edge_color: Color32,
         zoom_level: f32,
         label_position: Pos2,
         label_galley: Arc<Galley>,
@@ -25,7 +27,8 @@ impl NodeRectangleDrawCommand {
         Self {
             rect_top_left,
             rect_bottom_right,
-            rect_color,
+            rect_fill_color,
+            rect_edge_color,
             zoom_level,
             label_position,
             label_galley,
@@ -38,8 +41,8 @@ impl DrawCommand for NodeRectangleDrawCommand {
         painter.rect(
             egui::Rect::from_min_max(self.rect_top_left, self.rect_bottom_right),
             0,
-            self.rect_color,
-            egui::Stroke::new(self.zoom_level, Color32::BLACK),
+            self.rect_fill_color,
+            egui::Stroke::new(self.zoom_level, self.rect_edge_color),
             egui::StrokeKind::Inside,
         );
 
@@ -63,12 +66,16 @@ impl DrawCommand for NodeRectangleDrawCommand {
                 .set("y", top_left.y)
                 .set("width", width)
                 .set("height", height)
-                .set("fill", egui_color32_to_svg_rgb(self.rect_color))
-                .set("stroke", "rgb(0,0,0)")
+                .set("fill", egui_color32_to_svg_rgb(self.rect_fill_color))
+                .set("stroke", egui_color32_to_svg_rgb(self.rect_edge_color))
                 .set("stroke-width", "1")
                 .set(
                     "style",
-                    format!("fill-opacity:{}", self.rect_color.a() as f32 / 255.0),
+                    format!(
+                        "fill-opacity:{}; stroke-opacity:{}",
+                        self.rect_fill_color.a() as f32 / 255.0,
+                        self.rect_edge_color.a() as f32 / 255.0
+                    ),
                 ),
         );
 

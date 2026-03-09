@@ -81,7 +81,7 @@ impl Parser {
                     }
                 }
                 // == color ==
-                "color" => self.set_color_from_array(item, &mut curr_path.color),
+                "color" => self.set_color_from_array_or_string(item, &mut curr_path.color),
                 // == tips ==
                 "tips" => {
                     if let Some(item_str) = item.as_str() {

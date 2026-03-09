@@ -241,7 +241,7 @@ impl Parser {
         } else if let Some(value_str) = value.as_str() {
             let Some(result) = self.variables.get(value_str) else {
                 self.report_error(
-                    &format!("Variable '{value_str}' does not exist (expecting [X, Y])"),
+                    &format!("Variable '{value_str}' does not exist"),
                     &value.span(),
                 );
                 return DEFAULT_VALUE;
@@ -308,9 +308,9 @@ impl Parser {
         }
     }
 
-    pub(super) fn set_color_from_array(&mut self, item: &Item, to_set: &mut Color) {
+    pub(super) fn set_color_from_array_or_string(&mut self, item: &Item, to_set: &mut Color) {
         const ERR_MSG_EXPECTED_ARRAY: &str =
-            "An array of four uchars (0–255) or RGBA hex string must follow after 'color='";
+            "An array of four uchars (0–255) or RGBA hex string must be used to set the color";
 
         if let Some(item_arr) = item.as_array()
             && item_arr.len() == 4

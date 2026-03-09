@@ -7,6 +7,9 @@ impl App {
             "example1" => {
                 String::from_utf8_lossy(include_bytes!("../../assets/example/Example1.toml"))
             }
+            "example2" => {
+                String::from_utf8_lossy(include_bytes!("../../assets/example/Example2.toml"))
+            }
             "debug1" => {
                 String::from_utf8_lossy(include_bytes!("../../assets/example/debug/Z-axis.toml"))
             }

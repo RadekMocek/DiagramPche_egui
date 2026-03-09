@@ -64,9 +64,13 @@ impl App {
                 ui.menu_button("Help", |ui| {
                     // .: Examples :.
                     ui.menu_button("Examples", |ui| {
-                        // . Example 1 .
-                        if ui.button("Example 1").clicked() {
+                        // . Example 1 :: CPU block diagram .
+                        if ui.button("Example 1: CPU block diagram").clicked() {
                             self.load_source_from_example("example1");
+                        }
+                        // . Example 2 :: BPMN .
+                        if ui.button("Example 2: BPMN").clicked() {
+                            self.load_source_from_example("example2");
                         }
                     });
                     // . About .

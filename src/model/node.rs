@@ -19,6 +19,7 @@ pub struct Node {
 
     // = Color =
     pub color: Color,
+    pub color_border: Color,
 
     // = Size =
     pub width: i64,
@@ -49,6 +50,7 @@ impl Default for Node {
 
             // = Color =
             color: Color::new(255, 255, 255, 255),
+            color_border: Color::new(0, 0, 0, 255),
 
             // = Size =
             width: 0,
