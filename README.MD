@@ -21,10 +21,10 @@
   * [ ] Code editor syntax highlight
 * Pipeline: TOML parse → Draw to canvas / Render to SVG:
   * [x] Remove `(expecting [X, Y])` from error message (does not make sense in wider context)
-  * [ ] `[node].type = "text"`
-  * [ ] `[node].type = "rectangle"`
+  * [x] `[node].type = "text"`
+  * [x] `[node].type = "rectangle"`
   * [x] `[node].type = "ellipse"`
-  * [ ] `[node].type = "diamond"`
+  * [x] `[node].type = "diamond"`
   * [x] `[node].color_border`, don't forget to generalize the error message
   * [x] `[node].label_shift`, allow for variables, don't forget about zoom level
   * [ ] Allow setting individual start/end path shift, keep backwards compatible

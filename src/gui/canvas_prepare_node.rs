@@ -5,6 +5,7 @@ use crate::model::draw_command::command::DrawCommandOrd;
 use crate::model::draw_command::node_diamond::NodeDiamondDrawCommand;
 use crate::model::draw_command::node_ellipse::NodeEllipseDrawCommand;
 use crate::model::draw_command::node_rectangle::NodeRectangleDrawCommand;
+use crate::model::draw_command::node_text::NodeTextDrawCommand;
 use crate::model::node_type::NodeType;
 use crate::model::pivot::Pivot;
 use egui::{Painter, Pos2, pos2, vec2};
@@ -202,7 +203,10 @@ impl App {
                         ));
                     }
                     NodeType::Text => {
-                        //TODO
+                        self.draw_commands_ord.push(DrawCommandOrd::new(
+                            dl_user_channel_to_real_channel(node.z, true),
+                            Box::new(NodeTextDrawCommand::new(draw_label_position, label_galley)),
+                        ));
                     }
                 }
             }
