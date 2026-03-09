@@ -56,7 +56,7 @@ impl App {
                     self.scrolling += pointer_pos_in_canvas * (1.0 - ratio);
                     origin = response_rect.min + self.scrolling.to_vec2();
                     if let Some(pointer_pos) = response.interact_pointer_pos() {
-                        pointer_pos_in_canvas = pointer_pos - origin;
+                        //pointer_pos_in_canvas = pointer_pos - origin;
                     }
                     //todo not working
                 }

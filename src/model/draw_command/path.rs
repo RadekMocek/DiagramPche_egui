@@ -1,6 +1,8 @@
 use crate::config::{TIP_ARROW_LENGTH, TIP_ARROW_SPAN};
 use crate::helper::draw::draw_arrow_tip;
-use crate::logic::svg_exporter::{egui_color32_to_svg_rgb, egui_pos2_to_svg_point};
+use crate::logic::svg_exporter::{
+    egui_color32_to_svg_rgb, egui_pos2_to_svg_point, egui_pos2_vec_to_svg_points_string,
+};
 use crate::model::draw_command::command::DrawCommand;
 use egui::{Color32, Painter, Pos2, Vec2};
 use svg::{Document, Node};
@@ -91,9 +93,7 @@ impl DrawCommand for PathDrawCommand {
                 svg::node::element::Polyline::new()
                     .set(
                         "points",
-                        result_path.iter().fold(String::new(), |acc, vec| {
-                            format!("{} {},{}", acc, vec.x - offset.x, vec.y - offset.y)
-                        }),
+                        egui_pos2_vec_to_svg_points_string(result_path, offset),
                     )
                     .set("fill", "none")
                     .set("stroke", egui_color32_to_svg_rgb(self.color))

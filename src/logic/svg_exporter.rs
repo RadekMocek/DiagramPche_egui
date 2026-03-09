@@ -1,3 +1,5 @@
+use eframe::emath::Vec2;
+use std::fmt::Write;
 use svg::Node;
 
 pub const SVG_PADDING: f32 = 25.0;
@@ -34,6 +36,17 @@ pub fn add_text_to_svg_document(
         );
         label_y += SVG_FONT_SIZE as f32;
     }
+}
+
+pub fn egui_pos2_vec_to_svg_points_string(points: &Vec<egui::Pos2>, offset: Vec2) -> String {
+    let mut result = String::from("");
+    for point in points {
+        if let Err(err) = write!(result, "{},{} ", point.x - offset.x, point.y - offset.y) {
+            eprintln!("[!] logic::svg_exporter::egui_pos2_vec_to_svg_points_string error: {err}");
+            return result;
+        }
+    }
+    result
 }
 
 // == Exporter struct ==

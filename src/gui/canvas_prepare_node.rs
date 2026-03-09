@@ -2,6 +2,7 @@ use crate::App;
 use crate::helper::draw_layer::dl_user_channel_to_real_channel;
 use crate::model::canvas_node::CanvasNode;
 use crate::model::draw_command::command::DrawCommandOrd;
+use crate::model::draw_command::node_diamond::NodeDiamondDrawCommand;
 use crate::model::draw_command::node_ellipse::NodeEllipseDrawCommand;
 use crate::model::draw_command::node_rectangle::NodeRectangleDrawCommand;
 use crate::model::node_type::NodeType;
@@ -146,7 +147,7 @@ impl App {
 
                 // Make a draw command
                 match node.node_type {
-                    NodeType::Rectangle | NodeType::Diamond | NodeType::Text => {
+                    NodeType::Rectangle => {
                         self.draw_commands_ord.push(DrawCommandOrd::new(
                             dl_user_channel_to_real_channel(node.z, true),
                             Box::new(NodeRectangleDrawCommand::new(
@@ -173,14 +174,36 @@ impl App {
                                 label_galley,
                             )),
                         ));
-                    } /*
-                      NodeType::Diamond => {
-                          //TODO
-                      }
-                      NodeType::Text => {
-                          //TODO
-                      }
-                      */
+                    }
+                    NodeType::Diamond => {
+                        let canvas_node = self
+                            .canvas_nodes
+                            .get(&node.id)
+                            .expect("ID was added few lines above");
+                        self.draw_commands_ord.push(DrawCommandOrd::new(
+                            dl_user_channel_to_real_channel(node.z, true),
+                            Box::new(NodeDiamondDrawCommand::new(
+                                [
+                                    canvas_node.get_exact_point_from_pivot(&Pivot::Top)
+                                        + origin.to_vec2(),
+                                    canvas_node.get_exact_point_from_pivot(&Pivot::Right)
+                                        + origin.to_vec2(),
+                                    canvas_node.get_exact_point_from_pivot(&Pivot::Bottom)
+                                        + origin.to_vec2(),
+                                    canvas_node.get_exact_point_from_pivot(&Pivot::Left)
+                                        + origin.to_vec2(),
+                                ],
+                                node.color.to_egui_color(),
+                                node.color_border.to_egui_color(),
+                                self.zoom_level,
+                                draw_label_position,
+                                label_galley,
+                            )),
+                        ));
+                    }
+                    NodeType::Text => {
+                        //TODO
+                    }
                 }
             }
         }
