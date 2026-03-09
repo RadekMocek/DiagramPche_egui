@@ -23,7 +23,7 @@
   * [x] Remove `(expecting [X, Y])` from error message (does not make sense in wider context)
   * [ ] `[node].type = "text"`
   * [ ] `[node].type = "rectangle"`
-  * [ ] `[node].type = "ellipse"`
+  * [x] `[node].type = "ellipse"`
   * [ ] `[node].type = "diamond"`
   * [x] `[node].color_border`, don't forget to generalize the error message
   * [x] `[node].label_shift`, allow for variables, don't forget about zoom level

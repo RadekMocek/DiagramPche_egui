@@ -2,9 +2,11 @@ use crate::App;
 use crate::helper::draw_layer::dl_user_channel_to_real_channel;
 use crate::model::canvas_node::CanvasNode;
 use crate::model::draw_command::command::DrawCommandOrd;
+use crate::model::draw_command::node_ellipse::NodeEllipseDrawCommand;
 use crate::model::draw_command::node_rectangle::NodeRectangleDrawCommand;
+use crate::model::node_type::NodeType;
 use crate::model::pivot::Pivot;
-use egui::{Painter, Pos2, pos2};
+use egui::{Painter, Pos2, pos2, vec2};
 
 impl App {
     pub(super) fn gui_canvas_prepare_nodes(&mut self, painter: &Painter, origin: &Pos2) {
@@ -132,7 +134,7 @@ impl App {
                     draw_label_position.y += node.label_shift_y as f32 * self.zoom_level;
                 }
 
-                // SVG export?
+                // Update boundaries if SVG export is queued this iteration
                 if self.do_svg_export_this_iter {
                     self.svg_exporter.update_boundaries(
                         draw_top_left.x,
@@ -143,18 +145,43 @@ impl App {
                 }
 
                 // Make a draw command
-                self.draw_commands_ord.push(DrawCommandOrd::new(
-                    dl_user_channel_to_real_channel(node.z, true),
-                    Box::new(NodeRectangleDrawCommand::new(
-                        draw_top_left,
-                        draw_bottom_right,
-                        node.color.to_egui_color(),
-                        node.color_border.to_egui_color(),
-                        self.zoom_level,
-                        draw_label_position,
-                        label_galley,
-                    )),
-                ));
+                match node.node_type {
+                    NodeType::Rectangle | NodeType::Diamond | NodeType::Text => {
+                        self.draw_commands_ord.push(DrawCommandOrd::new(
+                            dl_user_channel_to_real_channel(node.z, true),
+                            Box::new(NodeRectangleDrawCommand::new(
+                                draw_top_left,
+                                draw_bottom_right,
+                                node.color.to_egui_color(),
+                                node.color_border.to_egui_color(),
+                                self.zoom_level,
+                                draw_label_position,
+                                label_galley,
+                            )),
+                        ));
+                    }
+                    NodeType::Ellipse => {
+                        self.draw_commands_ord.push(DrawCommandOrd::new(
+                            dl_user_channel_to_real_channel(node.z, true),
+                            Box::new(NodeEllipseDrawCommand::new(
+                                draw_center,
+                                vec2(node_width / 2.0, node_height / 2.0),
+                                node.color.to_egui_color(),
+                                node.color_border.to_egui_color(),
+                                self.zoom_level,
+                                draw_label_position,
+                                label_galley,
+                            )),
+                        ));
+                    } /*
+                      NodeType::Diamond => {
+                          //TODO
+                      }
+                      NodeType::Text => {
+                          //TODO
+                      }
+                      */
+                }
             }
         }
     }

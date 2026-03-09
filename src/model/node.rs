@@ -1,5 +1,6 @@
 use crate::helper::draw_layer::*;
 use crate::model::color::Color;
+use crate::model::node_type::NodeType;
 use crate::model::pivot::Pivot;
 use crate::model::point::Point;
 
@@ -32,6 +33,9 @@ pub struct Node {
 
     // = Z =
     pub z: i64,
+
+    // = Type =
+    pub node_type: NodeType,
 }
 
 impl Default for Node {
@@ -65,6 +69,9 @@ impl Default for Node {
 
             // = Z =
             z: DL_USER_CHANNEL_DEFAULT_NODE,
+
+            // = Type =
+            node_type: NodeType::Rectangle,
         }
     }
 }

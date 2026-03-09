@@ -1,5 +1,8 @@
 use svg::Node;
 
+pub const SVG_PADDING: f32 = 25.0;
+const SVG_FONT_SIZE: u32 = 18;
+
 // == Helper functions and values ==
 pub fn egui_color32_to_svg_rgb(c: egui::Color32) -> String {
     let s = c.to_srgba_unmultiplied();
@@ -10,7 +13,28 @@ pub fn egui_pos2_to_svg_point(v: egui::Pos2) -> String {
     format!("{},{}", v.x, v.y)
 }
 
-pub const SVG_PADDING: f32 = 25.0;
+pub fn add_text_to_svg_document(
+    document: &mut svg::Document,
+    label_position: egui::Pos2,
+    offset: egui::Vec2,
+    label_galley: std::sync::Arc<egui::Galley>,
+) {
+    let label_x = label_position.x - offset.x;
+    let mut label_y = label_position.y - offset.y;
+
+    label_y += (SVG_FONT_SIZE * 5 / 6) as f32; // Magic
+
+    for line in label_galley.job.text.lines() {
+        document.append(
+            svg::node::element::Text::new(line)
+                .set("x", label_x)
+                .set("y", label_y)
+                .set("font-size", SVG_FONT_SIZE)
+                .set("font-family", "Inconsolata"),
+        );
+        label_y += SVG_FONT_SIZE as f32;
+    }
+}
 
 // == Exporter struct ==
 pub struct Exporter {
@@ -18,7 +42,7 @@ pub struct Exporter {
     // so we don't have to subtract and divide with each `update_boundaries` call.
     boundaries_min: (f32, f32),
     boundaries_max: (f32, f32),
-    //
+    // Offset from the SVG origin
     pub offset: egui::Vec2,
     //
     pub svg_document: svg::Document,

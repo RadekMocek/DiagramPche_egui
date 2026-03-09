@@ -1,5 +1,7 @@
 use crate::logic::toml::parser::Parser;
 use crate::model::node::Node;
+use crate::model::node_type::NodeType;
+use std::str::FromStr;
 use toml_edit::Table;
 
 impl Parser {
@@ -69,6 +71,23 @@ impl Parser {
                         );
                     } else {
                         self.report_error("An array of two integers/strings of variable names must follow after 'label_shift='", &item.span())
+                    }
+                }
+                // == type ==
+                "type" => {
+                    const ERR_MSG_NOT_STRING: &str = "A string must follow after 'type='";
+
+                    const ERR_MSG_WRONG_STRING: &str =
+                        "Allowed NodeType values are: 'text', 'rectangle', 'ellipse', 'diamond'";
+
+                    if let Some(item_str) = item.as_str() {
+                        if let Ok(result) = NodeType::from_str(item_str) {
+                            curr_node.node_type = result;
+                        } else {
+                            self.report_error(ERR_MSG_WRONG_STRING, &item.span());
+                        }
+                    } else {
+                        self.report_error(ERR_MSG_NOT_STRING, &item.span());
                     }
                 }
                 // == Unknown key ==

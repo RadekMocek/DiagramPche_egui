@@ -1,12 +1,13 @@
 use crate::logic::svg_exporter::{add_text_to_svg_document, egui_color32_to_svg_rgb};
 use crate::model::draw_command::command::DrawCommand;
-use egui::{Color32, Galley, Painter, Pos2, Rect, Stroke, StrokeKind, Vec2};
+use egui::epaint::EllipseShape;
+use egui::{Color32, Galley, Painter, Pos2, Stroke, Vec2};
 use std::sync::Arc;
 use svg::{Document, Node};
 
-pub struct NodeRectangleDrawCommand {
-    top_left: Pos2,
-    bottom_right: Pos2,
+pub struct NodeEllipseDrawCommand {
+    center: Pos2,
+    radius: Vec2,
     color_fill: Color32,
     color_edge: Color32,
     zoom_level: f32,
@@ -14,10 +15,10 @@ pub struct NodeRectangleDrawCommand {
     label_galley: Arc<Galley>,
 }
 
-impl NodeRectangleDrawCommand {
+impl NodeEllipseDrawCommand {
     pub fn new(
-        top_left: Pos2,
-        bottom_right: Pos2,
+        center: Pos2,
+        radius: Vec2,
         color_fill: Color32,
         color_edge: Color32,
         zoom_level: f32,
@@ -25,8 +26,8 @@ impl NodeRectangleDrawCommand {
         label_galley: Arc<Galley>,
     ) -> Self {
         Self {
-            top_left,
-            bottom_right,
+            center,
+            radius,
             color_fill,
             color_edge,
             zoom_level,
@@ -36,15 +37,19 @@ impl NodeRectangleDrawCommand {
     }
 }
 
-impl DrawCommand for NodeRectangleDrawCommand {
+impl DrawCommand for NodeEllipseDrawCommand {
     fn draw(&self, painter: &Painter) {
-        painter.rect(
-            Rect::from_min_max(self.top_left, self.bottom_right),
-            0,
+        painter.add(EllipseShape::filled(
+            self.center,
+            self.radius,
             self.color_fill,
+        ));
+
+        painter.add(EllipseShape::stroke(
+            self.center,
+            self.radius,
             Stroke::new(self.zoom_level, self.color_edge),
-            StrokeKind::Inside,
-        );
+        ));
 
         painter.galley(
             self.label_position,
@@ -54,18 +59,16 @@ impl DrawCommand for NodeRectangleDrawCommand {
     }
 
     fn draw_svg(&self, document: &mut Document, offset: Vec2) {
-        // == SVG rectangle ==
-        let top_left = self.top_left - offset;
-        let bottom_right = self.bottom_right - offset;
-        let width = bottom_right.x - top_left.x;
-        let height = bottom_right.y - top_left.y;
+        // == SVG ellipse ==
+        let center = self.center - offset;
+        let radius = self.radius;
 
         document.append(
-            svg::node::element::Rectangle::new()
-                .set("x", top_left.x)
-                .set("y", top_left.y)
-                .set("width", width)
-                .set("height", height)
+            svg::node::element::Ellipse::new()
+                .set("cx", center.x)
+                .set("cy", center.y)
+                .set("rx", radius.x)
+                .set("ry", radius.y)
                 .set("fill", egui_color32_to_svg_rgb(self.color_fill))
                 .set("stroke", egui_color32_to_svg_rgb(self.color_edge))
                 .set("stroke-width", "1")
