@@ -91,7 +91,7 @@ impl App {
                 let label_left_x = draw_top_left.x + node_padding;
                 let label_top_y = draw_top_left.y + node_padding;
                 let draw_label_position_default = pos2(label_left_x, label_top_y);
-                let draw_label_position = if node_width > 0.0 || node_height > 0.0 {
+                let mut draw_label_position = if node_width > 0.0 || node_height > 0.0 {
                     match node.label_position {
                         Pivot::TopLeft => draw_label_position_default,
                         Pivot::Top => pos2(draw_center.x - label_size_x / 2.0, label_top_y),
@@ -124,6 +124,13 @@ impl App {
                 } else {
                     draw_label_position_default
                 };
+
+                if node.label_shift_x != 0 {
+                    draw_label_position.x += node.label_shift_x as f32 * self.zoom_level;
+                }
+                if node.label_shift_y != 0 {
+                    draw_label_position.y += node.label_shift_y as f32 * self.zoom_level;
+                }
 
                 // SVG export?
                 if self.do_svg_export_this_iter {

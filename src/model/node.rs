@@ -27,6 +27,8 @@ pub struct Node {
 
     // = Label pos =
     pub label_position: Pivot,
+    pub label_shift_x: i64,
+    pub label_shift_y: i64,
 
     // = Z =
     pub z: i64,
@@ -58,6 +60,8 @@ impl Default for Node {
 
             // = Label pos =
             label_position: Pivot::Center,
+            label_shift_x: 0,
+            label_shift_y: 0,
 
             // = Z =
             z: DL_USER_CHANNEL_DEFAULT_NODE,
