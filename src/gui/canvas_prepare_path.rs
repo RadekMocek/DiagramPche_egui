@@ -8,9 +8,6 @@ use egui::{Pos2, pos2};
 impl App {
     pub(super) fn gui_canvas_prepare_paths(&mut self, origin: &Pos2) {
         for path in &self.parser.result_paths {
-            // Get the "simple" values from path
-            let shift = path.shift;
-
             // Prepare the start point
             let mut start = pos2(
                 path.start.x as f32 * self.zoom_level,
@@ -26,7 +23,7 @@ impl App {
                     .get_exact_point_from_pivot(&path.start.parent_pivot)
                     .to_vec2();
                 // Path shift makes sense only when the start/end point is relative to some node
-                if shift != 0 {
+                if path.shift_start != 0 {
                     do_start_shift = true;
                 }
             }
@@ -44,7 +41,7 @@ impl App {
                 result_paths = vec![vec![start]; path.ends.len()]
             } else {
                 let shifted_start =
-                    start + path.get_shift_vector(&path.start.parent_pivot, self.zoom_level);
+                    start + path.get_shift_vector(&path.start.parent_pivot, self.zoom_level, true);
 
                 result_paths = vec![vec![start, shifted_start]; path.ends.len()];
 
@@ -68,7 +65,7 @@ impl App {
                     end += parent_node
                         .get_exact_point_from_pivot(&path_end.parent_pivot)
                         .to_vec2();
-                    if shift != 0 {
+                    if path.shift_end != 0 {
                         do_end_shift = true;
                     }
                 }
@@ -82,7 +79,7 @@ impl App {
                     end
                 } else {
                     // If there is a shift, we apply it; we still remember the original end and in this case it will be the last point added to current collection
-                    end + path.get_shift_vector(&path_end.parent_pivot, self.zoom_level)
+                    end + path.get_shift_vector(&path_end.parent_pivot, self.zoom_level, false)
                 };
 
                 // Pathpoints (defined as a collection [[path]].points) are points between start and end.

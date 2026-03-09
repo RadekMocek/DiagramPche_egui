@@ -76,8 +76,17 @@ impl Parser {
                 }
                 // == shift ==
                 "shift" => {
-                    if let Some(item_value) = item.as_value() {
-                        curr_path.shift = self.get_int_from_int_or_var(item_value);
+                    if let Some(item_arr) = item.as_array()
+                        && item_arr.len() == 2
+                    {
+                        curr_path.shift_start =
+                            self.get_int_from_int_or_var(item_arr.get(0).expect("len 2"));
+                        curr_path.shift_end =
+                            self.get_int_from_int_or_var(item_arr.get(1).expect("len 2"));
+                    } else if let Some(item_value) = item.as_value() {
+                        let shift_both = self.get_int_from_int_or_var(item_value);
+                        curr_path.shift_start = shift_both;
+                        curr_path.shift_end = shift_both;
                     }
                 }
                 // == color ==

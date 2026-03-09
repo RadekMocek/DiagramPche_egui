@@ -3,14 +3,15 @@ use crate::model::color::Color;
 use crate::model::pathpoint::Pathpoint;
 use crate::model::pivot::Pivot;
 use crate::model::point::Point;
-use egui::{vec2, Vec2};
+use egui::{Vec2, vec2};
 
 pub struct Path {
     pub start: Point,
     pub ends: Vec<Point>,
     pub pathpoints: Vec<Pathpoint>,
 
-    pub shift: i64,
+    pub shift_start: i64,
+    pub shift_end: i64,
 
     pub color: Color,
 
@@ -27,7 +28,8 @@ impl Default for Path {
             ends: Vec::new(),
             pathpoints: Vec::new(),
 
-            shift: 0,
+            shift_start: 0,
+            shift_end: 0,
 
             color: Color::new(0, 0, 0, 255),
 
@@ -40,8 +42,14 @@ impl Default for Path {
 }
 
 impl Path {
-    pub fn get_shift_vector(&self, pivot: &Pivot, zoom_level: f32) -> Vec2 {
-        let sf = self.shift as f32 * zoom_level;
+    pub fn get_shift_vector(&self, pivot: &Pivot, zoom_level: f32, is_start: bool) -> Vec2 {
+        let sf = if is_start {
+            self.shift_start
+        } else {
+            self.shift_end
+        } as f32
+            * zoom_level;
+
         match pivot {
             Pivot::TopLeft => vec2(-sf, -sf),
             Pivot::Top => vec2(0.0, -sf),
