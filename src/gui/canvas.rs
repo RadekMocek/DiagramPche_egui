@@ -56,7 +56,7 @@ impl App {
                     self.scrolling += pointer_pos_in_canvas * (1.0 - ratio);
                     origin = response_rect.min + self.scrolling.to_vec2();
                     if let Some(pointer_pos) = response.interact_pointer_pos() {
-                        //pointer_pos_in_canvas = pointer_pos - origin;
+                        pointer_pos_in_canvas = pointer_pos - origin;
                     }
                     //todo not working
                 }
@@ -100,7 +100,7 @@ impl App {
         // == Draw diagram ==
         self.canvas_nodes.clear();
         self.gui_canvas_prepare_nodes(&painter, &origin);
-        self.gui_canvas_prepare_paths(&origin);
+        self.gui_canvas_prepare_paths(&painter, &origin);
 
         if self.do_svg_export_this_iter {
             self.svg_exporter.apply_boundaries();

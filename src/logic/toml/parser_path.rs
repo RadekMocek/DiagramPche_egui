@@ -122,6 +122,32 @@ impl Parser {
                 }
                 // == z ==
                 "z" => curr_path.z = self.get_z_from_int(item, false),
+                // == label ==
+                "label" => {
+                    if let Some(item_arr) = item.as_array()
+                        && item_arr.len() == 4
+                        && item_arr.get(0).expect("len 4").is_str()
+                        && item_arr.get(1).expect("len 4").is_integer()
+                        && item_arr.get(2).expect("len 4").is_integer()
+                        && item_arr.get(3).expect("len 4").is_integer()
+                    {
+                        curr_path.label_value =
+                            String::from(item_arr.get(0).expect("len 4").as_str().expect("str"));
+                        curr_path.label_point =
+                            item_arr.get(1).expect("len 4").as_integer().expect("int");
+                        curr_path.label_shift =
+                            item_arr.get(2).expect("len 4").as_integer().expect("int");
+                        curr_path.label_shift_orthogonal =
+                            item_arr.get(3).expect("len 4").as_integer().expect("int");
+                    } else {
+                        self.report_error(
+                            "An array [string, int, int, int] must follow after 'label='",
+                            &item.span(),
+                        );
+                    }
+                }
+                // == label_bg ==
+                "label_bg" => self.set_color_from_array_or_string(item, &mut curr_path.label_bg_color),
                 // == Unknown key ==
                 _ => self.report_error(&format!("Unknown key '{key}'"), &item.span()),
             }

@@ -1,12 +1,13 @@
 use crate::App;
+use crate::helper::draw::{vec2_normalized, vec2_orthogonalized};
 use crate::helper::draw_layer::dl_user_channel_to_real_channel;
 use crate::model::draw_command::command::DrawCommandOrd;
 use crate::model::draw_command::path::PathDrawCommand;
 use crate::model::pathpoint_type::PathpointType;
-use egui::{Pos2, pos2};
+use egui::{Pos2, pos2, Painter};
 
 impl App {
-    pub(super) fn gui_canvas_prepare_paths(&mut self, origin: &Pos2) {
+    pub(super) fn gui_canvas_prepare_paths(&mut self, painter: &Painter, origin: &Pos2) {
         for path in &self.parser.result_paths {
             // Prepare the start point
             let mut start = pos2(
@@ -142,6 +143,41 @@ impl App {
                 result_pathpoints.push(shifted_end);
                 if do_end_shift {
                     result_pathpoints.push(end);
+                }
+
+                // Path label (`label=` && `label_bg=`)
+                let n_pathpoints = result_pathpoints.len();
+                if n_pathpoints > 2 && !path.label_value.is_empty() {
+                    // Path label is set in TOML as [string(1), int(2), int(3), int(4)]
+                    // (1) is the label's text
+                    // (2) is the point of the path on which the label is placed, use modulo to not get out of bounds
+                    let label_point_curr_idx = path.label_point as usize % n_pathpoints;
+                    // (3) is the shift of the label position to the next point on the path, get next point using modulo as well
+                    let label_point_next_idx = (path.label_point as usize + 1) % n_pathpoints;
+                    let label_shift = path.label_shift as f32;
+                    // (4) is shift in a direction orthogonal to (3), so user can fine-tune the placement of the label on the path
+                    let label_shift_orth = path.label_shift_orthogonal as f32;
+
+                    // Get chosen point ("curr") and next point ("next"), and get the direction vector from curr to next
+                    let label_point_curr = result_pathpoints[label_point_curr_idx];
+                    let label_point_next = result_pathpoints[label_point_next_idx];
+                    let direction = vec2_normalized(label_point_next - label_point_curr);
+
+                    // Prepare the text so we can shift to make it that when (3)==0, label center sits on the path
+                    let label_galley = painter.layout_no_wrap(
+                        path.label_value.clone(),
+                        egui::FontId::monospace(self.canvas_font_size as f32),
+                        egui::Color32::PLACEHOLDER,
+                    );
+
+                    // Using the direction vector, we can apply the shifts
+                    let label_position = label_point_curr
+                        + (label_shift * self.zoom_level * direction)
+                        + (label_shift_orth * self.zoom_level * vec2_orthogonalized(direction))
+                        - (label_galley.rect.size() / 2.0);
+
+                    // `label_bg=` can be set with color value to give background to the path label; background rectangle size == label size
+                    //TODO
                 }
             }
 

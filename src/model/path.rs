@@ -19,6 +19,12 @@ pub struct Path {
     pub do_end_arrow: bool,
 
     pub z: i64,
+
+    pub label_value: String,
+    pub label_point: i64,
+    pub label_shift: i64,
+    pub label_shift_orthogonal: i64,
+    pub label_bg_color: Color,
 }
 
 impl Default for Path {
@@ -37,6 +43,12 @@ impl Default for Path {
             do_end_arrow: true,
 
             z: DL_USER_CHANNEL_DEFAULT_PATH,
+
+            label_value: String::from(""),
+            label_point: 0,
+            label_shift: 0,
+            label_shift_orthogonal: 0,
+            label_bg_color: Color::new(0, 0, 0, 0),
         }
     }
 }
