@@ -1,21 +1,12 @@
 use crate::App;
 use crate::logic::app_dialog::save_svg_dialog;
-
-const SMALLSKIP: f32 = 9.0;
-const MEDSKIP: f32 = 13.0;
-const BIGSKIP: f32 = 17.0;
+use crate::gui::widget;
 
 #[derive(PartialEq)]
 pub enum ActionAfterExport {
     DoNothing,
     OpenFolder,
     OpenFile,
-}
-
-fn my_header(ui: &mut egui::Ui, space_height: f32, text: &str) {
-    ui.add_space(space_height);
-    ui.weak(text);
-    ui.separator();
 }
 
 impl App {
@@ -26,7 +17,7 @@ impl App {
             let modal = egui::Modal::new(egui::Id::new("modal_export")).show(ui.ctx(), |ui| {
                 ui.heading("Export to SVG");
                 // . Location .
-                my_header(ui, SMALLSKIP, "Location");
+                widget::header(ui, widget::SMALLSKIP, "Location");
                 ui.horizontal(|ui| {
                     // Location textedit
                     let response = ui.add(
@@ -46,7 +37,7 @@ impl App {
                 });
 
                 // . Overwrite guard .
-                my_header(ui, MEDSKIP, "Overwrite guard");
+                widget::header(ui, widget::MEDSKIP, "Overwrite guard");
 
                 let mut can_export = true;
                 let mut is_overwrite_export_needed = false;
@@ -82,7 +73,7 @@ impl App {
                 });
 
                 // . Action after export .
-                my_header(ui, MEDSKIP, "Action after export");
+                widget::header(ui, widget::MEDSKIP, "Action after export");
                 ui.horizontal(|ui| {
                     ui.radio_value(
                         &mut self.modal_export_action_choice,
@@ -102,7 +93,7 @@ impl App {
                 });
 
                 // . Export & Cancel buttons .
-                ui.add_space(BIGSKIP);
+                ui.add_space(widget::BIGSKIP);
                 ui.horizontal(|ui| {
                     ui.add_enabled_ui(can_export, |ui| {
                         if ui.button("Export").clicked() {
@@ -126,10 +117,10 @@ impl App {
         if self.do_open_modal_about {
             let modal = egui::Modal::new(egui::Id::new("modal_about")).show(ui.ctx(), |ui| {
                 ui.heading("About");
-                ui.add_space(SMALLSKIP);
+                ui.add_space(widget::SMALLSKIP);
                 ui.label("DiagramPche :: egui");
                 ui.hyperlink("https://github.com/RadekMocek/DiagramPche_egui");
-                ui.add_space(BIGSKIP);
+                ui.add_space(widget::BIGSKIP);
                 if ui.button("Close").clicked() {
                     ui.close();
                 }
@@ -144,12 +135,12 @@ impl App {
         if self.do_open_modal_error {
             let modal = egui::Modal::new(egui::Id::new("modal_error")).show(ui.ctx(), |ui| {
                 ui.heading("Error");
-                ui.add_space(SMALLSKIP);
+                ui.add_space(widget::SMALLSKIP);
                 ui.label(
                     egui::RichText::new(&self.modal_error_message)
                         .color(crate::config::COLOR_ERROR),
                 );
-                ui.add_space(BIGSKIP);
+                ui.add_space(widget::BIGSKIP);
                 if ui.button("RIP").clicked() {
                     ui.close();
                 }

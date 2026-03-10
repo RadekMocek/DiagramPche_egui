@@ -6,3 +6,5 @@ mod panel_bottom;
 mod panel_central;
 mod panel_top;
 mod text_editor;
+pub(super) mod window;
+mod widget;

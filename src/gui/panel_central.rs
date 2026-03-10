@@ -58,6 +58,9 @@ impl App {
                     self.gui_canvas(ui);
                 });
 
+            // Modeless windows logic
+            self.gui_window(&mut ui);
+            
             // Modals logic
             self.gui_modal(&mut ui);
         });

@@ -4,6 +4,7 @@ use crate::logic::toml::parser::Parser;
 use crate::model::canvas_node::CanvasNode;
 use crate::model::draw_command::command::DrawCommandOrd;
 use std::collections::{BinaryHeap, HashMap};
+use crate::gui::window::PreferencesTab;
 
 /// We derive Deserialize/Serialize so we can persist app state on shutdown.
 /*
@@ -41,6 +42,9 @@ pub struct App {
     pub modal_export_path: String,
     pub modal_export_do_overwrite: bool,
     pub modal_export_action_choice: ActionAfterExport,
+    // Modeless windows
+    pub do_show_window_preferences: bool,
+    pub window_preferences_selected_tab: PreferencesTab,
     // Misc
     pub font_char_size: egui::Vec2, // Cache for error highlight, how big is the character (counting on monospace font)
 }
@@ -78,6 +82,10 @@ impl Default for App {
             modal_export_path: crate::logic::app_file::get_default_svg_path(),
             modal_export_do_overwrite: false,
             modal_export_action_choice: ActionAfterExport::DoNothing,
+            // Modeless windows
+            // - preferences
+            do_show_window_preferences: true,
+            window_preferences_selected_tab: PreferencesTab::Appearance,
             // Misc
             font_char_size: egui::Vec2::ZERO,
         }
