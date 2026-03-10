@@ -24,7 +24,6 @@ pub struct App {
     // Canvas
     pub canvas_font_size: i32,   // Zoom level is based on this
     pub zoom_level: f32,         // Makes rendered diagram smaller/bigger
-    pub is_canvas_dragged: bool, // Is user holding RMB on canvas (dragging the rendered diagram)
     pub scrolling: egui::Pos2,   // How was the canvas moved by dragging
     pub canvas_nodes: HashMap<String, CanvasNode>, // Storing info about rendered nodes for references etc. to work
     pub draw_commands_ord: BinaryHeap<DrawCommandOrd>, // Commands for egui painter to do the drawing
@@ -64,7 +63,6 @@ impl Default for App {
             // Canvas
             canvas_font_size: crate::config::CANVAS_FONT_SIZE_BASE,
             zoom_level: crate::config::ZOOM_LEVEL_DEFAULT,
-            is_canvas_dragged: false,
             scrolling: crate::config::SCROLLING_DEFAULT,
             canvas_nodes: HashMap::new(),
             draw_commands_ord: BinaryHeap::new(),

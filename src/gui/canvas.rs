@@ -14,20 +14,15 @@ impl App {
         // .: User interaction :.
         // .:==================:.
         // RMB to move canvas ("scrolling")
-        if response.drag_started_by(egui::PointerButton::Secondary) {
-            self.is_canvas_dragged = true;
-        }
-        if self.is_canvas_dragged {
+        if response.dragged_by(egui::PointerButton::Secondary) {
             self.scrolling += response.drag_delta();
-        }
-        if response.drag_stopped_by(egui::PointerButton::Secondary) {
-            self.is_canvas_dragged = false;
+            ui.ctx().set_cursor_icon(egui::CursorIcon::Grabbing);
         }
 
         // Origin ([0,0]) of the canvas in screen space coordinates, which painter uses
         let mut origin = response_rect.min + self.scrolling.to_vec2();
 
-        let mut pointer_pos_in_canvas = if let Some(pointer_pos) = response.interact_pointer_pos() {
+        let mut pointer_pos_in_canvas = if let Some(pointer_pos) = response.hover_pos() {
             pointer_pos - origin
         } else {
             egui::Vec2::default()
@@ -47,18 +42,20 @@ impl App {
             });
             if let Some(scroll) = scroll {
                 let old_zoom = self.zoom_level;
+
                 self.set_canvas_font_size(
                     self.canvas_font_size + scroll.y as i32 * CANVAS_FONT_SIZE_STEP,
                 );
+
                 // Zoom anchor under mouse
                 if old_zoom != self.zoom_level {
                     let ratio = self.zoom_level / old_zoom;
                     self.scrolling += pointer_pos_in_canvas * (1.0 - ratio);
+                    // Scrolling has been changed, we have to update origin and pointer_pos for later use
                     origin = response_rect.min + self.scrolling.to_vec2();
-                    if let Some(pointer_pos) = response.interact_pointer_pos() {
+                    if let Some(pointer_pos) = response.hover_pos() {
                         pointer_pos_in_canvas = pointer_pos - origin;
                     }
-                    //todo not working
                 }
             }
         }

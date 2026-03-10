@@ -1,5 +1,12 @@
 # DiagramPche :: egui
 
+This is part of a IMGUI paradigm research, [go back to main repo](https://github.com/RadekMocek/DP).
+
+* Jump to:
+  * [Building locally](#building-locally)
+  * [Dependencies](#dependencies)
+  * [Problems](#problems)
+
 ## TODO
 
 * General:
@@ -31,8 +38,8 @@
   * [ ] `[[path]].label`
   * [ ] `[[path]].label_bg`
 * Canvas features:
-  * [ ] Canvas zooming: anchor under mouse
-  * [ ] Change the cursor type while dragging the canvas
+  * [x] Canvas zooming: anchor under mouse
+  * [x] Change the cursor type while dragging the canvas
   * [ ] Ctrl+Click to jump to node definition in text editor
 * Settings window:
   * [ ] Switch between vanilla and 3rd party text editor
@@ -48,6 +55,29 @@
 * TOML Parser:
   * [ ] Refactor TOML parsing: do not std::move into priority queue, use pq just for determining draw order and nothing more
 
+## Building locally
+
+```bash
+# Install Rust, follow https://rust-lang.org/learn/get-started/
+
+# Navigate to the root directory of this repository
+
+cargo build --release
+```
+
+## Dependencies
+
+* [egui](https://github.com/emilk/egui) ([MIT](https://github.com/emilk/egui/blob/main/LICENSE-MIT))
+* [toml_edit](https://github.com/toml-rs/toml/tree/main/crates/toml_edit) ([MIT](https://github.com/toml-rs/toml/blob/main/LICENSE-MIT))
+* [svg](https://github.com/bodoni/svg) ([MIT](https://github.com/bodoni/svg/blob/main/LICENSE.md))
+* [open](https://github.com/Byron/open-rs) ([MIT](https://github.com/Byron/open-rs/blob/main/LICENSE.md))
+* [rfd](https://github.com/PolyMeilex/rfd) ([MIT](https://github.com/PolyMeilex/rfd/blob/master/LICENSE))
+* [showfile](https://github.com/jf2048/showfile) ([MIT](https://github.com/jf2048/showfile/blob/main/COPYING))
+
+<br>
+
+* [Inconsolata](https://levien.com/type/myfonts/inconsolata.html) ([SIL Open Font](https://github.com/google/fonts/blob/main/ofl/inconsolata/OFL.txt))
+
 ## Problems
 
 * Error highlight breaks:
@@ -55,19 +85,3 @@
   * On too thin textedit because it wraps lines!
 * TextInput SingleLine: no equivalent to Dear ImGui's _ElideLeft_ flag (?)
 * Canvas zooming on touchpad not ideal
-
-## Dependencies
-
-* [egui](https://github.com/emilk/egui) ([MIT](https://github.com/emilk/egui/blob/main/LICENSE-MIT))
-* [toml_edit](https://github.com/toml-rs/toml/tree/main/crates/toml_edit) ([MIT](https://github.com/toml-rs/toml/blob/main/LICENSE-MIT))
-* [Inconsolata](https://levien.com/type/myfonts/inconsolata.html) ([SIL Open Font](https://github.com/google/fonts/blob/main/ofl/inconsolata/OFL.txt))
-* [svg](https://github.com/bodoni/svg) ([MIT](https://github.com/bodoni/svg/blob/main/LICENSE.md))
-* [open](https://github.com/Byron/open-rs) ([MIT](https://github.com/Byron/open-rs/blob/main/LICENSE.md))
-* [rfd](https://github.com/PolyMeilex/rfd) ([MIT](https://github.com/PolyMeilex/rfd/blob/master/LICENSE))
-* [showfile](https://github.com/jf2048/showfile) ([MIT](https://github.com/jf2048/showfile/blob/main/COPYING))
-
-## Building locally
-
-```bash
-cargo build --release
-```
