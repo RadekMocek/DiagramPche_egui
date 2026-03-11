@@ -1,10 +1,11 @@
 use crate::App;
 use crate::helper::draw::{vec2_normalized, vec2_orthogonalized};
-use crate::helper::draw_layer::dl_user_channel_to_real_channel;
+use crate::helper::draw_layer::{DLPriority, dl_user_channel_to_real_channel};
 use crate::model::draw_command::command::DrawCommandOrd;
+use crate::model::draw_command::node_rectangle::NodeRectangleDrawCommand;
 use crate::model::draw_command::path::PathDrawCommand;
 use crate::model::pathpoint_type::PathpointType;
-use egui::{Pos2, pos2, Painter};
+use egui::{Painter, Pos2, pos2};
 
 impl App {
     pub(super) fn gui_canvas_prepare_paths(&mut self, painter: &Painter, origin: &Pos2) {
@@ -170,14 +171,28 @@ impl App {
                         egui::Color32::PLACEHOLDER,
                     );
 
+                    let label_rect_size = label_galley.rect.size();
+
                     // Using the direction vector, we can apply the shifts
                     let label_position = label_point_curr
                         + (label_shift * self.zoom_level * direction)
                         + (label_shift_orth * self.zoom_level * vec2_orthogonalized(direction))
-                        - (label_galley.rect.size() / 2.0);
+                        - (label_rect_size / 2.0);
 
                     // `label_bg=` can be set with color value to give background to the path label; background rectangle size == label size
-                    //TODO
+                    // Make a draw command, we will use NodeRectangle for this
+                    self.draw_commands_ord.push(DrawCommandOrd::new(
+                        dl_user_channel_to_real_channel(path.z, DLPriority::PathLabel),
+                        Box::new(NodeRectangleDrawCommand::new(
+                            label_position,
+                            label_position + label_rect_size,
+                            path.label_bg_color.to_egui_color(),
+                            egui::Color32::TRANSPARENT,
+                            self.zoom_level,
+                            label_position,
+                            label_galley,
+                        )),
+                    ));
                 }
             }
 
@@ -197,7 +212,7 @@ impl App {
 
             // Make a draw command
             self.draw_commands_ord.push(DrawCommandOrd::new(
-                dl_user_channel_to_real_channel(path.z, false),
+                dl_user_channel_to_real_channel(path.z, DLPriority::Path),
                 Box::new(PathDrawCommand::new(
                     result_paths,
                     path.color.to_egui_color(),

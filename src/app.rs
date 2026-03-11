@@ -82,7 +82,7 @@ impl Default for App {
             modal_export_action_choice: ActionAfterExport::DoNothing,
             // Modeless windows
             // - preferences
-            do_show_window_preferences: true,
+            do_show_window_preferences: false,
             window_preferences_selected_tab: PreferencesTab::Appearance,
             // Misc
             font_char_size: egui::Vec2::ZERO,

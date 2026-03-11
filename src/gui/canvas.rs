@@ -22,7 +22,7 @@ impl App {
         // Origin ([0,0]) of the canvas in screen space coordinates, which painter uses
         let mut origin = response_rect.min + self.scrolling.to_vec2();
 
-        let mut pointer_pos_in_canvas = if let Some(pointer_pos) = response.hover_pos() {
+        let /*mut*/ pointer_pos_in_canvas = if let Some(pointer_pos) = response.hover_pos() {
             pointer_pos - origin
         } else {
             egui::Vec2::default()
@@ -53,9 +53,11 @@ impl App {
                     self.scrolling += pointer_pos_in_canvas * (1.0 - ratio);
                     // Scrolling has been changed, we have to update origin and pointer_pos for later use
                     origin = response_rect.min + self.scrolling.to_vec2();
+                    /*
                     if let Some(pointer_pos) = response.hover_pos() {
                         pointer_pos_in_canvas = pointer_pos - origin;
                     }
+                    */
                 }
             }
         }

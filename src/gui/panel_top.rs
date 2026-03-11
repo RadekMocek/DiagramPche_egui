@@ -33,7 +33,7 @@ impl App {
                     ui.separator();
                     // . Preferences .
                     if ui.button("Preferences").clicked() {
-                        //todo
+                        self.do_show_window_preferences = true;
                     }
                     ui.separator();
                     // . Exit .

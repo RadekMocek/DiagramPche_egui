@@ -1,5 +1,5 @@
 use crate::App;
-use crate::helper::draw_layer::dl_user_channel_to_real_channel;
+use crate::helper::draw_layer::{dl_user_channel_to_real_channel, DLPriority};
 use crate::model::canvas_node::CanvasNode;
 use crate::model::draw_command::command::DrawCommandOrd;
 use crate::model::draw_command::node_diamond::NodeDiamondDrawCommand;
@@ -150,7 +150,7 @@ impl App {
                 match node.node_type {
                     NodeType::Rectangle => {
                         self.draw_commands_ord.push(DrawCommandOrd::new(
-                            dl_user_channel_to_real_channel(node.z, true),
+                            dl_user_channel_to_real_channel(node.z, DLPriority::Node),
                             Box::new(NodeRectangleDrawCommand::new(
                                 draw_top_left,
                                 draw_bottom_right,
@@ -164,7 +164,7 @@ impl App {
                     }
                     NodeType::Ellipse => {
                         self.draw_commands_ord.push(DrawCommandOrd::new(
-                            dl_user_channel_to_real_channel(node.z, true),
+                            dl_user_channel_to_real_channel(node.z, DLPriority::Node),
                             Box::new(NodeEllipseDrawCommand::new(
                                 draw_center,
                                 vec2(node_width / 2.0, node_height / 2.0),
@@ -182,7 +182,7 @@ impl App {
                             .get(&node.id)
                             .expect("ID was added few lines above");
                         self.draw_commands_ord.push(DrawCommandOrd::new(
-                            dl_user_channel_to_real_channel(node.z, true),
+                            dl_user_channel_to_real_channel(node.z, DLPriority::Node),
                             Box::new(NodeDiamondDrawCommand::new(
                                 [
                                     canvas_node.get_exact_point_from_pivot(&Pivot::Top)
@@ -204,7 +204,7 @@ impl App {
                     }
                     NodeType::Text => {
                         self.draw_commands_ord.push(DrawCommandOrd::new(
-                            dl_user_channel_to_real_channel(node.z, true),
+                            dl_user_channel_to_real_channel(node.z, DLPriority::Node),
                             Box::new(NodeTextDrawCommand::new(draw_label_position, label_galley)),
                         ));
                     }
