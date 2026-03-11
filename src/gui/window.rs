@@ -26,7 +26,8 @@ impl App {
                 }
                 PreferencesTab::TextEditor => {
                     widget::header(ui, widget::SMALLSKIP, "Text editor font size");
-                    widget::header(ui, widget::SMALLSKIP, "Preferred text editor");
+                    widget::header(ui, widget::SMALLSKIP, "Text editor syntax highlight");
+                    ui.checkbox(&mut self.do_syntax_highlight,"Enable syntax highlight");
                 }
                 PreferencesTab::View => {
                     ui.label("3");

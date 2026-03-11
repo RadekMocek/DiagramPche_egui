@@ -80,8 +80,6 @@ cargo build --release
 
 ## Problems
 
-* Error highlight breaks:
-  * On tab
-  * On too thin textedit because it wraps lines!
+* Error highlight breaks on tab
 * TextInput SingleLine: no equivalent to Dear ImGui's _ElideLeft_ flag (?)
 * Canvas zooming on touchpad not ideal

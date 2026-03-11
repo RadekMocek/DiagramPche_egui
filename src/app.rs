@@ -1,10 +1,11 @@
 use crate::gui::modal::ActionAfterExport;
+use crate::gui::text_editor_alt::AltEditorConfig;
+use crate::gui::window::PreferencesTab;
 use crate::logic::svg_exporter::Exporter;
 use crate::logic::toml::parser::Parser;
 use crate::model::canvas_node::CanvasNode;
 use crate::model::draw_command::command::DrawCommandOrd;
 use std::collections::{BinaryHeap, HashMap};
-use crate::gui::window::PreferencesTab;
 
 /// We derive Deserialize/Serialize so we can persist app state on shutdown.
 /*
@@ -21,10 +22,14 @@ pub struct App {
     pub error_span_line: u32, // On which line of source is the error (we have to compute this)
     pub error_span_column: u32, // At which column of the particular line does the error start (we have to compute this)
     pub error_span_length: u32, // How many chars from the error start should be highlighted (we have to compute this)
+    pub do_use_alt_editor: bool, // Wether to use 3rd party text editor widget
+    pub alt_editor_config: AltEditorConfig,
+    pub do_syntax_highlight: bool,
+    pub source_font_size: u32,
     // Canvas
-    pub canvas_font_size: i32,   // Zoom level is based on this
-    pub zoom_level: f32,         // Makes rendered diagram smaller/bigger
-    pub scrolling: egui::Pos2,   // How was the canvas moved by dragging
+    pub canvas_font_size: u32, // Zoom level is based on this
+    pub zoom_level: f32,       // Makes rendered diagram smaller/bigger
+    pub scrolling: egui::Pos2, // How was the canvas moved by dragging
     pub canvas_nodes: HashMap<String, CanvasNode>, // Storing info about rendered nodes for references etc. to work
     pub draw_commands_ord: BinaryHeap<DrawCommandOrd>, // Commands for egui painter to do the drawing
     pub do_show_grid: bool,                            // Show canvas grid
@@ -44,8 +49,6 @@ pub struct App {
     // Modeless windows
     pub do_show_window_preferences: bool,
     pub window_preferences_selected_tab: PreferencesTab,
-    // Misc
-    pub font_char_size: egui::Vec2, // Cache for error highlight, how big is the character (counting on monospace font)
 }
 
 impl Default for App {
@@ -60,8 +63,12 @@ impl Default for App {
             error_span_line: 0,
             error_span_column: 0,
             error_span_length: 0,
+            do_use_alt_editor: true,
+            alt_editor_config: AltEditorConfig::default(),
+            do_syntax_highlight: true,
+            source_font_size: crate::config::FONT_SIZE_SOURCE_DEFAULT,
             // Canvas
-            canvas_font_size: crate::config::CANVAS_FONT_SIZE_BASE,
+            canvas_font_size: crate::config::FONT_SIZE_CANVAS_BASE,
             zoom_level: crate::config::ZOOM_LEVEL_DEFAULT,
             scrolling: crate::config::SCROLLING_DEFAULT,
             canvas_nodes: HashMap::new(),
@@ -84,8 +91,6 @@ impl Default for App {
             // - preferences
             do_show_window_preferences: false,
             window_preferences_selected_tab: PreferencesTab::Appearance,
-            // Misc
-            font_char_size: egui::Vec2::ZERO,
         }
     }
 }
@@ -109,22 +114,6 @@ impl App {
         }
         */
         Default::default()
-    }
-
-    /// (Expecting monospace font)
-    pub fn update_font_char_size(&mut self, ui: &egui::Ui) {
-        self.font_char_size = ui
-            .painter()
-            .layout_no_wrap(
-                String::from("A"),
-                egui::FontId::new(
-                    crate::config::FONT_SIZE_DEFAULT,
-                    eframe::epaint::FontFamily::Monospace,
-                ),
-                egui::Color32::PLACEHOLDER,
-            )
-            .rect
-            .size();
     }
 }
 

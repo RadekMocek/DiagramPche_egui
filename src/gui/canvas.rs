@@ -44,7 +44,8 @@ impl App {
                 let old_zoom = self.zoom_level;
 
                 self.set_canvas_font_size(
-                    self.canvas_font_size + scroll.y as i32 * CANVAS_FONT_SIZE_STEP,
+                    self.canvas_font_size
+                        .saturating_add_signed(scroll.y as i32 * FONT_SIZE_CANVAS_STEP as i32),
                 );
 
                 // Zoom anchor under mouse
@@ -168,13 +169,13 @@ impl App {
         response
     }
 
-    pub fn set_canvas_font_size(&mut self, value: i32) {
-        self.canvas_font_size = value.clamp(CANVAS_FONT_SIZE_MIN, CANVAS_FONT_SIZE_MAX);
-        self.zoom_level = self.canvas_font_size as f32 / CANVAS_FONT_SIZE_BASE as f32;
+    pub fn set_canvas_font_size(&mut self, value: u32) {
+        self.canvas_font_size = value.clamp(FONT_SIZE_CANVAS_MIN, FONT_SIZE_CANVAS_MAX);
+        self.zoom_level = self.canvas_font_size as f32 / FONT_SIZE_CANVAS_BASE as f32;
     }
 
     pub fn reset_canvas_scrolling_and_zoom(&mut self) {
         self.scrolling = SCROLLING_DEFAULT;
-        self.set_canvas_font_size(CANVAS_FONT_SIZE_BASE);
+        self.set_canvas_font_size(FONT_SIZE_CANVAS_BASE);
     }
 }

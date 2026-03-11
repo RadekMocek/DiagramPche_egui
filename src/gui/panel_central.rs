@@ -44,10 +44,34 @@ impl App {
 
             // Draw left panel (text editor)
             let mut left_ui = ui.new_child(egui::UiBuilder::new().max_rect(left_rect));
-            egui::ScrollArea::vertical()
+            left_ui.set_clip_rect(left_rect);
+
+            // Left toolbar
+            left_ui.horizontal(|ui| {
+                ui.label("Font size:");
+                ui.add(egui::DragValue::new(&mut self.source_font_size).speed(1));
+                if ui.button("-").clicked() {
+                    self.source_font_size -= 1;
+                }
+                if ui.button("+").clicked() {
+                    self.source_font_size += 1;
+                }
+                self.source_font_size = self.source_font_size.clamp(
+                    crate::config::FONT_SIZE_SOURCE_MIN,
+                    crate::config::FONT_SIZE_SOURCE_MAX,
+                );
+                ui.separator();
+            });
+
+            egui::ScrollArea::both()
                 .id_salt("source")
+                .auto_shrink(false)
                 .show(&mut left_ui, |ui| {
-                    self.gui_text_editor(ui);
+                    if !self.do_use_alt_editor {
+                        self.gui_text_editor(ui);
+                    } else {
+                        self.gui_text_editor_alt(ui);
+                    }
                 });
 
             // Draw right panel (canvas)
@@ -60,7 +84,7 @@ impl App {
 
             // Modeless windows logic
             self.gui_window(&mut ui);
-            
+
             // Modals logic
             self.gui_modal(&mut ui);
         });

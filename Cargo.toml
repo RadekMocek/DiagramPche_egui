@@ -19,6 +19,12 @@ eframe = { version = "0.33.3", default-features = false, features = [
     "wayland", # To support Linux (and CI)
     "x11", # To support older Linux distributions (restores one of the default features)
 ] }
+
+# Syntax highlight:
+egui_extras = "0.33.3"
+egui_code_editor = "0.2.21"
+
+# ...
 log = "0.4.27"
 toml_edit = "0.24.0"
 svg = "0.18.0"
@@ -28,9 +34,6 @@ showfile = "0.1.1"
 
 # You only need serde if you want app persistence:
 #serde = { version = "1.0.219", features = ["derive"] }
-
-# Syntax highlight?
-# Either "egui_extras" with "syntect" feature or https://docs.rs/egui_code_editor/latest/egui_code_editor/
 
 # native:
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]

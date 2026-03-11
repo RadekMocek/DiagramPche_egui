@@ -7,7 +7,7 @@ pub(super) fn conf_style_init(ctx: &egui::Context) {
     let text_styles: BTreeMap<TextStyle, FontId> = [
         (
             TextStyle::Heading,
-            FontId::new(FONT_SIZE_DEFAULT + 12.0, Proportional),
+            FontId::new(FONT_SIZE_DEFAULT + 9.0, Proportional),
         ),
         (
             TextStyle::Name("Heading2".into()),
