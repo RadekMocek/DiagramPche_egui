@@ -1,7 +1,7 @@
 use crate::config::*;
+use FontFamily::{Monospace, Proportional};
 use egui::{Color32, FontFamily, FontId, TextStyle};
 use std::collections::BTreeMap;
-use FontFamily::{Monospace, Proportional};
 
 pub(super) fn conf_style_init(ctx: &egui::Context) {
     let text_styles: BTreeMap<TextStyle, FontId> = [
@@ -75,11 +75,20 @@ pub(super) fn replace_fonts(ctx: &egui::Context) {
     // Start with the default fonts
     let mut fonts = egui::FontDefinitions::default();
 
-    // Install custom font
+    // Install custom fonts
+    let inconsolata_id = String::from("inconsolata");
     fonts.font_data.insert(
-        "inconsolata".to_owned(),
+        inconsolata_id.clone(),
         std::sync::Arc::new(egui::FontData::from_static(include_bytes!(
             "../assets/font/Inconsolata-Medium.ttf"
+        ))),
+    );
+
+    let icons_id = String::from("icons");
+    fonts.font_data.insert(
+        icons_id.clone(),
+        std::sync::Arc::new(egui::FontData::from_static(include_bytes!(
+            "../assets/font/pictogrammers-materialdesignicons.ttf"
         ))),
     );
 
@@ -88,13 +97,26 @@ pub(super) fn replace_fonts(ctx: &egui::Context) {
         .families
         .entry(Proportional)
         .or_default()
-        .insert(0, "inconsolata".to_owned());
+        .insert(0, inconsolata_id.clone());
 
     fonts
         .families
         .entry(Monospace)
         .or_default()
-        .insert(0, "inconsolata".to_owned());
+        .insert(0, inconsolata_id.clone());
+
+    // Then icons
+    fonts
+        .families
+        .entry(Proportional)
+        .or_default()
+        .insert(1, icons_id.clone());
+
+    fonts
+        .families
+        .entry(Monospace)
+        .or_default()
+        .insert(1, icons_id.clone());
 
     // Tell egui to use these fonts
     ctx.set_fonts(fonts);

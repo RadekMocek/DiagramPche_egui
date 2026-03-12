@@ -31,6 +31,7 @@ svg = "0.18.0"
 open = "5.3.3"
 rfd = "0.17.2"
 showfile = "0.1.1"
+const_format = "0.2.35"
 
 # You only need serde if you want app persistence:
 #serde = { version = "1.0.219", features = ["derive"] }

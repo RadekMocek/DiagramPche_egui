@@ -15,6 +15,7 @@ This is part of a IMGUI paradigm research, [go back to main repo](https://github
     * [x] Source: Allow changing font size of the text editor
     * [ ] Canvas: Change color node with color picker
     * [ ] Canvas: Change node's type via Drop-down list
+    * [ ] __Vertikánlí zarovnání prvků v toolbaru zlobí__
   * [ ] View → Secondary canvas toolbar
     * [ ] Drag'n'Drop new node, button for each node type
     * [ ] Zoom slider, right aligned
@@ -48,7 +49,7 @@ This is part of a IMGUI paradigm research, [go back to main repo](https://github
 * Benchmark window:
   * [ ] Do?
 * Icons:
-  * [ ] Main menu bar → File items
+  * [x] Main menu bar → File items
   * [ ] Toolbar → Drop-down list with node types
   * [ ] Secondary canvas toolbar → Drag'n'Drop buttons
 * TOML Parser:
@@ -72,10 +73,13 @@ cargo build --release
 * [open](https://github.com/Byron/open-rs) ([MIT](https://github.com/Byron/open-rs/blob/main/LICENSE.md))
 * [rfd](https://github.com/PolyMeilex/rfd) ([MIT](https://github.com/PolyMeilex/rfd/blob/master/LICENSE))
 * [showfile](https://github.com/jf2048/showfile) ([MIT](https://github.com/jf2048/showfile/blob/main/COPYING))
+* [IconFontCppHeaders](https://github.com/juliettef/IconFontCppHeaders) ([zlib](https://github.com/juliettef/IconFontCppHeaders/blob/main/licence.txt))
+* [const_format](https://github.com/rodrimati1992/const_format_crates/) ([zlib](https://github.com/rodrimati1992/const_format_crates/blob/master/LICENSE-ZLIB.md))
 
 <br>
 
 * [Inconsolata](https://levien.com/type/myfonts/inconsolata.html) ([SIL Open Font](https://github.com/google/fonts/blob/main/ofl/inconsolata/OFL.txt))
+* [Pictogrammers Material Design Icons](https://pictogrammers.com/library/mdi/) ([Apache-2.0](https://pictogrammers.com/docs/general/license/))
 
 ## Problems
 

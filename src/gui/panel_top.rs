@@ -1,4 +1,6 @@
 use crate::App;
+use crate::helper::icon::*;
+use const_format::concatcp;
 
 impl App {
     pub fn gui_panel_top(&mut self, ctx: &egui::Context) {
@@ -10,34 +12,52 @@ impl App {
                 // .: File :.
                 ui.menu_button("File", |ui| {
                     // . New .
-                    if ui.button("New").clicked() {
+                    if ui
+                        .button(concatcp!(ICON_FILE_PLUS_OUTLINE, " New"))
+                        .clicked()
+                    {
                         //todo
                     }
                     // . Open .
-                    if ui.button("Open").clicked() {
+                    if ui
+                        .button(concatcp!(ICON_FOLDER_OPEN_OUTLINE, " Open"))
+                        .clicked()
+                    {
                         //todo
                     }
                     // . Save .
-                    if ui.button("Save").clicked() {
+                    if ui
+                        .button(concatcp!(ICON_CONTENT_SAVE_OUTLINE, " Save"))
+                        .clicked()
+                    {
                         //todo
                     }
                     // . Save as .
-                    if ui.button("Save as").clicked() {
+                    if ui
+                        .button(concatcp!(ICON_CONTENT_SAVE_EDIT_OUTLINE, " Save as"))
+                        .clicked()
+                    {
                         //todo
                     }
                     // . Export to SVG .
-                    if ui.button("Export to SVG").clicked() {
+                    if ui
+                        .button(concatcp!(ICON_EXPORT, " Export to SVG"))
+                        .clicked()
+                    {
                         self.modal_export_do_overwrite = false;
                         self.do_open_modal_export = true;
                     }
                     ui.separator();
                     // . Preferences .
-                    if ui.button("Preferences").clicked() {
+                    if ui
+                        .button(concatcp!(ICON_WRENCH_OUTLINE, " Preferences"))
+                        .clicked()
+                    {
                         self.do_show_window_preferences = true;
                     }
                     ui.separator();
                     // . Exit .
-                    if ui.button("Exit").clicked() {
+                    if ui.button(concatcp!(ICON_EXIT_RUN, " Exit")).clicked() {
                         ctx.send_viewport_cmd(egui::ViewportCommand::Close);
                     }
                 });
@@ -49,7 +69,10 @@ impl App {
                     // . Canvas toolbar .
                     ui.checkbox(&mut self.do_show_toolbar, "Canvas toolbar");
                     // . Secondary canvas toolbar .
-                    ui.checkbox(&mut self.do_show_secondary_canvas_toolbar, "Secondary canvas toolbar");
+                    ui.checkbox(
+                        &mut self.do_show_secondary_canvas_toolbar,
+                        "Secondary canvas toolbar",
+                    );
                     // . Jump to canvas origin .
                     ui.separator();
                     if ui.button("Jump to canvas origin").clicked() {

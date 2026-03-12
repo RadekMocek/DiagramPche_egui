@@ -1,5 +1,14 @@
 use crate::App;
 use crate::gui::widget;
+use crate::helper::icon::*;
+use const_format::concatcp;
+
+const NODE_TYPE_CHOICES: [&str; 4] = [
+    concatcp!(ICON_RECTANGLE_OUTLINE, " Rectangle"),
+    concatcp!(ICON_ELLIPSE_OUTLINE, " Ellipse"),
+    concatcp!(ICON_RHOMBUS_OUTLINE, " Diamond"),
+    concatcp!(ICON_FORMAT_TEXT_VARIANT, " Text"),
+];
 
 impl App {
     pub fn gui_panel_central(&mut self, ctx: &egui::Context) {
@@ -71,7 +80,27 @@ impl App {
             // Right toolbar
             if self.do_show_toolbar {
                 right_ui.horizontal(|ui| {
-                    ui.label("Color:");
+                    // .: Color picker :.
+                    ui.label("Node color:");
+                    ui.separator();
+
+                    // .: Node type combo :.
+                    // In different file:
+                    ui.label("Type:");
+                    let mut current_choice_idx = 0;
+                    egui::ComboBox::from_id_salt("NodeTypeCombo")
+                        .selected_text(format!("{}", NODE_TYPE_CHOICES[current_choice_idx]))
+                        .show_ui(ui, |ui| {
+                            // Loop me
+                            ui.selectable_value(&mut current_choice_idx, 0, NODE_TYPE_CHOICES[0]);
+                            ui.selectable_value(&mut current_choice_idx, 1, NODE_TYPE_CHOICES[1]);
+                            ui.selectable_value(&mut current_choice_idx, 2, NODE_TYPE_CHOICES[2]);
+                            ui.selectable_value(&mut current_choice_idx, 3, NODE_TYPE_CHOICES[3]);
+                        });
+                    ui.separator();
+
+                    // .: Node ID label :.
+                    ui.label("ID:");
                 });
                 right_ui.add_space(widget::TINYSKIP);
             }

@@ -5,9 +5,15 @@ use crate::logic::app_file::open_file;
 
 impl App {
     pub(super) fn gui_canvas(&mut self, ui: &mut egui::Ui) -> egui::Response {
+        const CANVAS_SECONDARY_TOOLBAR_HEIGHT: f32 = 26.0;
+
         // .: Canvas init :.
         // .:=============:.
         // Painter is our canvas
+        let mut canvas_size = ui.available_size();
+        if self.do_show_secondary_canvas_toolbar {
+            canvas_size.y -= CANVAS_SECONDARY_TOOLBAR_HEIGHT; // This does nothing?
+        }
         let (response, painter) = ui.allocate_painter(ui.available_size(), egui::Sense::drag());
         let response_rect = response.rect;
 
@@ -165,7 +171,10 @@ impl App {
         }
         */
 
-        //
+        // .: Secondary canvas toolbar :.
+        // .:==========================:.
+
+        // --- ---
         response
     }
 
