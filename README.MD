@@ -12,8 +12,7 @@ This is part of a IMGUI paradigm research, [go back to main repo](https://github
 * General:
   * [x] View → Jump to canvas origin
   * [ ] View → Toolbar
-    * [ ] Source: Allow changing font size of the text editor
-    * [ ] Source: Show cursor position in the text editor
+    * [x] Source: Allow changing font size of the text editor
     * [ ] Canvas: Change color node with color picker
     * [ ] Canvas: Change node's type via Drop-down list
   * [ ] View → Secondary canvas toolbar
@@ -25,7 +24,7 @@ This is part of a IMGUI paradigm research, [go back to main repo](https://github
     * [ ] Confirm unsaved new
     * [ ] Confirm unsaved open, including loading a debug diagram or an example
     * [ ] Change window name according to opened document (incl. star for unsaved)
-  * [ ] Code editor syntax highlight
+  * [x] Code editor syntax highlight
 * Pipeline: TOML parse → Draw to canvas / Render to SVG:
   * [x] Remove `(expecting [X, Y])` from error message (does not make sense in wider context)
   * [x] `[node].type = "text"`
@@ -42,10 +41,10 @@ This is part of a IMGUI paradigm research, [go back to main repo](https://github
   * [x] Change the cursor type while dragging the canvas
   * [ ] Ctrl+Click to jump to node definition in text editor
 * Settings window:
-  * [ ] Switch between vanilla and 3rd party text editor
+  * [x] Switch between vanilla and 3rd party text editor
   * [ ] Appearance: color theme
   * [ ] Option for forcing light canvas regardless of color theme
-  * [ ] Duplicate settings from app: view→grid/toolbar/toolbar2, text editor font size (so all things that can be set and saved are at one place)
+  * [ ] Duplicate settings from app: view→grid/toolbar/toolbar2, text editor font size (so all things that can be set are at one place)
 * Benchmark window:
   * [ ] Do?
 * Icons:

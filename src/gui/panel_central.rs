@@ -1,4 +1,5 @@
 use crate::App;
+use crate::gui::widget;
 
 impl App {
     pub fn gui_panel_central(&mut self, ctx: &egui::Context) {
@@ -47,22 +48,12 @@ impl App {
             left_ui.set_clip_rect(left_rect);
 
             // Left toolbar
-            left_ui.horizontal(|ui| {
-                ui.label("Font size:");
-                ui.add(egui::DragValue::new(&mut self.source_font_size).speed(1));
-                if ui.button("-").clicked() {
-                    self.source_font_size -= 1;
-                }
-                if ui.button("+").clicked() {
-                    self.source_font_size += 1;
-                }
-                self.source_font_size = self.source_font_size.clamp(
-                    crate::config::FONT_SIZE_SOURCE_MIN,
-                    crate::config::FONT_SIZE_SOURCE_MAX,
-                );
-                ui.separator();
-            });
+            if self.do_show_toolbar {
+                self.widget_text_editor_font_size_setup(&mut left_ui);
+                left_ui.add_space(widget::TINYSKIP);
+            }
 
+            // Text editor
             egui::ScrollArea::both()
                 .id_salt("source")
                 .auto_shrink(false)
@@ -76,11 +67,23 @@ impl App {
 
             // Draw right panel (canvas)
             let mut right_ui = ui.new_child(egui::UiBuilder::new().max_rect(right_rect));
+
+            // Right toolbar
+            if self.do_show_toolbar {
+                right_ui.horizontal(|ui| {
+                    ui.label("Color:");
+                });
+                right_ui.add_space(widget::TINYSKIP);
+            }
+
+            // Canvas
             egui::Frame::canvas(&right_ui.style())
                 .fill(crate::config::COLOR_CANVAS_BACKGROUND)
                 .show(&mut right_ui, |ui| {
                     self.gui_canvas(ui);
                 });
+
+            // --- --- --- --- --- ---
 
             // Modeless windows logic
             self.gui_window(&mut ui);

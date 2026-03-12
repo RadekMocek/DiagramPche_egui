@@ -45,7 +45,13 @@ impl App {
                 ui.menu_button("View", |ui| {
                     // . Grid .
                     ui.checkbox(&mut self.do_show_grid, "Grid");
+                    ui.separator();
+                    // . Canvas toolbar .
+                    ui.checkbox(&mut self.do_show_toolbar, "Canvas toolbar");
+                    // . Secondary canvas toolbar .
+                    ui.checkbox(&mut self.do_show_secondary_canvas_toolbar, "Secondary canvas toolbar");
                     // . Jump to canvas origin .
+                    ui.separator();
                     if ui.button("Jump to canvas origin").clicked() {
                         self.reset_canvas_scrolling_and_zoom();
                     }

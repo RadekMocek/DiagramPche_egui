@@ -33,6 +33,9 @@ pub struct App {
     pub canvas_nodes: HashMap<String, CanvasNode>, // Storing info about rendered nodes for references etc. to work
     pub draw_commands_ord: BinaryHeap<DrawCommandOrd>, // Commands for egui painter to do the drawing
     pub do_show_grid: bool,                            // Show canvas grid
+    // Toolbar
+    pub do_show_toolbar: bool,
+    pub do_show_secondary_canvas_toolbar: bool,
     // Non-main window
     pub do_open_modal_about: bool,  // Show the Help → About window
     pub do_open_modal_export: bool, // Show the File → Export to SVG window
@@ -74,6 +77,9 @@ impl Default for App {
             canvas_nodes: HashMap::new(),
             draw_commands_ord: BinaryHeap::new(),
             do_show_grid: true,
+            // Toolbar
+            do_show_toolbar: true,
+            do_show_secondary_canvas_toolbar: true,
             // Non-main window
             do_open_modal_about: false,
             do_open_modal_export: false,

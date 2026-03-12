@@ -80,11 +80,13 @@ impl App {
                         ActionAfterExport::DoNothing,
                         "Nothing",
                     );
+                    ui.add_space(widget::SMALLSKIP);
                     ui.radio_value(
                         &mut self.modal_export_action_choice,
                         ActionAfterExport::OpenFolder,
                         "Show in explorer",
                     );
+                    ui.add_space(widget::SMALLSKIP);
                     ui.radio_value(
                         &mut self.modal_export_action_choice,
                         ActionAfterExport::OpenFile,
