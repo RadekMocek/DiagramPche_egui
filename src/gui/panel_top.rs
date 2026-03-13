@@ -62,12 +62,12 @@ impl App {
                     }
                 });
                 // .: View :.
-                ui.menu_button("View", |ui| {
-                    // . Grid .
-                    ui.checkbox(&mut self.do_show_grid, "Grid");
+                ui.menu_button("View", |ui| {                    
+                    // . Toolbar .
+                    ui.checkbox(&mut self.do_show_toolbar, "Toolbar");
                     ui.separator();
-                    // . Canvas toolbar .
-                    ui.checkbox(&mut self.do_show_toolbar, "Canvas toolbar");
+                    // . Canvas grid .
+                    ui.checkbox(&mut self.do_show_grid, "Canvas grid");
                     // . Secondary canvas toolbar .
                     ui.checkbox(
                         &mut self.do_show_secondary_canvas_toolbar,

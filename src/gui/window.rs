@@ -66,7 +66,12 @@ impl App {
                         });
                     }
                     PreferencesTab::View => {
-                        ui.label("TODO");
+                        ui.checkbox(&mut self.do_show_toolbar, "Toolbar");
+                        ui.checkbox(&mut self.do_show_grid, "Canvas grid");
+                        ui.checkbox(
+                            &mut self.do_show_secondary_canvas_toolbar,
+                            "Secondary canvas toolbar",
+                        );
                     }
                 }
             });

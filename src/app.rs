@@ -22,6 +22,8 @@ pub struct App {
     pub error_span_line: u32, // On which line of source is the error (we have to compute this)
     pub error_span_column: u32, // At which column of the particular line does the error start (we have to compute this)
     pub error_span_length: u32, // How many chars from the error start should be highlighted (we have to compute this)
+    pub editor_cursor_line: usize, // Cursor position is shown in the toolbar
+    pub editor_cursor_column: usize,
     pub do_use_alt_editor: bool, // Wether to use 3rd party text editor widget
     pub alt_editor_config: AltEditorConfig,
     pub do_syntax_highlight: bool,
@@ -66,6 +68,8 @@ impl Default for App {
             error_span_line: 0,
             error_span_column: 0,
             error_span_length: 0,
+            editor_cursor_line: 0,
+            editor_cursor_column: 0,
             do_use_alt_editor: true,
             alt_editor_config: AltEditorConfig::default(),
             do_syntax_highlight: true,

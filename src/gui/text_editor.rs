@@ -1,4 +1,5 @@
 use crate::App;
+use egui::text_selection::CCursorRange;
 use egui::{Color32, FontFamily, FontId, Rect, Response, TextEdit, TextStyle, vec2};
 
 impl App {
@@ -23,15 +24,32 @@ impl App {
                 ui.fonts_mut(|f| f.layout_job(layout_job))
             };
 
-            // The text editor itself
-            let response = ui.add(
-                TextEdit::multiline(&mut self.source)
-                    .desired_width(f32::INFINITY)
-                    .code_editor()
-                    .layouter(&mut layouter),
-            );
+            let text_edit_id = ui.make_persistent_id("source_editor");
 
-            self.error_highlight(ui, &response);
+            // The text editor itself
+            let text_edit_output = TextEdit::multiline(&mut self.source)
+                .id(text_edit_id)
+                .desired_width(f32::INFINITY)
+                .code_editor()
+                .layouter(&mut layouter)
+                .show(ui);
+
+            self.error_highlight(ui, &text_edit_output.response);
+
+            self.update_cursor_position_info(&text_edit_output.cursor_range);
+
+            if ui.button("Test button :: Jump to char 20").clicked() {
+                // FOCUS
+                ui.ctx().memory_mut(|m| m.request_focus(text_edit_id));
+
+                // SET CURSOR POS
+                let mut state = TextEdit::load_state(ui.ctx(), text_edit_id).unwrap();
+                let cursor = egui::text::CCursor::new(20);
+                state.cursor.set_char_range(Some(CCursorRange::one(cursor)));
+                state.store(ui.ctx(), text_edit_id);
+
+                // TODO SCROLL TO CURSOR
+            }
         });
     }
 
@@ -60,6 +78,18 @@ impl App {
                 0,
                 crate::config::COLOR_ERROR_HIGHLIGHT,
             );
+        }
+    }
+
+    pub(super) fn update_cursor_position_info(&mut self, cursor_range: &Option<CCursorRange>) {
+        if let Some(cursor_range) = cursor_range {
+            let cursor_index = cursor_range.primary.index;
+            let text_before_cursor = &self.source[..cursor_index];
+            self.editor_cursor_line = text_before_cursor.chars().filter(|&c| c == '\n').count();
+            self.editor_cursor_column = text_before_cursor
+                .rfind('\n')
+                .map(|pos| cursor_index - pos - 1)
+                .unwrap_or(cursor_index);
         }
     }
 }

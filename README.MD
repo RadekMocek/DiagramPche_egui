@@ -13,9 +13,10 @@ This is part of a IMGUI paradigm research, [go back to main repo](https://github
   * [x] View → Jump to canvas origin
   * [ ] View → Toolbar
     * [x] Source: Allow changing font size of the text editor
+    * [x] Source: Show cursor position in the text editor
     * [ ] Canvas: Change color node with color picker
     * [ ] Canvas: Change node's type via Drop-down list
-    * [ ] __Vertikánlí zarovnání prvků v toolbaru zlobí__
+    * [ ] __Vertikální zarovnání prvků v toolbaru zlobí__
   * [ ] View → Secondary canvas toolbar
     * [ ] Drag'n'Drop new node, button for each node type
     * [ ] Zoom slider, right aligned
@@ -45,13 +46,13 @@ This is part of a IMGUI paradigm research, [go back to main repo](https://github
   * [x] Switch between vanilla and 3rd party text editor
   * [ ] Appearance: color theme
   * [ ] Option for forcing light canvas regardless of color theme
-  * [ ] Duplicate settings from app: view→grid/toolbar/toolbar2, text editor font size (so all things that can be set are at one place)
+  * [x] Duplicate settings from app: view→grid/toolbar/toolbar2, text editor font size (so all things that can be set are at one place)
 * Benchmark window:
   * [ ] Do?
 * Icons:
   * [x] Main menu bar → File items
-  * [ ] Toolbar → Drop-down list with node types
-  * [ ] Secondary canvas toolbar → Drag'n'Drop buttons
+  * [x] Toolbar → Drop-down list with node types
+  * [x] Secondary canvas toolbar → Drag'n'Drop buttons
 * TOML Parser:
   * [ ] Refactor TOML parsing: do not std::move into priority queue, use pq just for determining draw order and nothing more
 
@@ -73,6 +74,7 @@ cargo build --release
 * [open](https://github.com/Byron/open-rs) ([MIT](https://github.com/Byron/open-rs/blob/main/LICENSE.md))
 * [rfd](https://github.com/PolyMeilex/rfd) ([MIT](https://github.com/PolyMeilex/rfd/blob/master/LICENSE))
 * [showfile](https://github.com/jf2048/showfile) ([MIT](https://github.com/jf2048/showfile/blob/main/COPYING))
+* [egui_code_editor](https://github.com/p4ymak/egui_code_editor) ([MIT](https://github.com/p4ymak/egui_code_editor/blob/main/LICENSE))
 * [IconFontCppHeaders](https://github.com/juliettef/IconFontCppHeaders) ([zlib](https://github.com/juliettef/IconFontCppHeaders/blob/main/licence.txt))
 * [const_format](https://github.com/rodrimati1992/const_format_crates/) ([zlib](https://github.com/rodrimati1992/const_format_crates/blob/master/LICENSE-ZLIB.md))
 

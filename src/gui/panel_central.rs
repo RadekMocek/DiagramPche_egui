@@ -58,7 +58,16 @@ impl App {
 
             // Left toolbar
             if self.do_show_toolbar {
-                self.widget_text_editor_font_size_setup(&mut left_ui);
+                left_ui.horizontal(|mut ui| {
+                    ui.add_space(widget::TINYSKIP);
+                    self.widget_text_editor_font_size_setup(&mut ui);
+                    ui.separator();
+                    ui.label(format!(
+                        "Cursor pos: {}, {}",
+                        self.editor_cursor_line, self.editor_cursor_column
+                    ));
+                });
+
                 left_ui.add_space(widget::TINYSKIP);
             }
 
@@ -80,6 +89,7 @@ impl App {
             // Right toolbar
             if self.do_show_toolbar {
                 right_ui.horizontal(|ui| {
+                    ui.add_space(widget::TINYSKIP);
                     // .: Color picker :.
                     ui.label("Node color:");
                     ui.separator();

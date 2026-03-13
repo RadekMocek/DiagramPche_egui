@@ -1,7 +1,30 @@
 use crate::App;
 use crate::config::*;
 use crate::gui::modal::ActionAfterExport;
+use crate::helper::icon::*;
 use crate::logic::app_file::open_file;
+use crate::model::node_type::NodeType;
+use const_format::concatcp;
+use crate::gui::widget;
+
+const NODE_TYPES: [(&str, NodeType, &str); 4] = [
+    (
+        concatcp!(ICON_RECTANGLE_OUTLINE),
+        NodeType::Rectangle,
+        "rectangle",
+    ),
+    (
+        concatcp!(ICON_ELLIPSE_OUTLINE),
+        NodeType::Ellipse,
+        "elllipse",
+    ),
+    (
+        concatcp!(ICON_RHOMBUS_OUTLINE),
+        NodeType::Diamond,
+        "diamond",
+    ),
+    (concatcp!(ICON_FORMAT_TEXT_VARIANT), NodeType::Text, "text"),
+];
 
 impl App {
     pub(super) fn gui_canvas(&mut self, ui: &mut egui::Ui) -> egui::Response {
@@ -12,9 +35,9 @@ impl App {
         // Painter is our canvas
         let mut canvas_size = ui.available_size();
         if self.do_show_secondary_canvas_toolbar {
-            canvas_size.y -= CANVAS_SECONDARY_TOOLBAR_HEIGHT; // This does nothing?
+            canvas_size.y -= CANVAS_SECONDARY_TOOLBAR_HEIGHT;
         }
-        let (response, painter) = ui.allocate_painter(ui.available_size(), egui::Sense::drag());
+        let (response, painter) = ui.allocate_painter(canvas_size, egui::Sense::drag());
         let response_rect = response.rect;
 
         // .: User interaction :.
@@ -49,7 +72,7 @@ impl App {
             if let Some(scroll) = scroll {
                 let old_zoom = self.zoom_level;
 
-                self.set_canvas_font_size(
+                self.set_canvas_font_size_and_zoom(
                     self.canvas_font_size
                         .saturating_add_signed(scroll.y as i32 * FONT_SIZE_CANVAS_STEP as i32),
                 );
@@ -173,18 +196,38 @@ impl App {
 
         // .: Secondary canvas toolbar :.
         // .:==========================:.
+        if self.do_show_secondary_canvas_toolbar {
+            ui.horizontal(|ui| {
+                ui.add_space(widget::TINYSKIP);
+
+                for tup in NODE_TYPES {
+                    let _ = ui.button(tup.0);
+                    // TODO try tooltip
+                }
+
+                ui.with_layout(egui::Layout::right_to_left(egui::Align::Center), |ui| {
+                    ui.add(
+                        egui::Slider::new(&mut self.zoom_level, 0.5..=2.0)
+                            .suffix("x zoom")
+                            .max_decimals(1),
+                    );
+                });
+
+                ui.add_space(widget::TINYSKIP);
+            });
+        }
 
         // --- ---
         response
     }
 
-    pub fn set_canvas_font_size(&mut self, value: u32) {
-        self.canvas_font_size = value.clamp(FONT_SIZE_CANVAS_MIN, FONT_SIZE_CANVAS_MAX);
+    pub fn set_canvas_font_size_and_zoom(&mut self, new_font_size: u32) {
+        self.canvas_font_size = new_font_size.clamp(FONT_SIZE_CANVAS_MIN, FONT_SIZE_CANVAS_MAX);
         self.zoom_level = self.canvas_font_size as f32 / FONT_SIZE_CANVAS_BASE as f32;
     }
 
     pub fn reset_canvas_scrolling_and_zoom(&mut self) {
         self.scrolling = SCROLLING_DEFAULT;
-        self.set_canvas_font_size(FONT_SIZE_CANVAS_BASE);
+        self.set_canvas_font_size_and_zoom(FONT_SIZE_CANVAS_BASE);
     }
 }
