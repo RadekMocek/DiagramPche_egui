@@ -1,18 +1,25 @@
 use crate::model::pivot::Pivot;
-use egui::{pos2, Pos2, Vec2};
+use egui::{Pos2, Vec2, pos2};
 
 pub struct CanvasNode {
     top_left: Pos2,
     bottom_right: Pos2,
     center: Pos2,
+    // Another metric to determine node's z-value. This one is used while interacting with nodes through the canvas.
+    // If more nodes are on top of each other on the z-axis, we need to determine one, that will be chosen e.g. on click.
+    // Preferably the one that was drawn last in the imdrawlist channel with biggest layer.
+    // With this number, bigger means better ("closer" to the cursor). This uses the same logic as in the Dear ImGui project,
+    // but here we are creating draw commands in new pq, so, theoretically, this value might not correspond to the order in which the elements were drawn.
+    pub z_mul: i64,
 }
 
 impl CanvasNode {
-    pub fn new(top_left: Pos2, bottom_right: Pos2, center: Pos2) -> Self {
+    pub fn new(top_left: Pos2, bottom_right: Pos2, center: Pos2, z_mul: i64) -> Self {
         Self {
             top_left,
             bottom_right,
             center,
+            z_mul,
         }
     }
 

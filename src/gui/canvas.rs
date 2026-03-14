@@ -1,11 +1,11 @@
 use crate::App;
 use crate::config::*;
 use crate::gui::modal::ActionAfterExport;
+use crate::gui::widget;
 use crate::helper::icon::*;
 use crate::logic::app_file::open_file;
 use crate::model::node_type::NodeType;
 use const_format::concatcp;
-use crate::gui::widget;
 
 const NODE_TYPES: [(&str, NodeType, &str); 4] = [
     (
@@ -37,7 +37,7 @@ impl App {
         if self.do_show_secondary_canvas_toolbar {
             canvas_size.y -= CANVAS_SECONDARY_TOOLBAR_HEIGHT;
         }
-        let (response, painter) = ui.allocate_painter(canvas_size, egui::Sense::drag());
+        let (response, painter) = ui.allocate_painter(canvas_size, egui::Sense::click_and_drag());
         let response_rect = response.rect;
 
         // .: User interaction :.
@@ -169,11 +169,23 @@ impl App {
 
         // .: User AABR interaction :.
         // .:=======================:.
-        //TODO Z priority
-        self.selected_or_hovered_canvas_node_key = String::from("nothing");
+        let mut hovered_z_mul = -1;
+        let mut is_some_node_hovered = false;
+
+        self.selected_or_hovered_canvas_node_key = String::from("(no node hovered)");
         for (key, value) in &self.canvas_nodes {
-            if value.is_point_inside_incl(pointer_pos_in_canvas) {
+            if value.z_mul > hovered_z_mul && value.is_point_inside_incl(pointer_pos_in_canvas) {
+                hovered_z_mul = value.z_mul;
+                is_some_node_hovered = true;
                 self.selected_or_hovered_canvas_node_key = String::from(key);
+            }
+        }
+        // LMB to (de)select node
+        if response.clicked() {
+            if is_some_node_hovered {
+                self.is_canvas_node_selected = true;
+            } else {
+                self.is_canvas_node_selected = false;
             }
         }
 
@@ -184,15 +196,22 @@ impl App {
                 ui.add_space(widget::TINYSKIP);
 
                 for tup in NODE_TYPES {
-                    let _ = ui.button(tup.0).on_hover_text(format!("Drag and drop me onto the canvas to add a '{}' node.", tup.2));
+                    let _ = ui.button(tup.0).on_hover_text(format!(
+                        "Drag and drop me onto the canvas to add a '{}' node.",
+                        tup.2
+                    ));
                 }
 
                 ui.with_layout(egui::Layout::right_to_left(egui::Align::Center), |ui| {
-                    let response = ui.add(egui::Slider::new(&mut self.canvas_font_size, FONT_SIZE_CANVAS_MIN..=FONT_SIZE_CANVAS_MAX)
+                    let response = ui.add(
+                        egui::Slider::new(
+                            &mut self.canvas_font_size,
+                            FONT_SIZE_CANVAS_MIN..=FONT_SIZE_CANVAS_MAX,
+                        )
                         .integer()
-                        .step_by(FONT_SIZE_CANVAS_STEP as f64).custom_formatter(|_, _| {
-                        format!("Zoom level: {:.2}", self.zoom_level)
-                    }));
+                        .step_by(FONT_SIZE_CANVAS_STEP as f64)
+                        .custom_formatter(|_, _| format!("Zoom level: {:.2}", self.zoom_level)),
+                    );
 
                     if response.changed() {
                         self.update_canvas_zoom();

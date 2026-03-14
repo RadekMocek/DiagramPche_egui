@@ -54,7 +54,7 @@ This is part of a IMGUI paradigm research, [go back to main repo](https://github
   * [x] Toolbar → Drop-down list with node types
   * [x] Secondary canvas toolbar → Drag'n'Drop buttons
 * TOML Parser:
-  * [ ] Refactor TOML parsing: do not std::move into priority queue, use pq just for determining draw order and nothing more
+  * [x] Refactor TOML parsing: if we get parsing error, do not make the whole diagram disappear
 
 ## Building locally
 

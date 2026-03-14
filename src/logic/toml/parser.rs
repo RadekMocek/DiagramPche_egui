@@ -13,6 +13,7 @@ pub struct Parser {
     pub is_error: bool,
     pub error_message: String,
     pub error_span: Option<Range<usize>>,
+    batch_nums: HashMap<String, i32>,
     pub result_nodes: HashMap<String, Node>,
     pub result_order: BinaryHeap<(i32, String)>,
     pub result_paths: Vec<Path>,
@@ -26,6 +27,7 @@ impl Default for Parser {
             is_error: false,
             error_message: String::new(),
             error_span: None,
+            batch_nums: HashMap::new(),
             result_nodes: HashMap::new(),
             result_order: BinaryHeap::new(),
             result_paths: Vec::new(),
@@ -46,9 +48,8 @@ impl Parser {
                 .err()
                 .expect("toml_parsed_result is not Ok");
             self.report_error(err.message(), &err.span());
-            // By returning here, last valid TOML could be drawn.
-            // But priority queue has been popped empty, so, in current state, it cannot be drawn.
-            // This is true for nodes, paths will be still drawn thanks to this return.
+            // By returning here, and filling PQ with nodes from previous iteration, last valid TOML will be drawn (better than everything dissappearing).
+            self.update_pq();
             return;
         };
 
@@ -71,7 +72,9 @@ impl Parser {
 
         // .: Nodes :.
         // .:=======:.
-        // This map is used to store nodes while they are being parsed and then for checking node references (more info below).
+        // This map is used to store nodes while they are being parsed (key == node ID)
+        // and then for checking node references and updating their draw order (more info below).
+        // (After that, node IDs and their draw order is moved into priority queue, which is used by the canvas to draw Nodes in correct order.)
         self.result_nodes.clear();
 
         // Each node can have its coordinates defined absolutely (xy=[10,10]) or relatively (xy=["some_id","center",10,10]).
@@ -82,7 +85,7 @@ impl Parser {
 
         // For this to work, every node has to have some ID.
         // We have to tell the canvas which nodes must be drawn earlier and which later – for each node ID we will store its "batch number".
-        let mut batch_nums: HashMap<String, i32> = HashMap::new();
+        self.batch_nums.clear();
 
         // So we set parent's batch number to 0 and dependant's to 1? But how do we know that the parent node is not also dependant on some other node?
         // What if the parent node wasn't parsed yet? Or it does not exist? Or there is a circular dependency?
@@ -130,7 +133,7 @@ impl Parser {
                         }
 
                         // Initial batch_num is 0
-                        batch_nums.insert(curr_id.clone(), 0);
+                        self.batch_nums.insert(curr_id.clone(), 0);
 
                         // Empty parent means stable node; otherwise dependant node
                         if !curr_node.position.parent_id.is_empty() {
@@ -138,7 +141,8 @@ impl Parser {
                             // than that of the parent. (We'll be doing this later for every reference pair that does not undergo this optimization.)
                             let parent_id = &curr_node.position.parent_id;
                             if stable_nodes.contains(parent_id) {
-                                *batch_nums.get_mut(curr_id).unwrap() = batch_nums[parent_id] + 1;
+                                *self.batch_nums.get_mut(curr_id).unwrap() =
+                                    self.batch_nums[parent_id] + 1;
                                 stable_nodes.insert(curr_id.clone());
                             } else {
                                 refs.insert(curr_id.clone(), parent_id.clone());
@@ -174,7 +178,7 @@ impl Parser {
                 }
                 // Is p1 unstable and p2 stable? Update the batch_num and mark as stable.
                 if !stable_nodes.contains(dep_id) && stable_nodes.contains(ref_id) {
-                    *batch_nums.get_mut(dep_id).unwrap() = batch_nums[ref_id] + 1;
+                    *self.batch_nums.get_mut(dep_id).unwrap() = self.batch_nums[ref_id] + 1;
                     stable_nodes.insert(dep_id.clone());
                     did_anything_change = true;
                 }
@@ -193,12 +197,8 @@ impl Parser {
             self.report_error(&error_message, &None);
         }
 
-        // Sort the batch_nums: flip the pairs and put them in a priority queue; this is what canvas will use to prepare nodes in correct order
-        self.result_order.clear();
-        for (k, v) in batch_nums {
-            // Minus because it's max heap but we prioritize lower numbers
-            self.result_order.push((-v, k));
-        }
+        // Set up `self.result_order`
+        self.update_pq();
 
         // .: Paths :.
         // .:=======:.
@@ -215,10 +215,20 @@ impl Parser {
         }
     }
 
+    fn update_pq(&mut self) {
+        // Sort the batch_nums: flip the pairs and put them in a priority queue; this is what canvas will use to prepare nodes in correct order
+        self.result_order.clear();
+        for (k, v) in &self.batch_nums {
+            // Minus because it's max heap but we prioritize lower numbers
+            self.result_order.push((-v, k.clone()));
+        }
+    }
+
     pub(super) fn get_pivot_from_value(&mut self, value: &Value) -> Pivot {
         const DEFAULT_VALUE: Pivot = Pivot::TopLeft;
         const ERR_MSG_NOT_STRING: &str = "Pivot value must be specified by a string";
-        const ERR_MSG_WRONG_STRING: &str = "Allowed pivot values are: 'top-left', 'top', 'top-right', 'right', 'bottom-right', 'bottom', 'bottom-left', 'left', 'center'";
+        const ERR_MSG_WRONG_STRING: &str = "Allowed pivot values are:\
+        'top-left', 'top', 'top-right', 'right', 'bottom-right', 'bottom', 'bottom-left', 'left', 'center'";
 
         if let Some(value_str) = value.as_str() {
             if let Ok(result) = Pivot::from_str(value_str) {

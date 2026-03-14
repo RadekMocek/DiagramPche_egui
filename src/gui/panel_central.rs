@@ -1,6 +1,6 @@
+use crate::App;
 use crate::gui::widget;
 use crate::helper::icon::*;
-use crate::App;
 use const_format::concatcp;
 
 const NODE_TYPE_CHOICES: [&str; 4] = [
@@ -44,7 +44,7 @@ impl App {
             if separator_response.dragged() {
                 self.central_split_ratio = (self.central_split_ratio
                     + separator_response.drag_delta().x / available_space.width())
-                    .clamp(0.1, 0.9);
+                .clamp(0.1, 0.9);
             }
 
             // Change cursor when hovering separator
@@ -89,26 +89,28 @@ impl App {
             // Right toolbar
             if self.do_show_toolbar {
                 right_ui.horizontal(|ui| {
-                    ui.add_space(widget::TINYSKIP);
-                    // .: Color picker :.
-                    ui.label("Node color:");
-                    ui.separator();
+                    ui.add_enabled_ui(self.is_canvas_node_selected, |ui| {
+                        ui.add_space(widget::TINYSKIP);
+                        // .: Color picker :.
+                        ui.label("Node color:");
+                        ui.separator();
 
-                    // .: Node type combo :.
-                    // In different file:
-                    ui.label("Type:");
-                    let mut current_choice_idx = 0;
-                    egui::ComboBox::from_id_salt("NodeTypeCombo")
-                        .selected_text(format!("{}", NODE_TYPE_CHOICES[current_choice_idx]))
-                        .show_ui(ui, |ui| {
-                            for (i, node_type) in NODE_TYPE_CHOICES.iter().enumerate() {
-                                ui.selectable_value(&mut current_choice_idx, i, *node_type);
-                            }
-                        });
-                    ui.separator();
+                        // .: Node type combo :.
+                        // In different file:
+                        ui.label("Type:");
+                        let mut current_choice_idx = 0;
+                        egui::ComboBox::from_id_salt("NodeTypeCombo")
+                            .selected_text(format!("{}", NODE_TYPE_CHOICES[current_choice_idx]))
+                            .show_ui(ui, |ui| {
+                                for (i, node_type) in NODE_TYPE_CHOICES.iter().enumerate() {
+                                    ui.selectable_value(&mut current_choice_idx, i, *node_type);
+                                }
+                            });
+                        ui.separator();
 
-                    // .: Node ID label :.
-                    ui.label(format!("ID: {}", self.selected_or_hovered_canvas_node_key));
+                        // .: Node ID label :.
+                        ui.label(format!("ID: {}", self.selected_or_hovered_canvas_node_key));
+                    });
                 });
                 right_ui.add_space(widget::TINYSKIP);
             }

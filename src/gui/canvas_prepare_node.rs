@@ -1,5 +1,5 @@
 use crate::App;
-use crate::helper::draw_layer::{dl_user_channel_to_real_channel, DLPriority};
+use crate::helper::draw_layer::{DLPriority, dl_user_channel_to_real_channel};
 use crate::model::canvas_node::CanvasNode;
 use crate::model::draw_command::command::DrawCommandOrd;
 use crate::model::draw_command::node_diamond::NodeDiamondDrawCommand;
@@ -12,6 +12,9 @@ use egui::{Painter, Pos2, pos2, vec2};
 
 impl App {
     pub(super) fn gui_canvas_prepare_nodes(&mut self, painter: &Painter, origin: &Pos2) {
+        let n_nodes = self.parser.result_nodes.len() as i64;
+        let mut node_n = 0;
+
         let node_padding = crate::config::NODE_BORDER_OFFSET_BASE * self.zoom_level;
 
         while !self.parser.result_order.is_empty() {
@@ -82,8 +85,14 @@ impl App {
 
                 self.canvas_nodes.insert(
                     node.id.clone(),
-                    CanvasNode::new(aabr_top_left, aabr_bottom_right, aabr_center),
+                    CanvasNode::new(
+                        aabr_top_left,
+                        aabr_bottom_right,
+                        aabr_center,
+                        node.z * n_nodes + node_n,
+                    ),
                 );
+                node_n += 1;
 
                 // By adding origin (canvas position in window + scrolling) to AABR we get proper drawing coordinates
                 let draw_top_left = *origin + aabr_top_left.to_vec2();

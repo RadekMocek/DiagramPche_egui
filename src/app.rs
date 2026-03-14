@@ -35,6 +35,8 @@ pub struct App {
     pub canvas_nodes: HashMap<String, CanvasNode>, // Storing info about rendered nodes for references etc. to work
     pub draw_commands_ord: BinaryHeap<DrawCommandOrd>, // Commands for egui painter to do the drawing
     pub do_show_grid: bool,                            // Show canvas grid
+    // - primary canvas toolbar related
+    pub is_canvas_node_selected: bool,
     pub selected_or_hovered_canvas_node_key: String,
     // Toolbar
     pub do_show_toolbar: bool,
@@ -82,6 +84,8 @@ impl Default for App {
             canvas_nodes: HashMap::new(),
             draw_commands_ord: BinaryHeap::new(),
             do_show_grid: true,
+            // - primary canvas toolbar related
+            is_canvas_node_selected: false,
             selected_or_hovered_canvas_node_key: String::new(),
             // Toolbar
             do_show_toolbar: true,
