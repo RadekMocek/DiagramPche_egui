@@ -1,15 +1,8 @@
 use crate::App;
 use crate::gui::widget;
-use crate::helper::icon::*;
 use crate::model::color::get_rgba_hex_quoted_from_u8arr;
-use const_format::concatcp;
-
-const NODE_TYPE_CHOICES: [&str; 4] = [
-    concatcp!(ICON_RECTANGLE_OUTLINE, " Rectangle"),
-    concatcp!(ICON_ELLIPSE_OUTLINE, " Ellipse"),
-    concatcp!(ICON_RHOMBUS_OUTLINE, " Diamond"),
-    concatcp!(ICON_FORMAT_TEXT_VARIANT, " Text"),
-];
+use crate::model::node_type::NodeType::Rectangle;
+use crate::model::node_type::{NODE_TYPE_CHOICES, get_node_type_quoted_string_from_usize};
 
 impl App {
     pub fn gui_panel_central(&mut self, ctx: &egui::Context) {
@@ -92,6 +85,8 @@ impl App {
                 let node_span;
                 let mut color;
                 let color_span;
+                let node_type;
+                let node_type_span;
                 let label_value;
 
                 if self.is_canvas_node_selected
@@ -100,6 +95,8 @@ impl App {
                     node_span = &node.node_span;
                     color = node.color.to_picker_arr();
                     color_span = &node.color_span;
+                    node_type = &node.node_type;
+                    node_type_span = &node.type_span;
                     label_value = &self.selected_canvas_node_key;
                 } else {
                     if let Some(hover_key) = &self.selected_or_hovered_canvas_node_key
@@ -107,12 +104,15 @@ impl App {
                     {
                         label_value = &node.id;
                         color = node.color.to_picker_arr();
+                        node_type = &node.node_type;
                     } else {
                         label_value = &self.no_node_hovered_string;
                         color = [240, 240, 240, 255];
+                        node_type = &Rectangle;
                     }
                     node_span = &None;
                     color_span = &None;
+                    node_type_span = &None;
                 }
 
                 right_ui.horizontal(|ui| {
@@ -139,9 +139,9 @@ impl App {
                         ui.separator();
 
                         // .: Node type combo :.
-                        // In different file:
                         ui.label("Type:");
-                        let mut current_choice_idx = 0;
+                        let previous_choice_idx = node_type.as_usize();
+                        let mut current_choice_idx = previous_choice_idx;
                         egui::ComboBox::from_id_salt("NodeTypeCombo")
                             .selected_text(NODE_TYPE_CHOICES[current_choice_idx])
                             .show_ui(ui, |ui| {
@@ -149,6 +149,20 @@ impl App {
                                     ui.selectable_value(&mut current_choice_idx, i, *node_type);
                                 }
                             });
+
+                        if previous_choice_idx != current_choice_idx {
+                            let type_string =
+                                get_node_type_quoted_string_from_usize(current_choice_idx);
+
+                            if let Some(node_type_span) = node_type_span {
+                                self.source
+                                    .replace_range(node_type_span.clone(), &type_string);
+                            } else if let Some(node_span) = node_span {
+                                self.source
+                                    .insert_str(node_span.end, &format!("\ntype = {type_string}"));
+                            }
+                        }
+
                         ui.separator();
 
                         // .: Node ID label :.

@@ -86,6 +86,7 @@ impl Parser {
                     if let Some(item_str) = item.as_str() {
                         if let Ok(result) = NodeType::from_str(item_str) {
                             curr_node.node_type = result;
+                            curr_node.type_span = item.span();
                         } else {
                             self.report_error(ERR_MSG_WRONG_STRING, &item.span());
                         }

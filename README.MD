@@ -15,8 +15,7 @@ This is part of a IMGUI paradigm research, [go back to main repo](https://github
     * [x] Source: Allow changing font size of the text editor
     * [x] Source: Show cursor position in the text editor
     * [x] Canvas: Change color node with color picker (add the parameter if it's missing in source; be aware that color def can be multiple lines if array)
-    * [ ] Canvas: Change node's type via Drop-down list (add the parameter if it's missing in source)
-    * [ ] __Vertikální zarovnání prvků v toolbaru zlobí__
+    * [x] Canvas: Change node's type via Drop-down list (add the parameter if it's missing in source)
   * [ ] View → Secondary canvas toolbar
     * [ ] Drag'n'Drop new node, button for each node type
     * [x] Zoom slider, right aligned
@@ -89,3 +88,4 @@ cargo build --release
 * TextInput SingleLine: no equivalent to Dear ImGui's _ElideLeft_ flag
 * Canvas zooming on touchpad acts strange
 * I don't know how to scroll textedit to certain line or cursor, [I am not the only one](https://github.com/emilk/egui/discussions/4176)
+* <https://github.com/emilk/egui/issues/7412>

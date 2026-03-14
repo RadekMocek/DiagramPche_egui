@@ -2,29 +2,8 @@ use crate::App;
 use crate::config::*;
 use crate::gui::modal::ActionAfterExport;
 use crate::gui::widget;
-use crate::helper::icon::*;
 use crate::logic::app_file::open_file;
-use crate::model::node_type::NodeType;
-use const_format::concatcp;
-
-const NODE_TYPES: [(&str, NodeType, &str); 4] = [
-    (
-        concatcp!(ICON_RECTANGLE_OUTLINE),
-        NodeType::Rectangle,
-        "rectangle",
-    ),
-    (
-        concatcp!(ICON_ELLIPSE_OUTLINE),
-        NodeType::Ellipse,
-        "elllipse",
-    ),
-    (
-        concatcp!(ICON_RHOMBUS_OUTLINE),
-        NodeType::Diamond,
-        "diamond",
-    ),
-    (concatcp!(ICON_FORMAT_TEXT_VARIANT), NodeType::Text, "text"),
-];
+use crate::model::node_type::NODE_TYPES;
 
 impl App {
     pub(super) fn gui_canvas(&mut self, ui: &mut egui::Ui) -> egui::Response {

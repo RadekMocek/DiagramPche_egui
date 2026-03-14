@@ -41,6 +41,7 @@ pub struct Node {
     // = Canvas interaction =
     pub node_span: Option<Range<usize>>,
     pub color_span: Option<Range<usize>>,
+    pub type_span: Option<Range<usize>>,
 }
 
 impl Default for Node {
@@ -81,6 +82,7 @@ impl Default for Node {
             // = Canvas interaction =
             node_span: None,
             color_span: None,
+            type_span: None,
         }
     }
 }
