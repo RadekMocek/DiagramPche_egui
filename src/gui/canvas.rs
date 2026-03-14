@@ -170,21 +170,19 @@ impl App {
         // .: User AABR interaction :.
         // .:=======================:.
         let mut hovered_z_mul = -1;
-        let mut is_some_node_hovered = false;
 
-        self.selected_or_hovered_canvas_node_key = String::from("(no node hovered)");
+        self.selected_or_hovered_canvas_node_key = None;
         for (key, value) in &self.canvas_nodes {
             if value.z_mul > hovered_z_mul && value.is_point_inside_incl(pointer_pos_in_canvas) {
                 hovered_z_mul = value.z_mul;
-                is_some_node_hovered = true;
-                self.selected_or_hovered_canvas_node_key = String::from(key);
+                self.selected_or_hovered_canvas_node_key = Some(String::from(key));
             }
         }
         // LMB to (de)select node
         if response.clicked() {
-            if is_some_node_hovered {
+            if let Some(hover_key) = &self.selected_or_hovered_canvas_node_key {
                 self.is_canvas_node_selected = true;
-                self.selected_canvas_node_key = self.selected_or_hovered_canvas_node_key.clone();
+                self.selected_canvas_node_key = hover_key.clone();
             } else {
                 self.is_canvas_node_selected = false;
             }

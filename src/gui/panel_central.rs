@@ -102,10 +102,17 @@ impl App {
                     color_span = &node.color_span;
                     label_value = &self.selected_canvas_node_key;
                 } else {
+                    if let Some(hover_key) = &self.selected_or_hovered_canvas_node_key
+                        && let Some(node) = self.parser.result_nodes.get(hover_key)
+                    {
+                        label_value = &node.id;
+                        color = node.color.to_picker_arr();
+                    } else {
+                        label_value = &self.no_node_hovered_string;
+                        color = [240, 240, 240, 255];
+                    }
                     node_span = &None;
-                    color = [240, 240, 240, 255];
                     color_span = &None;
-                    label_value = &self.selected_or_hovered_canvas_node_key;
                 }
 
                 right_ui.horizontal(|ui| {

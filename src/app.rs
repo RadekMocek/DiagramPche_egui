@@ -36,8 +36,8 @@ pub struct App {
     pub draw_commands_ord: BinaryHeap<DrawCommandOrd>, // Commands for egui painter to do the drawing
     pub do_show_grid: bool,                            // Show canvas grid
     // - primary canvas toolbar related
+    pub selected_or_hovered_canvas_node_key: Option<String>,
     pub is_canvas_node_selected: bool,
-    pub selected_or_hovered_canvas_node_key: String,
     pub selected_canvas_node_key: String,
     // Toolbar
     pub do_show_toolbar: bool,
@@ -58,6 +58,8 @@ pub struct App {
     // Modeless windows
     pub do_show_window_preferences: bool,
     pub window_preferences_selected_tab: PreferencesTab,
+    // Misc
+    pub no_node_hovered_string: String,
 }
 
 impl Default for App {
@@ -86,8 +88,8 @@ impl Default for App {
             draw_commands_ord: BinaryHeap::new(),
             do_show_grid: true,
             // - primary canvas toolbar related
+            selected_or_hovered_canvas_node_key: None,
             is_canvas_node_selected: false,
-            selected_or_hovered_canvas_node_key: String::new(),
             selected_canvas_node_key: String::new(),
             // Toolbar
             do_show_toolbar: true,
@@ -109,6 +111,8 @@ impl Default for App {
             // - preferences
             do_show_window_preferences: false,
             window_preferences_selected_tab: PreferencesTab::Appearance,
+            // Misc
+            no_node_hovered_string: String::from("(No node hovered)"),
         }
     }
 }
