@@ -30,7 +30,10 @@ impl Parser {
                     }
                 }
                 // == color ==
-                "color" => self.set_color_from_array_or_string(item, &mut curr_node.color),
+                "color" => {
+                    self.set_color_from_array_or_string(item, &mut curr_node.color);
+                    curr_node.color_span = item.span();
+                }
                 // == color border ==
                 "color_border" => {
                     self.set_color_from_array_or_string(item, &mut curr_node.color_border)

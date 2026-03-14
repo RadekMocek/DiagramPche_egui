@@ -38,6 +38,7 @@ pub struct App {
     // - primary canvas toolbar related
     pub is_canvas_node_selected: bool,
     pub selected_or_hovered_canvas_node_key: String,
+    pub selected_canvas_node_key: String,
     // Toolbar
     pub do_show_toolbar: bool,
     pub do_show_secondary_canvas_toolbar: bool,
@@ -87,6 +88,7 @@ impl Default for App {
             // - primary canvas toolbar related
             is_canvas_node_selected: false,
             selected_or_hovered_canvas_node_key: String::new(),
+            selected_canvas_node_key: String::new(),
             // Toolbar
             do_show_toolbar: true,
             do_show_secondary_canvas_toolbar: true,

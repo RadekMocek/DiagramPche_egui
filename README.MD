@@ -14,8 +14,8 @@ This is part of a IMGUI paradigm research, [go back to main repo](https://github
   * [ ] View → Toolbar
     * [x] Source: Allow changing font size of the text editor
     * [x] Source: Show cursor position in the text editor
-    * [ ] Canvas: Change color node with color picker
-    * [ ] Canvas: Change node's type via Drop-down list
+    * [x] Canvas: Change color node with color picker (add the parameter if it's missing in source; be aware that color def can be multiple lines if array)
+    * [ ] Canvas: Change node's type via Drop-down list (add the parameter if it's missing in source)
     * [ ] __Vertikální zarovnání prvků v toolbaru zlobí__
   * [ ] View → Secondary canvas toolbar
     * [ ] Drag'n'Drop new node, button for each node type

@@ -3,6 +3,7 @@ use crate::model::color::Color;
 use crate::model::node_type::NodeType;
 use crate::model::pivot::Pivot;
 use crate::model::point::Point;
+use std::ops::Range;
 
 pub struct Node {
     // = ID =
@@ -36,6 +37,10 @@ pub struct Node {
 
     // = Type =
     pub node_type: NodeType,
+
+    // = Canvas interaction =
+    pub node_span: Option<Range<usize>>,
+    pub color_span: Option<Range<usize>>,
 }
 
 impl Default for Node {
@@ -72,6 +77,10 @@ impl Default for Node {
 
             // = Type =
             node_type: NodeType::Rectangle,
+
+            // = Canvas interaction =
+            node_span: None,
+            color_span: None,
         }
     }
 }

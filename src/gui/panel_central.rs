@@ -1,6 +1,7 @@
 use crate::App;
 use crate::gui::widget;
 use crate::helper::icon::*;
+use crate::model::color::get_rgba_hex_quoted_from_u8arr;
 use const_format::concatcp;
 
 const NODE_TYPE_CHOICES: [&str; 4] = [
@@ -88,11 +89,46 @@ impl App {
 
             // Right toolbar
             if self.do_show_toolbar {
+                let node_span;
+                let mut color;
+                let color_span;
+                let label_value;
+
+                if self.is_canvas_node_selected
+                    && let Some(node) = self.parser.result_nodes.get(&self.selected_canvas_node_key)
+                {
+                    node_span = &node.node_span;
+                    color = node.color.to_picker_arr();
+                    color_span = &node.color_span;
+                    label_value = &self.selected_canvas_node_key;
+                } else {
+                    node_span = &None;
+                    color = [240, 240, 240, 255];
+                    color_span = &None;
+                    label_value = &self.selected_or_hovered_canvas_node_key;
+                }
+
                 right_ui.horizontal(|ui| {
                     ui.add_enabled_ui(self.is_canvas_node_selected, |ui| {
                         ui.add_space(widget::TINYSKIP);
                         // .: Color picker :.
                         ui.label("Node color:");
+
+                        let color_response = ui.color_edit_button_srgba_unmultiplied(&mut color);
+                        if color_response.changed() {
+                            if let Some(color_span) = color_span {
+                                self.source.replace_range(
+                                    color_span.clone(),
+                                    &get_rgba_hex_quoted_from_u8arr(color),
+                                );
+                            } else if let Some(node_span) = node_span {
+                                self.source.insert_str(
+                                    node_span.end,
+                                    &format!("\ncolor = {}", get_rgba_hex_quoted_from_u8arr(color)),
+                                );
+                            }
+                        }
+
                         ui.separator();
 
                         // .: Node type combo :.
@@ -100,7 +136,7 @@ impl App {
                         ui.label("Type:");
                         let mut current_choice_idx = 0;
                         egui::ComboBox::from_id_salt("NodeTypeCombo")
-                            .selected_text(format!("{}", NODE_TYPE_CHOICES[current_choice_idx]))
+                            .selected_text(NODE_TYPE_CHOICES[current_choice_idx])
                             .show_ui(ui, |ui| {
                                 for (i, node_type) in NODE_TYPE_CHOICES.iter().enumerate() {
                                     ui.selectable_value(&mut current_choice_idx, i, *node_type);
@@ -109,7 +145,7 @@ impl App {
                         ui.separator();
 
                         // .: Node ID label :.
-                        ui.label(format!("ID: {}", self.selected_or_hovered_canvas_node_key));
+                        ui.label(format!("ID: {}", label_value));
                     });
                 });
                 right_ui.add_space(widget::TINYSKIP);

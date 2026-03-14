@@ -113,11 +113,12 @@ impl Parser {
                         // Currently processed Node
                         let mut curr_node = Node::default();
                         curr_node.id = String::from(node_key);
+                        curr_node.node_span = node_value_table.span();
 
                         // Parse `node_value_table` data and set `curr_node` members; or set error message
                         self.parse_node(&node_value_table, &mut curr_node);
 
-                        let curr_id = &curr_node.id; // Just to make the name shorter :)
+                        let curr_id = &curr_node.id; // Just to make the following code shorter :)
 
                         // Check if the node is not referencing itself
                         if *curr_id == curr_node.position.parent_id {

@@ -63,6 +63,10 @@ type = "text"
 xy=[300, 0]
 color_border = "#FF0000FF"
 label_shift = [-50, -50]
+color=[0,
+0,
+0,
+255]
 
 [node.testm]
 xy = [-250, -250]

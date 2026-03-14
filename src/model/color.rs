@@ -18,4 +18,15 @@ impl Color {
     pub fn to_egui_color(&self) -> egui::Color32 {
         egui::Color32::from_rgba_unmultiplied_const(self.0, self.1, self.2, self.3)
     }
+
+    pub fn to_picker_arr(&self) -> [u8; 4] {
+        [self.0, self.1, self.2, self.3]
+    }
+}
+
+pub fn get_rgba_hex_quoted_from_u8arr(arr: [u8; 4]) -> String {
+    format!(
+        "\"#{:02X?}{:02X?}{:02X?}{:02X?}\"",
+        arr[0], arr[1], arr[2], arr[3]
+    )
 }

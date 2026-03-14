@@ -184,6 +184,7 @@ impl App {
         if response.clicked() {
             if is_some_node_hovered {
                 self.is_canvas_node_selected = true;
+                self.selected_canvas_node_key = self.selected_or_hovered_canvas_node_key.clone();
             } else {
                 self.is_canvas_node_selected = false;
             }
