@@ -1,6 +1,6 @@
 use crate::App;
 use egui::text_selection::CCursorRange;
-use egui::{Color32, FontFamily, FontId, Rect, Response, TextEdit, TextStyle, vec2};
+use egui::{vec2, Color32, FontFamily, FontId, Rect, Response, TextEdit, TextStyle};
 
 impl App {
     pub(super) fn gui_text_editor(&mut self, ui: &mut egui::Ui) {
@@ -24,48 +24,23 @@ impl App {
                 ui.fonts_mut(|f| f.layout_job(layout_job))
             };
 
-            let text_edit_id = ui.make_persistent_id("source_editor");
-
             // The text editor itself
             let text_edit_output = TextEdit::multiline(&mut self.source)
-                .id(text_edit_id)
                 .desired_width(f32::INFINITY)
                 .code_editor()
                 .layouter(&mut layouter)
                 .show(ui);
 
-            self.error_highlight(ui, &text_edit_output.response);
+            self.textedit_error_highlight(ui, &text_edit_output.response);
 
-            self.update_cursor_position_info(&text_edit_output.cursor_range);
-
-            if ui.button("Test button :: Jump to char 20").clicked() {
-                // FOCUS
-                ui.ctx().memory_mut(|m| m.request_focus(text_edit_id));
-
-                // SET CURSOR POS
-                let mut state = TextEdit::load_state(ui.ctx(), text_edit_id).unwrap();
-                let cursor = egui::text::CCursor::new(20);
-                state.cursor.set_char_range(Some(CCursorRange::one(cursor)));
-                state.store(ui.ctx(), text_edit_id);
-
-                // TODO SCROLL TO CURSOR
-            }
+            self.textedit_update_cursor_position_info(&text_edit_output.cursor_range);
         });
     }
 
-    pub(super) fn error_highlight(&self, ui: &mut egui::Ui, response: &Response) {
+    pub(super) fn textedit_error_highlight(&self, ui: &mut egui::Ui, response: &Response) {
         // Error highlight logic, ("eh" == error highlight)
         if self.is_error_span_some {
-            let char_size = ui
-                .painter()
-                .layout_no_wrap(
-                    String::from("A"),
-                    FontId::new(self.source_font_size as f32, FontFamily::Monospace),
-                    Color32::PLACEHOLDER,
-                )
-                .rect
-                .size();
-
+            let char_size = self.textedit_get_char_size(&ui);
             let text_edit_origin = response.rect.min;
             let eh_top = char_size.y * self.error_span_line as f32;
             let eh_left = char_size.x * self.error_span_column as f32;
@@ -81,7 +56,7 @@ impl App {
         }
     }
 
-    pub(super) fn update_cursor_position_info(&mut self, cursor_range: &Option<CCursorRange>) {
+    pub(super) fn textedit_update_cursor_position_info(&mut self, cursor_range: &Option<CCursorRange>) {
         if let Some(cursor_range) = cursor_range {
             let cursor_index = cursor_range.primary.index;
             let text_before_cursor = &self.source[..cursor_index];
@@ -91,5 +66,28 @@ impl App {
                 .map(|pos| cursor_index - pos - 1)
                 .unwrap_or(cursor_index);
         }
+    }
+
+    fn textedit_get_char_size(&self, ui: &egui::Ui) -> egui::Vec2 {
+        ui.painter().layout_no_wrap(
+            String::from("A"),
+            FontId::new(self.source_font_size as f32, FontFamily::Monospace),
+            Color32::PLACEHOLDER,
+        ).rect.size()
+    }
+
+    #[allow(dead_code)]
+    fn textedit_jump_to_position(ui: &egui::Ui, textedit_id: egui::Id, index: usize) {
+        // FOCUS
+        ui.ctx().memory_mut(|m| m.request_focus(textedit_id));
+
+        // SET CURSOR POS
+        let mut state = TextEdit::load_state(ui.ctx(), textedit_id).unwrap();
+        let cursor = egui::text::CCursor::new(index);
+        state.cursor.set_char_range(Some(CCursorRange::one(cursor)));
+        state.store(ui.ctx(), textedit_id);
+
+        // SCROLL
+        // ???
     }
 }

@@ -51,7 +51,7 @@ impl App {
         // Origin ([0,0]) of the canvas in screen space coordinates, which painter uses
         let mut origin = response_rect.min + self.scrolling.to_vec2();
 
-        let /*mut*/ pointer_pos_in_canvas = if let Some(pointer_pos) = response.hover_pos() {
+        let mut pointer_pos_in_canvas = if let Some(pointer_pos) = response.hover_pos() {
             pointer_pos - origin
         } else {
             egui::Vec2::default()
@@ -83,11 +83,9 @@ impl App {
                     self.scrolling += pointer_pos_in_canvas * (1.0 - ratio);
                     // Scrolling has been changed, we have to update origin and pointer_pos for later use
                     origin = response_rect.min + self.scrolling.to_vec2();
-                    /*
                     if let Some(pointer_pos) = response.hover_pos() {
                         pointer_pos_in_canvas = pointer_pos - origin;
                     }
-                    */
                 }
             }
         }
@@ -171,28 +169,13 @@ impl App {
 
         // .: User AABR interaction :.
         // .:=======================:.
-        // NOT IDEAL
-        /*
-        if let Some(pointer_pos) = response.interact_pointer_pos() {
-            let pointer_pos_in_canvas = pointer_pos - origin;
-
-            // Show tooltip with Node ID on hover
-            let mut tooltip = String::new();
-            let mut is_first_id = true;
-            for (key, value) in &self.canvas_nodes {
-                if value.is_point_inside_incl(pointer_pos_in_canvas) {
-                    if !is_first_id {
-                        tooltip.push_str(", ");
-                    }
-                    tooltip.push_str(key);
-                    is_first_id = false;
-                }
-            }
-            if !tooltip.is_empty() {
-                response.show_tooltip_text(tooltip);
+        //TODO Z priority
+        self.selected_or_hovered_canvas_node_key = String::from("nothing");
+        for (key, value) in &self.canvas_nodes {
+            if value.is_point_inside_incl(pointer_pos_in_canvas) {
+                self.selected_or_hovered_canvas_node_key = String::from(key);
             }
         }
-        */
 
         // .: Secondary canvas toolbar :.
         // .:==========================:.
@@ -201,16 +184,19 @@ impl App {
                 ui.add_space(widget::TINYSKIP);
 
                 for tup in NODE_TYPES {
-                    let _ = ui.button(tup.0);
-                    // TODO try tooltip
+                    let _ = ui.button(tup.0).on_hover_text(format!("Drag and drop me onto the canvas to add a '{}' node.", tup.2));
                 }
 
                 ui.with_layout(egui::Layout::right_to_left(egui::Align::Center), |ui| {
-                    ui.add(
-                        egui::Slider::new(&mut self.zoom_level, 0.5..=2.0)
-                            .suffix("x zoom")
-                            .max_decimals(1),
-                    );
+                    let response = ui.add(egui::Slider::new(&mut self.canvas_font_size, FONT_SIZE_CANVAS_MIN..=FONT_SIZE_CANVAS_MAX)
+                        .integer()
+                        .step_by(FONT_SIZE_CANVAS_STEP as f64).custom_formatter(|_, _| {
+                        format!("Zoom level: {:.2}", self.zoom_level)
+                    }));
+
+                    if response.changed() {
+                        self.update_canvas_zoom();
+                    }
                 });
 
                 ui.add_space(widget::TINYSKIP);
@@ -223,6 +209,10 @@ impl App {
 
     pub fn set_canvas_font_size_and_zoom(&mut self, new_font_size: u32) {
         self.canvas_font_size = new_font_size.clamp(FONT_SIZE_CANVAS_MIN, FONT_SIZE_CANVAS_MAX);
+        self.update_canvas_zoom();
+    }
+
+    fn update_canvas_zoom(&mut self) {
         self.zoom_level = self.canvas_font_size as f32 / FONT_SIZE_CANVAS_BASE as f32;
     }
 

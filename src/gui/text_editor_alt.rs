@@ -14,9 +14,9 @@ impl App {
             .with_numlines(false)
             .show_with_completer(ui, &mut self.source, &mut self.alt_editor_config.completer);
 
-        self.error_highlight(ui, &text_edit_output.response);
+        self.textedit_error_highlight(ui, &text_edit_output.response);
 
-        self.update_cursor_position_info(&text_edit_output.cursor_range);
+        self.textedit_update_cursor_position_info(&text_edit_output.cursor_range);
     }
 }
 

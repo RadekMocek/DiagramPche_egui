@@ -19,7 +19,7 @@ This is part of a IMGUI paradigm research, [go back to main repo](https://github
     * [ ] __Vertikální zarovnání prvků v toolbaru zlobí__
   * [ ] View → Secondary canvas toolbar
     * [ ] Drag'n'Drop new node, button for each node type
-    * [ ] Zoom slider, right aligned
+    * [x] Zoom slider, right aligned
   * Saving/loading:
     * [ ] New, Open, Save, Save as
     * [ ] Confirm unsaved exit (OS close button, alt+f4, mainmenubar option)
@@ -86,5 +86,6 @@ cargo build --release
 ## Problems
 
 * Error highlight breaks on tab
-* TextInput SingleLine: no equivalent to Dear ImGui's _ElideLeft_ flag (?)
-* Canvas zooming on touchpad not ideal
+* TextInput SingleLine: no equivalent to Dear ImGui's _ElideLeft_ flag
+* Canvas zooming on touchpad acts strange
+* I don't know how to scroll textedit to certain line or cursor, [I am not the only one](https://github.com/emilk/egui/discussions/4176)
