@@ -1,7 +1,7 @@
 use crate::App;
 use crate::gui::widget;
 use crate::model::color::get_rgba_hex_quoted_from_u8arr;
-use crate::model::node_type::NodeType::Rectangle;
+use crate::model::node_type::NodeType;
 use crate::model::node_type::{NODE_TYPE_CHOICES, get_node_type_quoted_string_from_usize};
 
 impl App {
@@ -108,7 +108,7 @@ impl App {
                     } else {
                         label_value = &self.no_node_hovered_string;
                         color = [240, 240, 240, 255];
-                        node_type = &Rectangle;
+                        node_type = &NodeType::Rectangle;
                     }
                     node_span = &None;
                     color_span = &None;

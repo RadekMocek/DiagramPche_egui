@@ -148,8 +148,36 @@ impl App {
 
         // .: User AABR interaction :.
         // .:=======================:.
-        let mut hovered_z_mul = -1;
 
+        // == Drag n drop new node logic ==
+        if self.is_dragndropping_node {
+            let pointer_pos = if let Some(pointer_pos) = ui.input(|i| i.pointer.latest_pos()) {
+                pointer_pos
+            } else {
+                egui::Pos2::default()
+            };
+
+            let label = format!("node_{}", self.canvas_nodes.len());
+            let offset = self.gui_canvas_draw_ghost_node(&painter, &label, pointer_pos);
+
+            if ui.input(|i| i.pointer.button_released(egui::PointerButton::Primary)) {
+                self.is_dragndropping_node = false;
+                if response.rect.contains(pointer_pos) {
+                    let node_x = ((pointer_pos_in_canvas.x - offset.x) / self.zoom_level) as i64;
+                    let node_y = ((pointer_pos_in_canvas.y - offset.y) / self.zoom_level) as i64;
+                    self.source += &format!(
+                        "\n[node.{}]\ntype = {}\nxy = [{}, {}]\n",
+                        label,
+                        self.dragndropping_node_type.as_quoted_string(),
+                        node_x,
+                        node_y
+                    );
+                }
+            }
+        }
+
+        // == Clicking on nodes in canvas ==
+        let mut hovered_z_mul = -1;
         self.selected_or_hovered_canvas_node_key = None;
         for (key, value) in &self.canvas_nodes {
             if value.z_mul > hovered_z_mul && value.is_point_inside_incl(pointer_pos_in_canvas) {
@@ -173,13 +201,20 @@ impl App {
             ui.horizontal(|ui| {
                 ui.add_space(widget::TINYSKIP);
 
+                // == Add node buttons ==
                 for tup in NODE_TYPES {
-                    let _ = ui.button(tup.0).on_hover_text(format!(
+                    let response = ui.button(tup.0).on_hover_text(format!(
                         "Drag and drop me onto the canvas to add a '{}' node.",
                         tup.2
                     ));
+
+                    if !self.is_dragndropping_node && response.is_pointer_button_down_on() {
+                        self.dragndropping_node_type = tup.1;
+                        self.is_dragndropping_node = true;
+                    }
                 }
 
+                // == Zoom level slider ==
                 ui.with_layout(egui::Layout::right_to_left(egui::Align::Center), |ui| {
                     let response = ui.add(
                         egui::Slider::new(

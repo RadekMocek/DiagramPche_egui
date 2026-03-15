@@ -11,13 +11,13 @@ This is part of a IMGUI paradigm research, [go back to main repo](https://github
 
 * General:
   * [x] View → Jump to canvas origin
-  * [ ] View → Toolbar
+  * [x] View → Toolbar
     * [x] Source: Allow changing font size of the text editor
     * [x] Source: Show cursor position in the text editor
     * [x] Canvas: Change color node with color picker (add the parameter if it's missing in source; be aware that color def can be multiple lines if array)
     * [x] Canvas: Change node's type via Drop-down list (add the parameter if it's missing in source)
-  * [ ] View → Secondary canvas toolbar
-    * [ ] Drag'n'Drop new node, button for each node type
+  * [x] View → Secondary canvas toolbar
+    * [x] Drag'n'Drop new node, button for each node type (beware the canvas scroll and zoom)
     * [x] Zoom slider, right aligned
   * Saving/loading:
     * [ ] New, Open, Save, Save as

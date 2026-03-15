@@ -32,6 +32,10 @@ impl NodeType {
             NodeType::Text => 3,
         }
     }
+
+    pub fn as_quoted_string(&self) -> String {
+        get_node_type_quoted_string_from_usize(self.as_usize())
+    }
 }
 
 pub fn get_node_type_quoted_string_from_usize(num: usize) -> String {

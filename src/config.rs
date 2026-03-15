@@ -19,6 +19,9 @@ pub const ZOOM_LEVEL_DEFAULT: f32 = 1.0;
 pub const GRID_STEP_BASE: f32 = 100.0;
 pub const COLOR_GRID_LINE: Color32 = Color32::from_rgba_unmultiplied_const(200, 200, 200, 40);
 
+pub const COLOR_GHOST_EDGE: Color32 = Color32::from_rgba_unmultiplied_const(0, 0, 0, 128);
+pub const COLOR_GHOST_FILL: Color32 = Color32::from_rgba_unmultiplied_const(255, 255, 255, 128);
+
 pub const FONT_SIZE_CANVAS_BASE: u32 = 18;
 pub const FONT_SIZE_CANVAS_STEP: u32 = 4;
 pub const FONT_SIZE_CANVAS_MIN: u32 = 6;
@@ -29,6 +32,7 @@ pub const NODE_BORDER_OFFSET_BASE: f32 = 18.0;
 pub const TIP_ARROW_LENGTH: f32 = 12.0;
 pub const TIP_ARROW_SPAN: f32 = 4.0;
 
+//
 pub const WELCOME_TOML: &str = r##"[variables]
 node_offset = 14
 path_offset = 40

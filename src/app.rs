@@ -5,6 +5,7 @@ use crate::logic::svg_exporter::Exporter;
 use crate::logic::toml::parser::Parser;
 use crate::model::canvas_node::CanvasNode;
 use crate::model::draw_command::command::DrawCommandOrd;
+use crate::model::node_type::NodeType;
 use std::collections::{BinaryHeap, HashMap};
 
 /// We derive Deserialize/Serialize so we can persist app state on shutdown.
@@ -39,6 +40,9 @@ pub struct App {
     pub selected_or_hovered_canvas_node_key: Option<String>,
     pub is_canvas_node_selected: bool,
     pub selected_canvas_node_key: String,
+    // - secondary canvas toolbar related
+    pub is_dragndropping_node: bool,
+    pub dragndropping_node_type: NodeType,
     // Toolbar
     pub do_show_toolbar: bool,
     pub do_show_secondary_canvas_toolbar: bool,
@@ -91,6 +95,9 @@ impl Default for App {
             selected_or_hovered_canvas_node_key: None,
             is_canvas_node_selected: false,
             selected_canvas_node_key: String::new(),
+            // - secondary canvas toolbar related
+            is_dragndropping_node: false,
+            dragndropping_node_type: NodeType::Rectangle,
             // Toolbar
             do_show_toolbar: true,
             do_show_secondary_canvas_toolbar: true,

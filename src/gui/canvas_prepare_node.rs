@@ -8,7 +8,8 @@ use crate::model::draw_command::node_rectangle::NodeRectangleDrawCommand;
 use crate::model::draw_command::node_text::NodeTextDrawCommand;
 use crate::model::node_type::NodeType;
 use crate::model::pivot::Pivot;
-use egui::{Painter, Pos2, pos2, vec2};
+use egui::epaint::EllipseShape;
+use egui::{Painter, Pos2, Vec2, pos2, vec2};
 
 impl App {
     pub(super) fn gui_canvas_prepare_nodes(&mut self, painter: &Painter, origin: &Pos2) {
@@ -220,5 +221,79 @@ impl App {
                 }
             }
         }
+    }
+
+    pub(super) fn gui_canvas_draw_ghost_node(
+        &self,
+        painter: &Painter,
+        label: &str,
+        pointer_pos: Pos2,
+    ) -> Vec2 {
+        let node_padding = crate::config::NODE_BORDER_OFFSET_BASE * self.zoom_level;
+        let stroke = egui::Stroke::new(self.zoom_level, crate::config::COLOR_GHOST_EDGE);
+
+        let label_galley = painter.layout_no_wrap(
+            String::from(label),
+            egui::FontId::monospace(self.canvas_font_size as f32),
+            egui::Color32::PLACEHOLDER,
+        );
+        let label_rect = label_galley.rect;
+        let label_size_x = label_rect.width();
+        let label_size_y = label_rect.height();
+        let node_width = label_size_x + 2.0 * node_padding;
+        let node_height = label_size_y + 2.0 * node_padding;
+        let half_width = node_width / 2.0;
+        let half_height = node_height / 2.0;
+
+        match self.dragndropping_node_type {
+            NodeType::Rectangle => {
+                painter.rect(
+                    egui::Rect::from_center_size(pointer_pos, vec2(node_width, node_height)),
+                    0.0,
+                    crate::config::COLOR_GHOST_FILL,
+                    stroke,
+                    egui::StrokeKind::Middle,
+                );
+            }
+            NodeType::Ellipse => {
+                painter.add(EllipseShape::filled(
+                    pointer_pos,
+                    vec2(half_width, half_height),
+                    crate::config::COLOR_GHOST_FILL,
+                ));
+                painter.add(EllipseShape::stroke(
+                    pointer_pos,
+                    vec2(half_width, half_height),
+                    stroke,
+                ));
+            }
+            NodeType::Diamond => {
+                painter.add(egui::epaint::PathShape::convex_polygon(
+                    vec![
+                        pos2(pointer_pos.x, pointer_pos.y + half_height), // Top
+                        pos2(pointer_pos.x + half_width, pointer_pos.y),  // Right
+                        pos2(pointer_pos.x, pointer_pos.y - half_height), // Bottom
+                        pos2(pointer_pos.x - half_width, pointer_pos.y),  // Left
+                    ],
+                    crate::config::COLOR_GHOST_FILL,
+                    stroke,
+                ));
+            }
+            NodeType::Text => {
+                // Do nothing
+            }
+        }
+
+        painter.galley(
+            pointer_pos - vec2(label_size_x / 2.0, label_size_y / 2.0),
+            label_galley,
+            crate::config::COLOR_GHOST_EDGE,
+        );
+
+        // Return
+        vec2(
+            label_size_x / 2.0 + node_padding,
+            label_size_y / 2.0 + node_padding,
+        )
     }
 }
