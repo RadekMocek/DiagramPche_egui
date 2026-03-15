@@ -44,8 +44,8 @@ This is part of a IMGUI paradigm research, [go back to main repo](https://github
   * [ ] Ctrl+Click to jump to node definition in text editor
 * Settings window:
   * [x] Switch between vanilla and 3rd party text editor
-  * [ ] Appearance: color theme
-  * [ ] Option for forcing light canvas regardless of color theme
+  * [x] Appearance: color theme
+  * [x] Option for forcing light canvas regardless of color theme
   * [x] Duplicate settings from app: view→grid/toolbar/toolbar2, text editor font size (so all things that can be set are at one place)
 * Benchmark window:
   * [ ] Do?

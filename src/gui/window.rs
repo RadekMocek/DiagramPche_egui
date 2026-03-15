@@ -1,5 +1,6 @@
 use crate::App;
 use crate::gui::widget;
+use crate::style::change_appearance_theme;
 
 #[derive(PartialEq)]
 pub enum PreferencesTab {
@@ -10,12 +11,13 @@ pub enum PreferencesTab {
 
 impl App {
     pub(super) fn gui_window(&mut self, ui: &mut egui::Ui) {
-        let mut open = self.do_show_window_preferences; // to satisfy the borrow checker
+        let mut do_open_preferences = self.do_show_window_preferences; // to satisfy the borrow checker
 
         // .: Preferences :.
         // .:=============:.
         egui::Window::new("Preferences")
-            .open(&mut open)
+            .open(&mut do_open_preferences)
+            .resizable(false)
             .show(ui.ctx(), |ui| {
                 ui.horizontal(|ui| {
                     ui.selectable_value(
@@ -37,8 +39,20 @@ impl App {
                 ui.separator();
                 match self.window_preferences_selected_tab {
                     PreferencesTab::Appearance => {
+                        // .::.
                         widget::header(ui, widget::SMALLSKIP, "App color theme");
+                        let prev_choice = self.style_is_light_mode;
+                        ui.horizontal(|ui| {
+                            ui.radio_value(&mut self.style_is_light_mode, true, "Light");
+                            ui.add_space(widget::SMALLSKIP);
+                            ui.radio_value(&mut self.style_is_light_mode, false, "Dark");
+                        });
+                        if prev_choice != self.style_is_light_mode {
+                            change_appearance_theme(ui.ctx(), self.style_is_light_mode);
+                        }
+                        // .::.
                         widget::header(ui, widget::SMALLSKIP, "Canvas color theme");
+                        ui.checkbox(&mut self.style_do_force_light_canvas, "Keep canvas light");
                     }
                     PreferencesTab::TextEditor => {
                         // .::.
@@ -76,6 +90,17 @@ impl App {
                 }
             });
 
-        self.do_show_window_preferences = open;
+        self.do_show_window_preferences = do_open_preferences;
+
+        // .: Benchmark :.
+        // .:===========:.
+        egui::Window::new("Benchmark")
+            .open(&mut self.do_show_window_benchmark)
+            .resizable(false)
+            .show(ui.ctx(), |ui| {
+                ui.label("TODO");
+                ui.separator();
+                let _ = ui.button("Start benchmark");
+            });
     }
 }

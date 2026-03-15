@@ -73,6 +73,11 @@ pub struct App {
     // Modeless windows
     pub do_show_window_preferences: bool,
     pub window_preferences_selected_tab: PreferencesTab,
+    // Theme
+    pub style_is_light_mode: bool,
+    pub style_do_force_light_canvas: bool,
+    // Benchmark
+    pub do_show_window_benchmark: bool,
     // Misc
     pub no_node_hovered_string: String,
 }
@@ -138,6 +143,11 @@ impl Default for App {
             // - preferences
             do_show_window_preferences: false,
             window_preferences_selected_tab: PreferencesTab::Appearance,
+            // Theme
+            style_is_light_mode: true,
+            style_do_force_light_canvas: true,
+            // Benchmark
+            do_show_window_benchmark: false,
             // Misc
             no_node_hovered_string: String::from("(No node hovered)"),
         }
@@ -147,9 +157,8 @@ impl Default for App {
 impl App {
     /// Called once before the first frame.
     pub fn new(cc: &eframe::CreationContext<'_>) -> Self {
-        // This is also where you can customize the look and feel of egui using
-        // `cc.egui_ctx.set_visuals` and `cc.egui_ctx.set_fonts`.
-        cc.egui_ctx.set_visuals(egui::Visuals::light());
+        // This is also where you can customize the look and feel of egui
+        crate::style::change_appearance_theme(&cc.egui_ctx, true);
         crate::style::replace_fonts(&cc.egui_ctx);
         crate::style::conf_style_init(&cc.egui_ctx);
 

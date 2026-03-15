@@ -173,8 +173,14 @@ impl App {
             }
 
             // Canvas
+            let do_fill_canvas = self.style_is_light_mode || self.style_do_force_light_canvas;
+
             egui::Frame::canvas(&right_ui.style())
-                .fill(crate::config::COLOR_CANVAS_BACKGROUND)
+                .fill(if do_fill_canvas {
+                    crate::config::COLOR_CANVAS_BACKGROUND
+                } else {
+                    egui::Color32::TRANSPARENT
+                })
                 .show(&mut right_ui, |ui| {
                     self.gui_canvas(ui);
                 });

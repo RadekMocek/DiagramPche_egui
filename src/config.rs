@@ -17,6 +17,11 @@ pub const COLOR_BTN_BAD_NORMAL: Color32 = Color32::from_rgba_unmultiplied_const(
 pub const COLOR_BTN_BAD_HOVER: Color32 = Color32::from_rgba_unmultiplied_const(220, 66, 66, 128);
 pub const COLOR_BTN_BAD_CLICK: Color32 = Color32::from_rgba_unmultiplied_const(165, 49, 49, 128);
 
+/*
+pub const COLOR_SECONDARY_TOOLBAR_LIGHT: Color32 = Color32::from_gray(220);
+pub const COLOR_SECONDARY_TOOLBAR_DARK: Color32 = Color32::from_gray(45);
+*/
+
 // Canvas
 pub const COLOR_CANVAS_BACKGROUND: Color32 = Color32::from_gray(240);
 

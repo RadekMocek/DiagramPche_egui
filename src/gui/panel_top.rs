@@ -108,6 +108,10 @@ impl App {
                             self.handle_open_example(FileExampleId::Debug1);
                         }
                     });
+                    // . Benchmark .
+                    if ui.button("Benchmark").clicked() {
+                        self.do_show_window_benchmark = true;
+                    }
                 });
                 // .: Help :.
                 ui.menu_button("Help", |ui| {

@@ -9,7 +9,11 @@ impl App {
         let text_edit_output = CodeEditor::default()
             .id_source("source_alt")
             .with_fontsize(self.source_font_size as f32)
-            .with_theme(self.alt_editor_config.palette)
+            .with_theme(if self.style_is_light_mode {
+                self.alt_editor_config.palette_light
+            } else {
+                ColorTheme::SONOKAI
+            })
             .with_syntax(self.alt_editor_config.syntax.clone())
             .with_numlines(false)
             .show_with_completer(ui, &mut self.source, &mut self.alt_editor_config.completer);
@@ -28,7 +32,7 @@ impl App {
 
 pub struct AltEditorConfig {
     syntax: Syntax,
-    palette: ColorTheme,
+    palette_light: ColorTheme,
     completer: Completer,
 }
 
@@ -36,7 +40,7 @@ impl Default for AltEditorConfig {
     fn default() -> Self {
         Self {
             syntax: Self::get_syntax(),
-            palette: Self::get_palette_light(),
+            palette_light: Self::get_palette_light(),
             completer: Completer::new_with_syntax(&Self::get_syntax()),
         }
     }

@@ -2,6 +2,7 @@ use crate::config;
 use FontFamily::{Monospace, Proportional};
 use egui::{Color32, FontFamily, FontId, TextStyle};
 use std::collections::BTreeMap;
+use eframe::epaint::AlphaFromCoverage;
 
 pub(super) fn conf_style_init(ctx: &egui::Context) {
     let text_styles: BTreeMap<TextStyle, FontId> = [
@@ -39,9 +40,6 @@ pub(super) fn conf_style_init(ctx: &egui::Context) {
     ctx.all_styles_mut(|style| {
         // Set font sizes defined above
         style.text_styles = text_styles.clone();
-        // Black font instead of dark gray
-        // (This may need to be changed later if we implement dark/light mode switch)
-        style.visuals.override_text_color = Some(Color32::BLACK);
     });
 }
 
@@ -139,4 +137,22 @@ pub(super) fn set_unsavedwarn_modal_button_colors(ui: &mut egui::Ui, is_good: bo
     } else {
         config::COLOR_BTN_BAD_CLICK
     };
+}
+
+pub(super) fn change_appearance_theme(ctx: &egui::Context, is_light: bool) {
+    if is_light {
+        ctx.set_visuals(egui::Visuals::light());
+        ctx.all_styles_mut(|style| {
+            // Black font instead of dark gray
+            style.visuals.override_text_color = Some(Color32::BLACK);
+        });
+    } else {
+        ctx.set_visuals(egui::Visuals::dark());
+        ctx.all_styles_mut(|style| {
+            // Dark mode default makes the font blurry...
+            style.visuals.text_alpha_from_coverage = AlphaFromCoverage::LIGHT_MODE_DEFAULT;
+            // Lighter font
+            style.visuals.override_text_color = Some(Color32::from_gray(233));
+        });
+    }
 }
