@@ -37,7 +37,7 @@ impl App {
                         .button(concatcp!(ICON_CONTENT_SAVE_EDIT_OUTLINE, " Save as"))
                         .clicked()
                     {
-                        //todo
+                        self.save_source_to_file_from_dialog();
                     }
                     // . Export to SVG .
                     if ui

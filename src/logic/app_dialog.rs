@@ -15,3 +15,21 @@ pub fn save_svg_dialog() -> Option<String> {
 
     Some(String::from(result_path_str))
 }
+
+pub fn save_toml_dialog() -> Option<String> {
+    let result = rfd::FileDialog::new()
+        .add_filter("Diagram", &["toml"])
+        .set_file_name("diagram.toml")
+        .set_title("Save diagram to file")
+        .save_file();
+
+    let Some(result_path) = result else {
+        return None;
+    };
+
+    let Some(result_path_str) = result_path.to_str() else {
+        return None;
+    };
+
+    Some(String::from(result_path_str))
+}

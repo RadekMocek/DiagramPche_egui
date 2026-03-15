@@ -1,6 +1,6 @@
 use crate::App;
 use egui::text_selection::CCursorRange;
-use egui::{vec2, Color32, FontFamily, FontId, Rect, Response, TextEdit, TextStyle};
+use egui::{Color32, FontFamily, FontId, Rect, Response, TextEdit, TextStyle, vec2};
 
 impl App {
     pub(super) fn gui_text_editor(&mut self, ui: &mut egui::Ui) {
@@ -34,6 +34,10 @@ impl App {
             self.textedit_error_highlight(ui, &text_edit_output.response);
 
             self.textedit_update_cursor_position_info(&text_edit_output.cursor_range);
+
+            if text_edit_output.response.changed() {
+                self.is_source_dirty = true;
+            }
         });
     }
 
@@ -56,7 +60,10 @@ impl App {
         }
     }
 
-    pub(super) fn textedit_update_cursor_position_info(&mut self, cursor_range: &Option<CCursorRange>) {
+    pub(super) fn textedit_update_cursor_position_info(
+        &mut self,
+        cursor_range: &Option<CCursorRange>,
+    ) {
         if let Some(cursor_range) = cursor_range {
             let cursor_index = cursor_range.primary.index;
             let text_before_cursor = &self.source[..cursor_index];
@@ -69,11 +76,14 @@ impl App {
     }
 
     fn textedit_get_char_size(&self, ui: &egui::Ui) -> egui::Vec2 {
-        ui.painter().layout_no_wrap(
-            String::from("A"),
-            FontId::new(self.source_font_size as f32, FontFamily::Monospace),
-            Color32::PLACEHOLDER,
-        ).rect.size()
+        ui.painter()
+            .layout_no_wrap(
+                String::from("A"),
+                FontId::new(self.source_font_size as f32, FontFamily::Monospace),
+                Color32::PLACEHOLDER,
+            )
+            .rect
+            .size()
     }
 
     #[allow(dead_code)]

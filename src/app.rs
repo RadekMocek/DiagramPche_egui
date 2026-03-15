@@ -16,6 +16,9 @@ use std::collections::{BinaryHeap, HashMap};
 pub struct App {
     // Central panel
     pub central_split_ratio: f32, // Textedit on left, canvas on right; this is ratio if their widths user can change
+    // Saving
+    pub is_source_dirty: bool, // Are there any unsaved changes to the source?
+    pub source_filename: String,
     // Text editor
     pub source: String, // Text editor content, the TOML source code that user writes
     pub parser: Parser, // Parses the source into collections of structs which then our app uses to draw the diagram
@@ -72,6 +75,9 @@ impl Default for App {
         Self {
             // Central panel
             central_split_ratio: 0.5,
+            // Saving
+            is_source_dirty: false,
+            source_filename: String::from(""),
             // Text editor
             source: String::from(crate::config::WELCOME_TOML),
             parser: Parser::default(),
@@ -107,7 +113,7 @@ impl Default for App {
             do_open_modal_export: false,
             do_open_modal_error: false,
             modal_error_message: String::from(""),
-            do_open_modal_unsavedwarn: true,
+            do_open_modal_unsavedwarn: false,
             // SVG export
             // - svg logic
             svg_exporter: Exporter::default(),

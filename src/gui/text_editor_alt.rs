@@ -17,6 +17,10 @@ impl App {
         self.textedit_error_highlight(ui, &text_edit_output.response);
 
         self.textedit_update_cursor_position_info(&text_edit_output.cursor_range);
+
+        if text_edit_output.response.changed() {
+            self.is_source_dirty = true;
+        }
     }
 }
 
