@@ -9,8 +9,6 @@ This is part of a IMGUI paradigm research, [go back to main repo](https://github
 
 ## TODO
 
-* __TYPING ĚŠČŘŽÝÁÍÉ ETC. WILL CRASH THE PROGRAM__
-
 * General:
   * [x] View → Jump to canvas origin
   * [x] View → Toolbar

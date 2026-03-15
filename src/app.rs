@@ -184,7 +184,7 @@ impl eframe::App for App {
                 let mut column = 0;
                 let mut column_end = 0;
                 let mut is_end_column_processed = false;
-                // UTF8 shenanigans
+                // UTF-8 shenanigans
                 for (i, ch) in self.source.char_indices() {
                     if !is_end_column_processed {
                         if i >= error_span.start {

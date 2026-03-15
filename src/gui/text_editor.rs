@@ -65,13 +65,18 @@ impl App {
         cursor_range: &Option<CCursorRange>,
     ) {
         if let Some(cursor_range) = cursor_range {
-            let cursor_index = cursor_range.primary.index;
-            let text_before_cursor = &self.source[..cursor_index]; //todo this line crashes on utf8 char
-            self.editor_cursor_line = text_before_cursor.chars().filter(|&c| c == '\n').count();
-            self.editor_cursor_column = text_before_cursor
-                .rfind('\n')
-                .map(|pos| cursor_index - pos - 1)
-                .unwrap_or(cursor_index);
+            // UTF-8 shenanigans
+            let mut n_newlines = 0;
+            let mut n_chars_in_line = 0;
+            for char in self.source.chars().take(cursor_range.primary.index) {
+                n_chars_in_line += 1;
+                if char == '\n' {
+                    n_chars_in_line = 0;
+                    n_newlines += 1;
+                }
+            }
+            self.editor_cursor_line = n_newlines;
+            self.editor_cursor_column = n_chars_in_line;
         }
     }
 
