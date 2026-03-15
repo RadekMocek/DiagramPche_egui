@@ -1,4 +1,4 @@
-use crate::config::*;
+use crate::config;
 use FontFamily::{Monospace, Proportional};
 use egui::{Color32, FontFamily, FontId, TextStyle};
 use std::collections::BTreeMap;
@@ -7,31 +7,31 @@ pub(super) fn conf_style_init(ctx: &egui::Context) {
     let text_styles: BTreeMap<TextStyle, FontId> = [
         (
             TextStyle::Heading,
-            FontId::new(FONT_SIZE_DEFAULT + 9.0, Proportional),
+            FontId::new(config::FONT_SIZE_DEFAULT + 9.0, Proportional),
         ),
         (
             TextStyle::Name("Heading2".into()),
-            FontId::new(FONT_SIZE_DEFAULT + 7.0, Proportional),
+            FontId::new(config::FONT_SIZE_DEFAULT + 7.0, Proportional),
         ),
         (
             TextStyle::Name("Context".into()),
-            FontId::new(FONT_SIZE_DEFAULT + 5.0, Proportional),
+            FontId::new(config::FONT_SIZE_DEFAULT + 5.0, Proportional),
         ),
         (
             TextStyle::Body,
-            FontId::new(FONT_SIZE_DEFAULT, Proportional),
+            FontId::new(config::FONT_SIZE_DEFAULT, Proportional),
         ),
         (
             TextStyle::Monospace,
-            FontId::new(FONT_SIZE_DEFAULT, Monospace),
+            FontId::new(config::FONT_SIZE_DEFAULT, Monospace),
         ),
         (
             TextStyle::Button,
-            FontId::new(FONT_SIZE_DEFAULT, Proportional),
+            FontId::new(config::FONT_SIZE_DEFAULT, Proportional),
         ),
         (
             TextStyle::Small,
-            FontId::new(FONT_SIZE_DEFAULT - 8.0, Proportional),
+            FontId::new(config::FONT_SIZE_DEFAULT - 8.0, Proportional),
         ),
     ]
     .into();
@@ -49,11 +49,11 @@ pub(super) fn conf_style_panel_top_begin(ctx: &egui::Context) {
     ctx.all_styles_mut(|style| {
         style.text_styles.insert(
             TextStyle::Button,
-            FontId::new(FONT_SIZE_MAIN_MENU_BAR, Proportional),
+            FontId::new(config::FONT_SIZE_MAIN_MENU_BAR, Proportional),
         );
         style.text_styles.insert(
             TextStyle::Body,
-            FontId::new(FONT_SIZE_MAIN_MENU_BAR, Proportional),
+            FontId::new(config::FONT_SIZE_MAIN_MENU_BAR, Proportional),
         );
     });
 }
@@ -62,11 +62,11 @@ pub(super) fn conf_style_panel_top_end(ctx: &egui::Context) {
     ctx.all_styles_mut(|style| {
         style.text_styles.insert(
             TextStyle::Button,
-            FontId::new(FONT_SIZE_DEFAULT, Proportional),
+            FontId::new(config::FONT_SIZE_DEFAULT, Proportional),
         );
         style.text_styles.insert(
             TextStyle::Body,
-            FontId::new(FONT_SIZE_DEFAULT, Proportional),
+            FontId::new(config::FONT_SIZE_DEFAULT, Proportional),
         );
     });
 }
@@ -120,4 +120,23 @@ pub(super) fn replace_fonts(ctx: &egui::Context) {
 
     // Tell egui to use these fonts
     ctx.set_fonts(fonts);
+}
+
+// This should be called inside `ui.scope`
+pub(super) fn set_unsavedwarn_modal_button_colors(ui: &mut egui::Ui, is_good: bool) {
+    ui.style_mut().visuals.widgets.inactive.weak_bg_fill = if is_good {
+        config::COLOR_BTN_GOOD_NORMAL
+    } else {
+        config::COLOR_BTN_BAD_NORMAL
+    };
+    ui.style_mut().visuals.widgets.hovered.weak_bg_fill = if is_good {
+        config::COLOR_BTN_GOOD_HOVER
+    } else {
+        config::COLOR_BTN_BAD_HOVER
+    };
+    ui.style_mut().visuals.widgets.active.weak_bg_fill = if is_good {
+        config::COLOR_BTN_GOOD_CLICK
+    } else {
+        config::COLOR_BTN_BAD_CLICK
+    };
 }

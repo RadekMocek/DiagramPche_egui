@@ -49,8 +49,9 @@ pub struct App {
     // Non-main window
     pub do_open_modal_about: bool,  // Show the Help → About window
     pub do_open_modal_export: bool, // Show the File → Export to SVG window
-    pub do_open_modal_error: bool,  // Shows error message when something went worng
+    pub do_open_modal_error: bool,  // Shows error message when something went wrong
     pub modal_error_message: String,
+    pub do_open_modal_unsavedwarn: bool, // Warns the user when they have unsaved changes and try to discard them, allows to save the document
     // SVG export
     // - svg logic
     pub svg_exporter: Exporter,
@@ -106,6 +107,7 @@ impl Default for App {
             do_open_modal_export: false,
             do_open_modal_error: false,
             modal_error_message: String::from(""),
+            do_open_modal_unsavedwarn: true,
             // SVG export
             // - svg logic
             svg_exporter: Exporter::default(),

@@ -10,6 +10,13 @@ pub const FONT_SIZE_SOURCE_MAX: u32 = 40;
 pub const COLOR_ERROR: Color32 = Color32::from_rgb(211, 1, 2);
 pub const COLOR_ERROR_HIGHLIGHT: Color32 = Color32::from_rgba_unmultiplied_const(211, 1, 2, 80);
 
+pub const COLOR_BTN_GOOD_NORMAL: Color32 = Color32::from_rgba_unmultiplied_const(192, 230, 0, 128);
+pub const COLOR_BTN_GOOD_HOVER: Color32 = Color32::from_rgba_unmultiplied_const(183, 220, 0, 128);
+pub const COLOR_BTN_GOOD_CLICK: Color32 = Color32::from_rgba_unmultiplied_const(138, 165, 0, 128);
+pub const COLOR_BTN_BAD_NORMAL: Color32 = Color32::from_rgba_unmultiplied_const(230, 69, 69, 128);
+pub const COLOR_BTN_BAD_HOVER: Color32 = Color32::from_rgba_unmultiplied_const(220, 66, 66, 128);
+pub const COLOR_BTN_BAD_CLICK: Color32 = Color32::from_rgba_unmultiplied_const(165, 49, 49, 128);
+
 // Canvas
 pub const COLOR_CANVAS_BACKGROUND: Color32 = Color32::from_gray(240);
 

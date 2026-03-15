@@ -1,6 +1,10 @@
 use crate::App;
-use crate::logic::app_dialog::save_svg_dialog;
+use crate::config;
 use crate::gui::widget;
+use crate::helper::icon::*;
+use crate::logic::app_dialog::save_svg_dialog;
+use crate::style::set_unsavedwarn_modal_button_colors;
+use const_format::concatcp;
 
 #[derive(PartialEq)]
 pub enum ActionAfterExport {
@@ -51,7 +55,7 @@ impl App {
                         if !path.is_dir() {
                             ui.label(
                                 egui::RichText::new("File at the specified path already exists.")
-                                    .color(crate::config::COLOR_ERROR),
+                                    .color(config::COLOR_ERROR),
                             );
                             is_overwrite_export_needed = true;
                             if self.modal_export_do_overwrite {
@@ -60,7 +64,7 @@ impl App {
                         } else {
                             ui.label(
                                 egui::RichText::new("The specified path is a directory.")
-                                    .color(crate::config::COLOR_ERROR),
+                                    .color(config::COLOR_ERROR),
                             );
                         }
                     }
@@ -132,16 +136,48 @@ impl App {
             }
         }
 
+        // .: Unsaved file warning modal :.
+        // .:============================:.
+        if self.do_open_modal_unsavedwarn {
+            let modal = egui::Modal::new(egui::Id::new("modal_unsavedwarn")).show(ui.ctx(), |ui| {
+                ui.heading("You have unsaved changes");
+                ui.add_space(widget::SMALLSKIP);
+                ui.label("Do you want to save changes to\n...?");
+                ui.add_space(widget::BIGSKIP);
+                ui.horizontal(|ui| {
+                    ui.scope(|ui| {
+                        set_unsavedwarn_modal_button_colors(ui, true);
+                        if ui
+                            .button(concatcp!(ICON_CONTENT_SAVE_OUTLINE, " Save"))
+                            .clicked()
+                        {
+                            ui.close();
+                        }
+                        set_unsavedwarn_modal_button_colors(ui, false);
+                        if ui
+                            .button(concatcp!(ICON_TRASH_CAN_OUTLINE, " Discard"))
+                            .clicked()
+                        {
+                            ui.close();
+                        }
+                    });
+                    if ui.button(concatcp!(ICON_CANCEL, " Cancel")).clicked() {
+                        ui.close();
+                    }
+                });
+            });
+            if modal.should_close() {
+                self.do_open_modal_unsavedwarn = false;
+            }
+        }
+
         // .: Error modal :.
         // .:=============:.
         if self.do_open_modal_error {
             let modal = egui::Modal::new(egui::Id::new("modal_error")).show(ui.ctx(), |ui| {
                 ui.heading("Error");
                 ui.add_space(widget::SMALLSKIP);
-                ui.label(
-                    egui::RichText::new(&self.modal_error_message)
-                        .color(crate::config::COLOR_ERROR),
-                );
+                ui.label(egui::RichText::new(&self.modal_error_message).color(config::COLOR_ERROR));
                 ui.add_space(widget::BIGSKIP);
                 if ui.button("RIP").clicked() {
                     ui.close();

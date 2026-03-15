@@ -52,6 +52,7 @@ This is part of a IMGUI paradigm research, [go back to main repo](https://github
   * [x] Main menu bar → File items
   * [x] Toolbar → Drop-down list with node types
   * [x] Secondary canvas toolbar → Drag'n'Drop buttons
+  * [x] UnsavedWarn modal
 * TOML Parser:
   * [x] Refactor TOML parsing: if we get parsing error, do not make the whole diagram disappear
 

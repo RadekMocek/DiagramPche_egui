@@ -1,5 +1,5 @@
 use crate::App;
-use crate::config::*;
+use crate::config;
 use crate::gui::modal::ActionAfterExport;
 use crate::gui::widget;
 use crate::logic::app_file::open_file;
@@ -52,8 +52,9 @@ impl App {
                 let old_zoom = self.zoom_level;
 
                 self.set_canvas_font_size_and_zoom(
-                    self.canvas_font_size
-                        .saturating_add_signed(scroll.y as i32 * FONT_SIZE_CANVAS_STEP as i32),
+                    self.canvas_font_size.saturating_add_signed(
+                        scroll.y as i32 * config::FONT_SIZE_CANVAS_STEP as i32,
+                    ),
                 );
 
                 // Zoom anchor under mouse
@@ -79,8 +80,8 @@ impl App {
         // .:================:.
         // == Draw grid ==
         if self.do_show_grid {
-            let grid_step = GRID_STEP_BASE * self.zoom_level;
-            let grid_stroke = egui::Stroke::new(1.0, COLOR_GRID_LINE);
+            let grid_step = config::GRID_STEP_BASE * self.zoom_level;
+            let grid_stroke = egui::Stroke::new(1.0, config::COLOR_GRID_LINE);
 
             let mut x = self.scrolling.x.rem_euclid(grid_step);
             while x < response_rect.width() {
@@ -219,10 +220,10 @@ impl App {
                     let response = ui.add(
                         egui::Slider::new(
                             &mut self.canvas_font_size,
-                            FONT_SIZE_CANVAS_MIN..=FONT_SIZE_CANVAS_MAX,
+                            config::FONT_SIZE_CANVAS_MIN..=config::FONT_SIZE_CANVAS_MAX,
                         )
                         .integer()
-                        .step_by(FONT_SIZE_CANVAS_STEP as f64)
+                        .step_by(config::FONT_SIZE_CANVAS_STEP as f64)
                         .custom_formatter(|_, _| format!("Zoom level: {:.2}", self.zoom_level)),
                     );
 
@@ -240,16 +241,17 @@ impl App {
     }
 
     pub fn set_canvas_font_size_and_zoom(&mut self, new_font_size: u32) {
-        self.canvas_font_size = new_font_size.clamp(FONT_SIZE_CANVAS_MIN, FONT_SIZE_CANVAS_MAX);
+        self.canvas_font_size =
+            new_font_size.clamp(config::FONT_SIZE_CANVAS_MIN, config::FONT_SIZE_CANVAS_MAX);
         self.update_canvas_zoom();
     }
 
     fn update_canvas_zoom(&mut self) {
-        self.zoom_level = self.canvas_font_size as f32 / FONT_SIZE_CANVAS_BASE as f32;
+        self.zoom_level = self.canvas_font_size as f32 / config::FONT_SIZE_CANVAS_BASE as f32;
     }
 
     pub fn reset_canvas_scrolling_and_zoom(&mut self) {
-        self.scrolling = SCROLLING_DEFAULT;
-        self.set_canvas_font_size_and_zoom(FONT_SIZE_CANVAS_BASE);
+        self.scrolling = config::SCROLLING_DEFAULT;
+        self.set_canvas_font_size_and_zoom(config::FONT_SIZE_CANVAS_BASE);
     }
 }

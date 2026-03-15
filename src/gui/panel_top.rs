@@ -88,6 +88,10 @@ impl App {
                             self.load_source_from_example("debug1");
                         }
                     });
+                    // ...
+                    if ui.button("(test)").clicked() {
+                        self.do_open_modal_unsavedwarn = true;
+                    }
                 });
                 // .: Help :.
                 ui.menu_button("Help", |ui| {
