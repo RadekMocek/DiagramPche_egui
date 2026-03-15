@@ -16,21 +16,29 @@ impl App {
                         .button(concatcp!(ICON_FILE_PLUS_OUTLINE, " New"))
                         .clicked()
                     {
-                        //todo
+                        if !self.is_source_dirty {
+                            self.handle_regular_new();
+                        } else {
+                            //todo
+                        }
                     }
                     // . Open .
                     if ui
                         .button(concatcp!(ICON_FOLDER_OPEN_OUTLINE, " Open"))
                         .clicked()
                     {
-                        //todo
+                        if !self.is_source_dirty {
+                            self.handle_regular_open();
+                        } else {
+                            //todo
+                        }
                     }
                     // . Save .
                     if ui
                         .button(concatcp!(ICON_CONTENT_SAVE_OUTLINE, " Save"))
                         .clicked()
                     {
-                        //todo
+                        self.handle_regular_save();
                     }
                     // . Save as .
                     if ui
@@ -62,7 +70,7 @@ impl App {
                     }
                 });
                 // .: View :.
-                ui.menu_button("View", |ui| {                    
+                ui.menu_button("View", |ui| {
                     // . Toolbar .
                     ui.checkbox(&mut self.do_show_toolbar, "Toolbar");
                     ui.separator();

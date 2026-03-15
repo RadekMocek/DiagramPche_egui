@@ -17,7 +17,7 @@ fn main() -> eframe::Result {
         ..Default::default()
     };
     eframe::run_native(
-        "Untitled – DiagramPche :: egui",
+        "DiagramPche :: egui",
         native_options,
         Box::new(|cc| Ok(Box::new(diagram_pche_egui::App::new(cc)))),
     )

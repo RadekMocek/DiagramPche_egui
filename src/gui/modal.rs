@@ -142,7 +142,14 @@ impl App {
             let modal = egui::Modal::new(egui::Id::new("modal_unsavedwarn")).show(ui.ctx(), |ui| {
                 ui.heading("You have unsaved changes");
                 ui.add_space(widget::SMALLSKIP);
-                ui.label("Do you want to save changes to\n...?");
+                if let Some(source_filename) = &self.source_filename {
+                    ui.label(format!(
+                        "Do you want to save changes to\n'{}'?",
+                        source_filename
+                    ));
+                } else {
+                    ui.label("Do you want to save changes to\n'Untitled'?");
+                }
                 ui.add_space(widget::BIGSKIP);
                 ui.horizontal(|ui| {
                     ui.scope(|ui| {

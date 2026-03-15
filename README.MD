@@ -20,11 +20,11 @@ This is part of a IMGUI paradigm research, [go back to main repo](https://github
     * [x] Drag'n'Drop new node, button for each node type (beware the canvas scroll and zoom)
     * [x] Zoom slider, right aligned
   * Saving/loading:
-    * [ ] New, Open, Save, Save as
+    * [x] New, Open, Save, Save as
     * [ ] Confirm unsaved exit (OS close button, alt+f4, mainmenubar option)
     * [ ] Confirm unsaved new
     * [ ] Confirm unsaved open, including loading a debug diagram or an example
-    * [ ] Change window name according to opened document (incl. star for unsaved)
+    * [x] Change window name according to opened document (incl. star for unsaved)
   * [x] Code editor syntax highlight
 * Pipeline: TOML parse → Draw to canvas / Render to SVG:
   * [x] Remove `(expecting [X, Y])` from error message (does not make sense in wider context)
@@ -90,3 +90,4 @@ cargo build --release
 * Canvas zooming on touchpad acts strange
 * I don't know how to scroll textedit to certain line or cursor, [I am not the only one](https://github.com/emilk/egui/discussions/4176)
 * <https://github.com/emilk/egui/issues/7412>
+* TextEdit && TextEditAlt – cannot MW scroll while selecting text

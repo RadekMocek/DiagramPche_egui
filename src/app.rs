@@ -18,7 +18,7 @@ pub struct App {
     pub central_split_ratio: f32, // Textedit on left, canvas on right; this is ratio if their widths user can change
     // Saving
     pub is_source_dirty: bool, // Are there any unsaved changes to the source?
-    pub source_filename: String,
+    pub source_filename: Option<String>,
     // Text editor
     pub source: String, // Text editor content, the TOML source code that user writes
     pub parser: Parser, // Parses the source into collections of structs which then our app uses to draw the diagram
@@ -77,7 +77,7 @@ impl Default for App {
             central_split_ratio: 0.5,
             // Saving
             is_source_dirty: false,
-            source_filename: String::from(""),
+            source_filename: None,
             // Text editor
             source: String::from(crate::config::WELCOME_TOML),
             parser: Parser::default(),
@@ -204,6 +204,19 @@ impl eframe::App for App {
         self.gui_panel_top(&ctx);
         self.gui_panel_bottom(&ctx);
         self.gui_panel_central(&ctx); // Central called after bottom oterwise bottom would cover a little bit of central
+
+        // Update window title
+        let mut native_window_title = String::from("");
+        if self.is_source_dirty {
+            native_window_title.push('*');
+        }
+        if let Some(source_filename) = &self.source_filename {
+            native_window_title.push_str(source_filename);
+        } else {
+            native_window_title.push_str("Untitled");
+        }
+        native_window_title.push_str(" – DiagramPche :: egui");
+        ctx.send_viewport_cmd(egui::ViewportCommand::Title(native_window_title));
     }
 
     /*
