@@ -66,7 +66,7 @@ impl App {
     ) {
         if let Some(cursor_range) = cursor_range {
             let cursor_index = cursor_range.primary.index;
-            let text_before_cursor = &self.source[..cursor_index];
+            let text_before_cursor = &self.source[..cursor_index]; //todo this line crashes on utf8 char
             self.editor_cursor_line = text_before_cursor.chars().filter(|&c| c == '\n').count();
             self.editor_cursor_column = text_before_cursor
                 .rfind('\n')

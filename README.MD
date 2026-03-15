@@ -9,6 +9,8 @@ This is part of a IMGUI paradigm research, [go back to main repo](https://github
 
 ## TODO
 
+* __TYPING ĚŠČŘŽÝÁÍÉ ETC. WILL CRASH THE PROGRAM__
+
 * General:
   * [x] View → Jump to canvas origin
   * [x] View → Toolbar
@@ -21,11 +23,11 @@ This is part of a IMGUI paradigm research, [go back to main repo](https://github
     * [x] Zoom slider, right aligned
   * Saving/loading:
     * [x] New, Open, Save, Save as
-    * [ ] Confirm unsaved exit (OS close button, alt+f4, mainmenubar option)
+    * [x] Confirm unsaved exit (OS close button, alt+f4, mainmenubar option)
     * [x] Confirm unsaved new
     * [x] Confirm unsaved open, including loading a debug diagram or an example
     * [x] Change window name according to opened document (incl. star for unsaved)
-    * [ ] _Save → Cancel_ should behave the same as unsavedwarn's _Cancel_
+    * [x] _Save → Cancel_ should behave the same as unsavedwarn's _Cancel_
   * [x] Code editor syntax highlight
 * Pipeline: TOML parse → Draw to canvas / Render to SVG:
   * [x] Remove `(expecting [X, Y])` from error message (does not make sense in wider context)

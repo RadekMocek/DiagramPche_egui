@@ -25,6 +25,7 @@ pub struct App {
     pub do_action_unsavedwarn_save: bool,   // Did user click save in unsavedwarn modal?
     pub action_unsavedwarn_type: ActionAfterUnsavedWarn, // What to do after unsavedwarn modal is processed
     pub action_unsavedwarn_value: FileExampleId, // What file to open if ActionAfterUnsavedWarn is opening an example
+    pub should_window_really_close: bool, // Once we set this to true, the app will be definitely closed
     // Text editor
     pub source: String, // Text editor content, the TOML source code that user writes
     pub parser: Parser, // Parses the source into collections of structs which then our app uses to draw the diagram
@@ -88,6 +89,7 @@ impl Default for App {
             do_action_unsavedwarn_save: false,
             action_unsavedwarn_type: ActionAfterUnsavedWarn::Invalid,
             action_unsavedwarn_value: FileExampleId::Example1,
+            should_window_really_close: false,
             // Text editor
             source: String::from(crate::config::WELCOME_TOML),
             parser: Parser::default(),
@@ -230,7 +232,8 @@ impl eframe::App for App {
                         self.show_error_modal("ActionAfterUnsavedWarn::Invalid")
                     }
                     ActionAfterUnsavedWarn::Exit => {
-                        //todo
+                        self.should_window_really_close = true;
+                        ctx.send_viewport_cmd(egui::ViewportCommand::Close);
                     }
                     ActionAfterUnsavedWarn::New => {
                         self.handle_regular_new();
@@ -244,6 +247,16 @@ impl eframe::App for App {
                 }
             }
             self.action_unsavedwarn_type = ActionAfterUnsavedWarn::Invalid;
+        }
+
+        // Handle native window close pressed or Alt+F4 pressed (cancel the close and show modal if source is dirty)
+        if !self.should_window_really_close // If `should_window_really_close` is true, skip modal and definitely close the app
+            && self.is_source_dirty
+            && ctx.input(|i| i.viewport().close_requested())
+        {
+            ctx.send_viewport_cmd(egui::ViewportCommand::CancelClose);
+            self.action_unsavedwarn_type = ActionAfterUnsavedWarn::Exit;
+            self.do_open_modal_unsavedwarn = true;
         }
 
         // Update window title
