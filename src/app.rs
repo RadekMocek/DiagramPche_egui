@@ -2,6 +2,7 @@ use crate::gui::modal::ActionAfterExport;
 use crate::gui::panel_top::ActionAfterUnsavedWarn;
 use crate::gui::text_editor_alt::AltEditorConfig;
 use crate::gui::window::PreferencesTab;
+use crate::logic::app_file::FileExampleId;
 use crate::logic::svg_exporter::Exporter;
 use crate::logic::toml::parser::Parser;
 use crate::model::canvas_node::CanvasNode;
@@ -23,7 +24,7 @@ pub struct App {
     pub is_action_unsavedwarn_queued: bool, // Did user click something other than cancel in unsavedwarn modal?
     pub do_action_unsavedwarn_save: bool,   // Did user click save in unsavedwarn modal?
     pub action_unsavedwarn_type: ActionAfterUnsavedWarn, // What to do after unsavedwarn modal is processed
-    pub action_unsavedwarn_value: String, // What file to open if ActionAfterUnsavedWarn is opening a file
+    pub action_unsavedwarn_value: FileExampleId, // What file to open if ActionAfterUnsavedWarn is opening an example
     // Text editor
     pub source: String, // Text editor content, the TOML source code that user writes
     pub parser: Parser, // Parses the source into collections of structs which then our app uses to draw the diagram
@@ -86,7 +87,7 @@ impl Default for App {
             is_action_unsavedwarn_queued: false,
             do_action_unsavedwarn_save: false,
             action_unsavedwarn_type: ActionAfterUnsavedWarn::Invalid,
-            action_unsavedwarn_value: String::from(""),
+            action_unsavedwarn_value: FileExampleId::Example1,
             // Text editor
             source: String::from(crate::config::WELCOME_TOML),
             parser: Parser::default(),
@@ -238,7 +239,7 @@ impl eframe::App for App {
                         self.handle_regular_open();
                     }
                     ActionAfterUnsavedWarn::LoadExample => {
-                        //todo
+                        self.load_source_from_example(self.action_unsavedwarn_value.clone());
                     }
                 }
             }

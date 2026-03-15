@@ -1,5 +1,6 @@
 use crate::App;
 use crate::helper::icon::*;
+use crate::logic::app_file::FileExampleId;
 use const_format::concatcp;
 
 pub enum ActionAfterUnsavedWarn {
@@ -104,7 +105,7 @@ impl App {
                     ui.menu_button("Render tests", |ui| {
                         // . Z-axis, out-of-order .
                         if ui.button("Z-axis, out-of-order").clicked() {
-                            self.load_source_from_example("debug1");
+                            self.handle_open_example(FileExampleId::Debug1);
                         }
                     });
                 });
@@ -114,11 +115,11 @@ impl App {
                     ui.menu_button("Examples", |ui| {
                         // . Example 1 :: CPU block diagram .
                         if ui.button("Example 1: CPU block diagram").clicked() {
-                            self.load_source_from_example("example1");
+                            self.handle_open_example(FileExampleId::Example1);
                         }
                         // . Example 2 :: BPMN .
                         if ui.button("Example 2: BPMN").clicked() {
-                            self.load_source_from_example("example2");
+                            self.handle_open_example(FileExampleId::Example2);
                         }
                     });
                     // . About .

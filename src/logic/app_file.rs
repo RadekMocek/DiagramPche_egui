@@ -1,5 +1,13 @@
 use crate::App;
+use crate::gui::panel_top::ActionAfterUnsavedWarn;
 use crate::logic::app_dialog::{open_toml_dialog, save_toml_dialog};
+
+#[derive(Clone)]
+pub enum FileExampleId {
+    Example1,
+    Example2,
+    Debug1,
+}
 
 impl App {
     // == Logic for buttons in MainMenuBar ==========================================
@@ -28,6 +36,16 @@ impl App {
             false
         } else {
             self.save_source_to_file_from_dialog()
+        }
+    }
+
+    pub fn handle_open_example(&mut self, id: FileExampleId) {
+        if !self.is_source_dirty {
+            self.load_source_from_example(id);
+        } else {
+            self.action_unsavedwarn_type = ActionAfterUnsavedWarn::LoadExample;
+            self.action_unsavedwarn_value = id;
+            self.do_open_modal_unsavedwarn = true;
         }
     }
 
@@ -67,21 +85,17 @@ impl App {
         false
     }
 
-    pub fn load_source_from_example(&mut self, magic_string: &str) {
+    pub fn load_source_from_example(&mut self, id: FileExampleId) {
         // Not good solution, but right now I don't want to spend time making build scripts to copy files to target directory
-        let cow = match magic_string {
-            "example1" => {
+        let cow = match id {
+            FileExampleId::Example1 => {
                 String::from_utf8_lossy(include_bytes!("../../assets/example/Example1.toml"))
             }
-            "example2" => {
+            FileExampleId::Example2 => {
                 String::from_utf8_lossy(include_bytes!("../../assets/example/Example2.toml"))
             }
-            "debug1" => {
+            FileExampleId::Debug1 => {
                 String::from_utf8_lossy(include_bytes!("../../assets/example/debug/Z-axis.toml"))
-            }
-            unknown => {
-                self.show_error_modal(&format!("There is no example with key '{unknown}'."));
-                return;
             }
         };
 

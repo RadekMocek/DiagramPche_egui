@@ -23,7 +23,7 @@ This is part of a IMGUI paradigm research, [go back to main repo](https://github
     * [x] New, Open, Save, Save as
     * [ ] Confirm unsaved exit (OS close button, alt+f4, mainmenubar option)
     * [x] Confirm unsaved new
-    * [ ] Confirm unsaved open, including loading a debug diagram or an example
+    * [x] Confirm unsaved open, including loading a debug diagram or an example
     * [x] Change window name according to opened document (incl. star for unsaved)
     * [ ] _Save → Cancel_ should behave the same as unsavedwarn's _Cancel_
   * [x] Code editor syntax highlight
