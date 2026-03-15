@@ -4,7 +4,7 @@ mod canvas_prepare_path;
 pub(super) mod modal;
 mod panel_bottom;
 mod panel_central;
-mod panel_top;
+pub(super) mod panel_top;
 mod text_editor;
 pub(super) mod text_editor_alt;
 pub(super) mod window;

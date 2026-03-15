@@ -16,15 +16,18 @@ impl App {
         }
     }
 
-    pub fn handle_regular_save(&mut self) {
+    pub fn handle_regular_save(&mut self) -> bool {
         let source_filename = self.source_filename.clone();
 
+        // (This whole if let else acts as a return)
         if let Some(source_filename) = source_filename {
             if self.save_source_to_file(&source_filename) {
                 self.is_source_dirty = false;
+                return true;
             }
+            false
         } else {
-            self.save_source_to_file_from_dialog();
+            self.save_source_to_file_from_dialog()
         }
     }
 
@@ -43,6 +46,7 @@ impl App {
         }
     }
 
+    /// Saves `self.source` to `filename`, returns true if successful
     pub fn save_source_to_file(&mut self, filename: &str) -> bool {
         if let Err(err) = std::fs::write(filename, &self.source) {
             self.show_error_modal(&err.to_string());
@@ -52,13 +56,15 @@ impl App {
         }
     }
 
-    pub fn save_source_to_file_from_dialog(&mut self) {
+    pub fn save_source_to_file_from_dialog(&mut self) -> bool {
         if let Some(path) = save_toml_dialog() {
             if self.save_source_to_file(&path) {
                 self.source_filename = Some(path);
                 self.is_source_dirty = false;
+                return true;
             }
         }
+        false
     }
 
     pub fn load_source_from_example(&mut self, magic_string: &str) {

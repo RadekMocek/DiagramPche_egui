@@ -1,4 +1,5 @@
 use crate::gui::modal::ActionAfterExport;
+use crate::gui::panel_top::ActionAfterUnsavedWarn;
 use crate::gui::text_editor_alt::AltEditorConfig;
 use crate::gui::window::PreferencesTab;
 use crate::logic::svg_exporter::Exporter;
@@ -19,6 +20,10 @@ pub struct App {
     // Saving
     pub is_source_dirty: bool, // Are there any unsaved changes to the source?
     pub source_filename: Option<String>,
+    pub is_action_unsavedwarn_queued: bool, // Did user click something other than cancel in unsavedwarn modal?
+    pub do_action_unsavedwarn_save: bool,   // Did user click save in unsavedwarn modal?
+    pub action_unsavedwarn_type: ActionAfterUnsavedWarn, // What to do after unsavedwarn modal is processed
+    pub action_unsavedwarn_value: String, // What file to open if ActionAfterUnsavedWarn is opening a file
     // Text editor
     pub source: String, // Text editor content, the TOML source code that user writes
     pub parser: Parser, // Parses the source into collections of structs which then our app uses to draw the diagram
@@ -78,6 +83,10 @@ impl Default for App {
             // Saving
             is_source_dirty: false,
             source_filename: None,
+            is_action_unsavedwarn_queued: false,
+            do_action_unsavedwarn_save: false,
+            action_unsavedwarn_type: ActionAfterUnsavedWarn::Invalid,
+            action_unsavedwarn_value: String::from(""),
             // Text editor
             source: String::from(crate::config::WELCOME_TOML),
             parser: Parser::default(),
@@ -204,6 +213,37 @@ impl eframe::App for App {
         self.gui_panel_top(&ctx);
         self.gui_panel_bottom(&ctx);
         self.gui_panel_central(&ctx); // Central called after bottom oterwise bottom would cover a little bit of central
+
+        // Post modal actions
+        if self.is_action_unsavedwarn_queued {
+            self.is_action_unsavedwarn_queued = false;
+            // Should we really do the action?
+            let mut do_the_action = true;
+            if self.do_action_unsavedwarn_save {
+                // If user pressed cancel on save dialog or saving somehow failed, we won't do the action
+                do_the_action = self.handle_regular_save();
+            }
+            if do_the_action {
+                match self.action_unsavedwarn_type {
+                    ActionAfterUnsavedWarn::Invalid => {
+                        self.show_error_modal("ActionAfterUnsavedWarn::Invalid")
+                    }
+                    ActionAfterUnsavedWarn::Exit => {
+                        //todo
+                    }
+                    ActionAfterUnsavedWarn::New => {
+                        self.handle_regular_new();
+                    }
+                    ActionAfterUnsavedWarn::OpenFile => {
+                        self.handle_regular_open();
+                    }
+                    ActionAfterUnsavedWarn::LoadExample => {
+                        //todo
+                    }
+                }
+            }
+            self.action_unsavedwarn_type = ActionAfterUnsavedWarn::Invalid;
+        }
 
         // Update window title
         let mut native_window_title = String::from("");

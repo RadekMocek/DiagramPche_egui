@@ -158,6 +158,8 @@ impl App {
                             .button(concatcp!(ICON_CONTENT_SAVE_OUTLINE, " Save"))
                             .clicked()
                         {
+                            self.is_action_unsavedwarn_queued = true;
+                            self.do_action_unsavedwarn_save = true;
                             ui.close();
                         }
                         set_unsavedwarn_modal_button_colors(ui, false);
@@ -165,6 +167,8 @@ impl App {
                             .button(concatcp!(ICON_TRASH_CAN_OUTLINE, " Discard"))
                             .clicked()
                         {
+                            self.is_action_unsavedwarn_queued = true;
+                            self.do_action_unsavedwarn_save = false;
                             ui.close();
                         }
                     });

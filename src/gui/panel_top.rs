@@ -2,6 +2,14 @@ use crate::App;
 use crate::helper::icon::*;
 use const_format::concatcp;
 
+pub enum ActionAfterUnsavedWarn {
+    Invalid,
+    Exit,
+    New,
+    OpenFile,
+    LoadExample,
+}
+
 impl App {
     pub fn gui_panel_top(&mut self, ctx: &egui::Context) {
         crate::style::conf_style_panel_top_begin(&ctx);
@@ -19,7 +27,8 @@ impl App {
                         if !self.is_source_dirty {
                             self.handle_regular_new();
                         } else {
-                            //todo
+                            self.action_unsavedwarn_type = ActionAfterUnsavedWarn::New;
+                            self.do_open_modal_unsavedwarn = true;
                         }
                     }
                     // . Open .
@@ -30,7 +39,8 @@ impl App {
                         if !self.is_source_dirty {
                             self.handle_regular_open();
                         } else {
-                            //todo
+                            self.action_unsavedwarn_type = ActionAfterUnsavedWarn::OpenFile;
+                            self.do_open_modal_unsavedwarn = true;
                         }
                     }
                     // . Save .
@@ -67,6 +77,7 @@ impl App {
                     // . Exit .
                     if ui.button(concatcp!(ICON_EXIT_RUN, " Exit")).clicked() {
                         ctx.send_viewport_cmd(egui::ViewportCommand::Close);
+                        //todo unsavedwarn
                     }
                 });
                 // .: View :.
@@ -96,10 +107,6 @@ impl App {
                             self.load_source_from_example("debug1");
                         }
                     });
-                    // ...
-                    if ui.button("(test)").clicked() {
-                        self.do_open_modal_unsavedwarn = true;
-                    }
                 });
                 // .: Help :.
                 ui.menu_button("Help", |ui| {
