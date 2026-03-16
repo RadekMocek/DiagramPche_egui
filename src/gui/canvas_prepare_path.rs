@@ -6,10 +6,22 @@ use crate::model::draw_command::node_rectangle::NodeRectangleDrawCommand;
 use crate::model::draw_command::path::PathDrawCommand;
 use crate::model::pathpoint_type::PathpointType;
 use egui::{Painter, Pos2, pos2};
+use std::sync::Arc;
 
 impl App {
     pub(super) fn gui_canvas_prepare_paths(&mut self, painter: &Painter, origin: &Pos2) {
         for path in &self.parser.result_paths {
+            // ---- Prepare for possible path label(s) --- --- --- --- --- --- --- --- --- ---
+            // (There may be multiple path labels on the same path,if it has multiple ends,
+            // but their text and background color is always the same)
+            let path_label_galley = painter.layout_no_wrap(
+                path.label_value.clone(),
+                egui::FontId::monospace(self.canvas_font_size as f32),
+                egui::Color32::PLACEHOLDER,
+            );
+            let path_label_rect_size = path_label_galley.rect.size();
+            // --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
+
             // Prepare the start point
             let mut start = pos2(
                 path.start.x as f32 * self.zoom_level,
@@ -164,20 +176,11 @@ impl App {
                     let label_point_next = result_pathpoints[label_point_next_idx];
                     let direction = vec2_normalized(label_point_next - label_point_curr);
 
-                    // Prepare the text so we can shift to make it that when (3)==0, label center sits on the path
-                    let label_galley = painter.layout_no_wrap(
-                        path.label_value.clone(),
-                        egui::FontId::monospace(self.canvas_font_size as f32),
-                        egui::Color32::PLACEHOLDER,
-                    );
-
-                    let label_rect_size = label_galley.rect.size();
-
                     // Using the direction vector, we can apply the shifts
                     let label_position = label_point_curr
                         + (label_shift * self.zoom_level * direction)
                         + (label_shift_orth * self.zoom_level * vec2_orthogonalized(direction))
-                        - (label_rect_size / 2.0);
+                        - (path_label_rect_size / 2.0);
 
                     // `label_bg=` can be set with color value to give background to the path label; background rectangle size == label size
                     // Make a draw command, we will use NodeRectangle for this
@@ -185,12 +188,12 @@ impl App {
                         dl_user_channel_to_real_channel(path.z, DLPriority::PathLabel),
                         Box::new(NodeRectangleDrawCommand::new(
                             label_position,
-                            label_position + label_rect_size,
+                            label_position + path_label_rect_size,
                             path.label_bg_color.to_egui_color(),
                             egui::Color32::TRANSPARENT,
                             self.zoom_level,
                             label_position,
-                            label_galley,
+                            Arc::clone(&path_label_galley),
                         )),
                     ));
                 }

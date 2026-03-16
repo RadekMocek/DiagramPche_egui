@@ -92,3 +92,4 @@ cargo build --release
 * I don't know how to scroll textedit to certain line or cursor, [I am not the only one](https://github.com/emilk/egui/discussions/4176)
 * <https://github.com/emilk/egui/issues/7412>
 * TextEdit && TextEditAlt – cannot MW scroll while selecting text
+* TextEdit && TextEditAlt – vkládání symbolů s diakritikou moc nefunguje (pouze na Linux Mint, na Windows OK)
