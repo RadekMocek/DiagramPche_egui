@@ -131,12 +131,26 @@ impl Parser {
                         && item_arr.get(2).expect("len 4").is_integer()
                         && item_arr.get(3).expect("len 4").is_integer()
                     {
+                        // Path label value
                         curr_path.label_value =
                             String::from(item_arr.get(0).expect("len 4").as_str().expect("str"));
-                        curr_path.label_point =
+
+                        // Path label reference point index
+                        let label_point =
                             item_arr.get(1).expect("len 4").as_integer().expect("int");
+                        if label_point < 0 {
+                            self.report_error(
+                                "Path label reference point index shouldn't be a negative number",
+                                &item_arr.get(1).expect("len 4").span(),
+                            );
+                        }
+                        curr_path.label_point = label_point;
+
+                        // Path label shift to next point
                         curr_path.label_shift =
                             item_arr.get(2).expect("len 4").as_integer().expect("int");
+
+                        // Path label perpendicular shift
                         curr_path.label_shift_orthogonal =
                             item_arr.get(3).expect("len 4").as_integer().expect("int");
                     } else {
@@ -147,7 +161,9 @@ impl Parser {
                     }
                 }
                 // == label_bg ==
-                "label_bg" => self.set_color_from_array_or_string(item, &mut curr_path.label_bg_color),
+                "label_bg" => {
+                    self.set_color_from_array_or_string(item, &mut curr_path.label_bg_color)
+                }
                 // == Unknown key ==
                 _ => self.report_error(&format!("Unknown key '{key}'"), &item.span()),
             }

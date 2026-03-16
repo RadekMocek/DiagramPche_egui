@@ -49,6 +49,9 @@ pub const WELCOME_TOML: &str = r##"[variables]
 node_offset = 14
 path_offset = 40
 
+[node.ABCD]
+xy=[100,0]
+
 [node.hello]
 value = "Hello,"
 color = "#ff99b880"
@@ -79,10 +82,6 @@ type = "text"
 xy=[300, 0]
 color_border = "#FF0000FF"
 label_shift = [-50, -50]
-color=[0,
-0,
-0,
-255]
 
 [node.testm]
 xy = [-250, -250]
@@ -91,7 +90,6 @@ type = "text"
 
 [node.testr]
 color = "#FFFFFFC0"
-color_border = "#0000FF2F"
 pivot = "center"
 xy = ["testp", "center", 0, 0]
 value = "       "
@@ -115,6 +113,6 @@ ends=[
     ["teststh", "bottom", 20,0]
 ]
 shift=[200,100]
-label=["AAA\nBBB\nCCC\nDDD", 1, 250, 0]
+label=["AAA\nBBB\nCCC\nDDD", 6, 0, 0]
 label_bg = "#00FF008F"
 "##;
