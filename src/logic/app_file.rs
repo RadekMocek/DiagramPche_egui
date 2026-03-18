@@ -7,6 +7,7 @@ pub enum FileExampleId {
     Example1,
     Example2,
     Debug1,
+    Debug2,
 }
 
 impl App {
@@ -96,6 +97,9 @@ impl App {
             }
             FileExampleId::Debug1 => {
                 String::from_utf8_lossy(include_bytes!("../../assets/example/debug/Z-axis.toml"))
+            }
+            FileExampleId::Debug2 => {
+                String::from_utf8_lossy(include_bytes!("../../assets/example/debug/PathLabel.toml"))
             }
         };
 

@@ -107,6 +107,10 @@ impl App {
                         if ui.button("Z-axis, out-of-order").clicked() {
                             self.handle_open_example(FileExampleId::Debug1);
                         }
+                        // . Path label with bg .
+                        if ui.button("Path label background").clicked() {
+                            self.handle_open_example(FileExampleId::Debug2);
+                        }
                     });
                     // . Benchmark .
                     if ui.button("Benchmark").clicked() {

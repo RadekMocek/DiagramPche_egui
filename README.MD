@@ -27,17 +27,6 @@ This is part of a IMGUI paradigm research, [go back to main repo](https://github
     * [x] Change window name according to opened document (incl. star for unsaved)
     * [x] _Save → Cancel_ should behave the same as unsavedwarn's _Cancel_
   * [x] Code editor syntax highlight
-* Pipeline: TOML parse → Draw to canvas / Render to SVG:
-  * [x] Remove `(expecting [X, Y])` from error message (does not make sense in wider context)
-  * [x] `[node].type = "text"`
-  * [x] `[node].type = "rectangle"`
-  * [x] `[node].type = "ellipse"`
-  * [x] `[node].type = "diamond"`
-  * [x] `[node].color_border`, don't forget to generalize the error message
-  * [x] `[node].label_shift`, allow for variables, don't forget about zoom level
-  * [x] Allow setting individual start/end path shift, keep backwards compatible
-  * [x] `[[path]].label`
-  * [x] `[[path]].label_bg`
 * Canvas features:
   * [x] Canvas zooming: anchor under mouse
   * [x] Change the cursor type while dragging the canvas
@@ -48,7 +37,7 @@ This is part of a IMGUI paradigm research, [go back to main repo](https://github
   * [x] Option for forcing light canvas regardless of color theme
   * [x] Duplicate settings from app: view→grid/toolbar/toolbar2, text editor font size (so all things that can be set are at one place)
 * Benchmark window:
-  * [ ] Do?
+  * [ ] Do
 * Icons:
   * [x] Main menu bar → File items
   * [x] Toolbar → Drop-down list with node types

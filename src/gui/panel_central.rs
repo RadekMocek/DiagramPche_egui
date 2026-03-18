@@ -92,6 +92,7 @@ impl App {
                 if self.is_canvas_node_selected
                     && let Some(node) = self.parser.result_nodes.get(&self.selected_canvas_node_key)
                 {
+                    // Node is selected, get info from it
                     node_span = &node.node_span;
                     color = node.color.to_picker_arr();
                     color_span = &node.color_span;
@@ -102,14 +103,17 @@ impl App {
                     if let Some(hover_key) = &self.selected_or_hovered_canvas_node_key
                         && let Some(node) = self.parser.result_nodes.get(hover_key)
                     {
+                        // Node is not selected, but is at least hovered, get info from it
                         label_value = &node.id;
                         color = node.color.to_picker_arr();
                         node_type = &node.node_type;
                     } else {
+                        // No node hovered, show placeholder info
                         label_value = &self.no_node_hovered_string;
                         color = [240, 240, 240, 255];
                         node_type = &NodeType::Rectangle;
                     }
+                    // Same for hovered and no node selected (no need to store these if node is just hovered, toolbar is disabled)
                     node_span = &None;
                     color_span = &None;
                     node_type_span = &None;
@@ -166,7 +170,7 @@ impl App {
                         ui.separator();
 
                         // .: Node ID label :.
-                        ui.label(format!("ID: {}", label_value));
+                        ui.label(format!("ID: {}", label_value.replace('\n', " ")));
                     });
                 });
                 right_ui.add_space(widget::TINYSKIP);

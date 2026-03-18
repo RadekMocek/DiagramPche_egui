@@ -223,6 +223,10 @@ impl App {
         }
     }
 
+    // --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
+
+    /// This is used when user is drag'n'dropping new node onto a canvas.
+    /// A "ghost node" is rendered and shows where will the real node end up if user releases LMB.
     pub(super) fn gui_canvas_draw_ghost_node(
         &self,
         painter: &Painter,

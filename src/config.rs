@@ -17,11 +17,6 @@ pub const COLOR_BTN_BAD_NORMAL: Color32 = Color32::from_rgba_unmultiplied_const(
 pub const COLOR_BTN_BAD_HOVER: Color32 = Color32::from_rgba_unmultiplied_const(220, 66, 66, 128);
 pub const COLOR_BTN_BAD_CLICK: Color32 = Color32::from_rgba_unmultiplied_const(165, 49, 49, 128);
 
-/*
-pub const COLOR_SECONDARY_TOOLBAR_LIGHT: Color32 = Color32::from_gray(220);
-pub const COLOR_SECONDARY_TOOLBAR_DARK: Color32 = Color32::from_gray(45);
-*/
-
 // Canvas
 pub const COLOR_CANVAS_BACKGROUND: Color32 = Color32::from_gray(240);
 
@@ -49,9 +44,6 @@ pub const WELCOME_TOML: &str = r##"[variables]
 node_offset = 14
 path_offset = 40
 
-[node.ABCD]
-xy=[100,0]
-
 [node.hello]
 value = "Hello,"
 color = "#ff99b880"
@@ -70,49 +62,4 @@ end = ["world", "bottom", 0, 0]
 shift = [0, "path_offset"]
 points = [["", "start", 0, "", "end", 0]]
 color = [40, 40, 40, 255]
-
-# ---------------
-
-[node.testp]
-xy = [250, 250]
-value = "aaaaa\nbbbbbbbbbbbbb\nccccc\nddddd"
-type = "text"
-
-[node.teststh]
-xy=[300, 0]
-color_border = "#FF0000FF"
-label_shift = [-50, -50]
-
-[node.testm]
-xy = [-250, -250]
-value = "aaaaa\nbbbbb\nccccc\nddddd"
-type = "text"
-
-[node.testr]
-color = "#FFFFFFC0"
-pivot = "center"
-xy = ["testp", "center", 0, 0]
-value = "       "
-z = 5
-type = "rectangle"
-
-[[path]]
-start=["world", "right", 0 ,0]
-end=["testp", "left", 0 ,0]
-points=[
-    ["teststh","bottom",0,"","start",0],
-    ["hello","bottom",0,"","prev",200]
-]
-label=["huh?", 1, 150, 15]
-label_bg = [255,255,255,255]
-
-[[path]]
-start=["testp", "right", 0,0]
-ends=[
-    ["teststh", "right", 0,0],
-    ["teststh", "bottom", 20,0]
-]
-shift=[200,100]
-label=["AAA\nBBB\nCCC\nDDD", 6, 0, 0]
-label_bg = "#00FF008F"
 "##;

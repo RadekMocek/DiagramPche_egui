@@ -177,29 +177,40 @@ impl App {
                     let direction = vec2_normalized(label_point_next - label_point_curr);
 
                     // Using the direction vector, we can apply the shifts
-                    let label_position = label_point_curr
+                    let label_rect_top_left = label_point_curr
                         + (label_shift * self.zoom_level * direction)
                         + (label_shift_orth * self.zoom_level * vec2_orthogonalized(direction))
                         - (path_label_rect_size / 2.0);
 
                     // `label_bg=` can be set with color value to give background to the path label; background rectangle size == label size
                     // Make a draw command, we will use NodeRectangle for this
+                    let label_rect_bottom_right = label_rect_top_left + path_label_rect_size;
                     self.draw_commands_ord.push(DrawCommandOrd::new(
                         dl_user_channel_to_real_channel(path.z, DLPriority::PathLabel),
                         Box::new(NodeRectangleDrawCommand::new(
-                            label_position,
-                            label_position + path_label_rect_size,
+                            label_rect_top_left,
+                            label_rect_bottom_right,
                             path.label_bg_color.to_egui_color(),
                             egui::Color32::TRANSPARENT,
                             self.zoom_level,
-                            label_position,
+                            label_rect_top_left,
                             Arc::clone(&path_label_galley),
                         )),
                     ));
+
+                    // Path label also needs to update SVG boundaries
+                    if self.do_svg_export_this_iter {
+                        self.svg_exporter.update_boundaries(
+                            label_rect_top_left.x,
+                            label_rect_top_left.y,
+                            label_rect_bottom_right.x,
+                            label_rect_bottom_right.y,
+                        );
+                    }
                 }
             }
 
-            // SVG export?
+            // Update SVG boundaries if we do SVG export this iter
             if self.do_svg_export_this_iter {
                 for result_path in &result_paths {
                     for result_point in result_path {
