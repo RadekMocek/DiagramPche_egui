@@ -204,6 +204,8 @@ impl eframe::App for App {
                         if ch == '\n' {
                             line += 1;
                             column = 0;
+                        } else if ch == '\t' {
+                            column += 4
                         } else {
                             column += 1;
                         }
@@ -211,7 +213,7 @@ impl eframe::App for App {
                         if i >= error_span.end {
                             break;
                         }
-                        column_end += 1;
+                        column_end += if ch == '\t' { 4 } else { 1 };
                     }
                 }
                 self.error_span_line = line;

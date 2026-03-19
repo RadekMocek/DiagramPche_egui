@@ -150,33 +150,6 @@ impl App {
         // .: User AABR interaction :.
         // .:=======================:.
 
-        // == Drag n drop new node logic ==
-        if self.is_dragndropping_node {
-            let pointer_pos = if let Some(pointer_pos) = ui.input(|i| i.pointer.latest_pos()) {
-                pointer_pos
-            } else {
-                egui::Pos2::default()
-            };
-
-            let label = format!("node_{}", self.canvas_nodes.len());
-            let offset = self.gui_canvas_draw_ghost_node(&painter, &label, pointer_pos);
-
-            if ui.input(|i| i.pointer.button_released(egui::PointerButton::Primary)) {
-                self.is_dragndropping_node = false;
-                if response.rect.contains(pointer_pos) {
-                    let node_x = ((pointer_pos_in_canvas.x - offset.x) / self.zoom_level) as i64;
-                    let node_y = ((pointer_pos_in_canvas.y - offset.y) / self.zoom_level) as i64;
-                    self.source += &format!(
-                        "\n[node.{}]\ntype = {}\nxy = [{}, {}]\n",
-                        label,
-                        self.dragndropping_node_type.as_quoted_string(),
-                        node_x,
-                        node_y
-                    );
-                }
-            }
-        }
-
         // == Clicking on nodes in canvas ==
         // If selected node is removed from the TOML source, unselect it
         if self.is_canvas_node_selected
@@ -200,6 +173,41 @@ impl App {
                 self.selected_canvas_node_key = hover_key.clone();
             } else {
                 self.is_canvas_node_selected = false;
+            }
+        }
+
+        // == Drag n drop new node logic ==
+        if self.is_dragndropping_node {
+            // We ignore scrolling here, we are checking if pointer is in part of the window
+            let pointer_pos = ui
+                .input(|i| i.pointer.latest_pos())
+                .unwrap_or(egui::Pos2::default());
+
+            let label = format!("node_{}", self.canvas_nodes.len());
+
+            // Draw the "ghost node"
+            let offset = self.gui_canvas_draw_ghost_node(&painter, &label, pointer_pos);
+
+            // Check if LMB released inside the canvas
+            if ui.input(|i| i.pointer.button_released(egui::PointerButton::Primary)) {
+                self.is_dragndropping_node = false;
+                if response.rect.contains(pointer_pos) {
+                    // Add new node to canvas (TOML values are zoom level independent so we divide by that)
+                    let node_x = ((pointer_pos_in_canvas.x - offset.x) / self.zoom_level) as i64;
+                    let node_y = ((pointer_pos_in_canvas.y - offset.y) / self.zoom_level) as i64;
+                    self.source += &format!(
+                        "\n[node.{}]\ntype = {}\nxy = [{}, {}]\n",
+                        label,
+                        self.dragndropping_node_type.as_quoted_string(),
+                        node_x,
+                        node_y
+                    );
+                    // Don't forget to mark as dirty
+                    self.is_source_dirty = true;
+                    // Make the new node selected
+                    self.is_canvas_node_selected = true;
+                    self.selected_canvas_node_key = label;
+                }
             }
         }
 

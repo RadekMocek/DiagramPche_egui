@@ -138,6 +138,7 @@ impl App {
                                     &format!("\ncolor = {}", get_rgba_hex_quoted_from_u8arr(color)),
                                 );
                             }
+                            self.is_source_dirty = true;
                         }
 
                         ui.separator();
@@ -165,6 +166,8 @@ impl App {
                                 self.source
                                     .insert_str(node_span.end, &format!("\ntype = {type_string}"));
                             }
+
+                            self.is_source_dirty = true;
                         }
 
                         ui.separator();
