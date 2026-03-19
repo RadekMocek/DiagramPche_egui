@@ -178,6 +178,13 @@ impl App {
         }
 
         // == Clicking on nodes in canvas ==
+        // If selected node is removed from the TOML source, unselect it
+        if self.is_canvas_node_selected
+            && let None = self.parser.result_nodes.get(&self.selected_canvas_node_key)
+        {
+            self.is_canvas_node_selected = false;
+        }
+        // Check for nodes under the pointer
         let mut hovered_z_mul = -1;
         self.selected_or_hovered_canvas_node_key = None;
         for (key, value) in &self.canvas_nodes {
