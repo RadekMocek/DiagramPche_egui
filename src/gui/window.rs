@@ -52,7 +52,9 @@ impl App {
                         }
                         // .::.
                         widget::header(ui, widget::SMALLSKIP, "Canvas color theme");
-                        ui.checkbox(&mut self.style_do_force_light_canvas, "Keep canvas light");
+                        ui.add_enabled_ui(!self.style_is_light_mode, |ui| {
+                            ui.checkbox(&mut self.style_do_force_light_canvas, "Keep canvas light");
+                        });
                     }
                     PreferencesTab::TextEditor => {
                         // .::.
