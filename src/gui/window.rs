@@ -100,9 +100,13 @@ impl App {
             .open(&mut self.do_show_window_benchmark)
             .resizable(false)
             .show(ui.ctx(), |ui| {
-                ui.label("TODO");
-                ui.separator();
-                let _ = ui.button("Start benchmark");
+                if !self.benchmark_data.is_benchmark_running {
+                    ui.label("TODO");
+                    ui.separator();
+                    let _ = ui.button("Start benchmark");
+                } else {
+                    //todo
+                }
             });
     }
 }

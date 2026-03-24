@@ -1,7 +1,9 @@
+use crate::config;
 use crate::gui::modal::ActionAfterExport;
 use crate::gui::panel_top::ActionAfterUnsavedWarn;
 use crate::gui::text_editor_alt::AltEditorConfig;
 use crate::gui::window::PreferencesTab;
+use crate::logic::app_benchmark::BenchmarkData;
 use crate::logic::app_file::FileExampleId;
 use crate::logic::svg_exporter::Exporter;
 use crate::logic::toml::parser::Parser;
@@ -78,6 +80,7 @@ pub struct App {
     pub style_do_force_light_canvas: bool,
     // Benchmark
     pub do_show_window_benchmark: bool,
+    pub benchmark_data: BenchmarkData,
     // Misc
     pub no_node_hovered_string: String,
 }
@@ -96,7 +99,7 @@ impl Default for App {
             action_unsavedwarn_value: FileExampleId::Example1,
             should_window_really_close: false,
             // Text editor
-            source: String::from(crate::config::WELCOME_TOML),
+            source: String::from(config::WELCOME_TOML),
             parser: Parser::default(),
             is_error_span_some: false,
             error_span_line: 0,
@@ -107,11 +110,11 @@ impl Default for App {
             do_use_alt_editor: true,
             alt_editor_config: AltEditorConfig::default(),
             do_syntax_highlight: true,
-            source_font_size: crate::config::FONT_SIZE_SOURCE_DEFAULT,
+            source_font_size: config::FONT_SIZE_SOURCE_DEFAULT,
             // Canvas
-            canvas_font_size: crate::config::FONT_SIZE_CANVAS_BASE,
-            zoom_level: crate::config::ZOOM_LEVEL_DEFAULT,
-            scrolling: crate::config::SCROLLING_DEFAULT,
+            canvas_font_size: config::FONT_SIZE_CANVAS_BASE,
+            zoom_level: config::ZOOM_LEVEL_DEFAULT,
+            scrolling: config::SCROLLING_DEFAULT,
             canvas_nodes: HashMap::new(),
             draw_commands_ord: BinaryHeap::new(),
             do_show_grid: true,
@@ -147,7 +150,8 @@ impl Default for App {
             style_is_light_mode: true,
             style_do_force_light_canvas: true,
             // Benchmark
-            do_show_window_benchmark: false,
+            do_show_window_benchmark: config::DO_OPEN_BENCHMARK_WINDOW_AT_STARTUP,
+            benchmark_data: BenchmarkData::default(),
             // Misc
             no_node_hovered_string: String::from("(No node hovered)"),
         }

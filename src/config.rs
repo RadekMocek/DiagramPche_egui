@@ -1,5 +1,8 @@
 use egui::{Color32, Pos2, pos2};
 
+pub const DO_OPEN_BENCHMARK_WINDOW_AT_STARTUP: bool = true;
+
+//
 pub const FONT_SIZE_DEFAULT: f32 = 20.0;
 pub const FONT_SIZE_MAIN_MENU_BAR: f32 = 18.0;
 
