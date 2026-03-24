@@ -62,24 +62,10 @@ impl App {
                         self.widget_text_editor_font_size_setup(ui);
                         // .::.
                         widget::header(ui, widget::SMALLSKIP, "Preferred text editor");
-
-                        const CHOICES: [&str; 2] = [
-                            "Vanilla (TextEdit::multiline)",
-                            "3rd Party (egui_code_editor)",
-                        ];
-                        let current_choice_idx = if !self.do_use_alt_editor { 0 } else { 1 };
-
-                        egui::ComboBox::from_id_salt("PreferredTextEditorCombo")
-                            .selected_text(format!("{}", CHOICES[current_choice_idx]))
-                            .show_ui(ui, |ui| {
-                                ui.selectable_value(&mut self.do_use_alt_editor, false, CHOICES[0]);
-                                ui.selectable_value(&mut self.do_use_alt_editor, true, CHOICES[1]);
-                            });
+                        self.widget_text_editor_preferred_combo(ui);
                         // .::.
                         widget::header(ui, widget::SMALLSKIP, "Text editor syntax highlight");
-                        ui.add_enabled_ui(!self.do_use_alt_editor, |ui| {
-                            ui.checkbox(&mut self.do_syntax_highlight, "Enable syntax highlight");
-                        });
+                        self.widget_text_editor_syntax_highlight_checkbox(ui);
                     }
                     PreferencesTab::View => {
                         ui.checkbox(&mut self.do_show_toolbar, "Toolbar");
@@ -96,14 +82,36 @@ impl App {
 
         // .: Benchmark :.
         // .:===========:.
+        let mut do_open_benchmark = self.do_show_window_benchmark;
+
         egui::Window::new("Benchmark")
-            .open(&mut self.do_show_window_benchmark)
+            .open(&mut do_open_benchmark)
             .resizable(false)
             .show(ui.ctx(), |ui| {
                 if !self.benchmark_data.is_benchmark_running {
-                    ui.label("TODO");
+                    const CHOICES: [&str; 3] = [
+                        "Light",
+                        "Heavy",
+                        "Gradual",
+                    ];
+
+                    ui.label("Syntax highlight may affect performance:");
+                    self.widget_text_editor_preferred_combo(ui);
+                    self.widget_text_editor_syntax_highlight_checkbox(ui);
+                    ui.label("Choose one of the three benchmarks:");
                     ui.separator();
-                    let _ = ui.button("Start benchmark");
+                    ui.add_space(widget::TINYSKIP);
+                    if self.is_source_dirty {
+                        ui.label(
+                            egui::RichText::new("You have unsaved changes, save your work before running the benchmark.")
+                                .color(crate::config::COLOR_ERROR),
+                        );
+                        ui.label("(If you don't wish to save this, select File → New → Discard.)");
+                    } else {
+                        if ui.button("Start benchmark").clicked() {
+                            //todo
+                        }
+                    }
                 } else {
                     //todo
                 }

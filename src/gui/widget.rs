@@ -29,4 +29,26 @@ impl App {
             );
         });
     }
+
+    pub(super) fn widget_text_editor_preferred_combo(&mut self, ui: &mut egui::Ui) {
+        const CHOICES: [&str; 2] = [
+            "Vanilla (TextEdit::multiline)",
+            "3rd Party (egui_code_editor)",
+        ];
+        
+        let current_choice_idx = if !self.do_use_alt_editor { 0 } else { 1 };
+
+        egui::ComboBox::from_id_salt("PreferredTextEditorCombo")
+            .selected_text(format!("{}", CHOICES[current_choice_idx]))
+            .show_ui(ui, |ui| {
+                ui.selectable_value(&mut self.do_use_alt_editor, false, CHOICES[0]);
+                ui.selectable_value(&mut self.do_use_alt_editor, true, CHOICES[1]);
+            });
+    }
+    
+    pub(super) fn widget_text_editor_syntax_highlight_checkbox(&mut self, ui: &mut egui::Ui) {
+        ui.add_enabled_ui(!self.do_use_alt_editor, |ui| {
+            ui.checkbox(&mut self.do_syntax_highlight, "Enable syntax highlight");
+        });
+    }
 }
