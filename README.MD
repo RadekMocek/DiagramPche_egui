@@ -9,11 +9,26 @@ This is part of a IMGUI paradigm research, [go back to main repo](https://github
 
 ## TODO
 
-* [ ] Do not draw the ghost node if in this position releasing LMB won't place it? (this happens when the ghost is at the edge of the canvas but cursor is already outside of it)
 * Canvas features:
   * [ ] Ctrl+Click to jump to node definition in text editor
 * Benchmark window:
-  * [ ] Do
+  * Before the benchmark starts:
+    * [ ] Warn about benchmark discarding current document
+    * [ ] Allow disabling syntax highlight
+    * [ ] Choose between 3 different benchmarks
+  * Do this automatically on the benchmark start:
+    * [ ] Disable user interaction
+    * [ ] Reserve string space for gradual benchmark
+    * [ ] Change text/canvas layout ratio
+    * [ ] Maximize the window
+    * [ ] Move the bench-window top-left of the parent
+  * During the benchmark:
+    * [ ] Set bench-window unclosable when bench running and show undetermined progress bar
+    * [ ] Don't mark the document as dirty
+    * [ ] Show FPS, total nodes, app ram usage, system cpu usage; win+linux
+    * [ ] Record shown data with timestamp
+  * Post:
+    * [ ] Export to CSV
 
 ## Building locally
 

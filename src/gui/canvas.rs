@@ -183,15 +183,15 @@ impl App {
                 .input(|i| i.pointer.latest_pos())
                 .unwrap_or(egui::Pos2::default());
 
-            let label = format!("node_{}", self.canvas_nodes.len());
+            // Do not draw the ghost node if in this position releasing LMB won't place it
+            if response.rect.contains(pointer_pos) {
+                // Draw the "ghost node"
+                let label = format!("node_{}", self.canvas_nodes.len());
+                let offset = self.gui_canvas_draw_ghost_node(&painter, &label, pointer_pos);
 
-            // Draw the "ghost node"
-            let offset = self.gui_canvas_draw_ghost_node(&painter, &label, pointer_pos);
-
-            // Check if LMB released inside the canvas
-            if ui.input(|i| i.pointer.button_released(egui::PointerButton::Primary)) {
-                self.is_dragndropping_node = false;
-                if response.rect.contains(pointer_pos) {
+                // Check if LMB released inside the canvas
+                if ui.input(|i| i.pointer.button_released(egui::PointerButton::Primary)) {
+                    self.is_dragndropping_node = false;
                     // Add new node to canvas (TOML values are zoom level independent so we divide by that)
                     let node_x = ((pointer_pos_in_canvas.x - offset.x) / self.zoom_level) as i64;
                     let node_y = ((pointer_pos_in_canvas.y - offset.y) / self.zoom_level) as i64;
@@ -207,6 +207,11 @@ impl App {
                     // Make the new node selected
                     self.is_canvas_node_selected = true;
                     self.selected_canvas_node_key = label;
+                }
+            } else {
+                // Check if LMB released outside the canvas
+                if ui.input(|i| i.pointer.button_released(egui::PointerButton::Primary)) {
+                    self.is_dragndropping_node = false;
                 }
             }
         }

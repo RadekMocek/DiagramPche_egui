@@ -78,7 +78,6 @@ impl App {
                     // . Exit .
                     if ui.button(concatcp!(ICON_EXIT_RUN, " Exit")).clicked() {
                         ctx.send_viewport_cmd(egui::ViewportCommand::Close);
-                        //todo unsavedwarn
                     }
                 });
                 // .: View :.
