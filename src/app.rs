@@ -96,7 +96,7 @@ impl Default for App {
             is_action_unsavedwarn_queued: false,
             do_action_unsavedwarn_save: false,
             action_unsavedwarn_type: ActionAfterUnsavedWarn::Invalid,
-            action_unsavedwarn_value: FileExampleId::Example1,
+            action_unsavedwarn_value: FileExampleId::ExampleBlockDiag,
             should_window_really_close: false,
             // Text editor
             source: String::from(config::WELCOME_TOML),
@@ -227,7 +227,7 @@ impl eframe::App for App {
             }
         }
 
-        // Draw GUI
+        // Draw GUI        
         self.gui_panel_top(&ctx);
         self.gui_panel_bottom(&ctx);
         self.gui_panel_central(&ctx); // Central called after bottom oterwise bottom would cover a little bit of central

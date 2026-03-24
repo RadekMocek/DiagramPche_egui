@@ -4,10 +4,12 @@ use crate::logic::app_dialog::{open_toml_dialog, save_toml_dialog};
 
 #[derive(Clone)]
 pub enum FileExampleId {
-    Example1,
-    Example2,
-    Debug1,
-    Debug2,
+    ExampleBlockDiag,
+    ExampleEcoDiag,
+    DebugZAxis,
+    DebugPathLabel,
+    DebugBenchLight,
+    DebugBenchHeavy,
 }
 
 impl App {
@@ -89,17 +91,23 @@ impl App {
     pub fn load_source_from_example(&mut self, id: FileExampleId) {
         // Not good solution, but right now I don't want to spend time making build scripts to copy files to target directory
         let cow = match id {
-            FileExampleId::Example1 => {
+            FileExampleId::ExampleBlockDiag => {
                 String::from_utf8_lossy(include_bytes!("../../assets/example/Example1.toml"))
             }
-            FileExampleId::Example2 => {
+            FileExampleId::ExampleEcoDiag => {
                 String::from_utf8_lossy(include_bytes!("../../assets/example/Example2.toml"))
             }
-            FileExampleId::Debug1 => {
+            FileExampleId::DebugZAxis => {
                 String::from_utf8_lossy(include_bytes!("../../assets/example/debug/Z-axis.toml"))
             }
-            FileExampleId::Debug2 => {
+            FileExampleId::DebugPathLabel => {
                 String::from_utf8_lossy(include_bytes!("../../assets/example/debug/PathLabel.toml"))
+            }
+            FileExampleId::DebugBenchLight => {
+                String::from_utf8_lossy(include_bytes!("../../assets/example/debug/BenchmarkLight.toml"))
+            }
+            FileExampleId::DebugBenchHeavy => {
+                String::from_utf8_lossy(include_bytes!("../../assets/example/debug/BenchmarkHeavy.toml"))
             }
         };
 

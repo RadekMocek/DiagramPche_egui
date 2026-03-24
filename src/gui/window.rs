@@ -11,12 +11,12 @@ pub enum PreferencesTab {
 
 impl App {
     pub(super) fn gui_window(&mut self, ui: &mut egui::Ui) {
-        let mut do_open_preferences = self.do_show_window_preferences; // to satisfy the borrow checker
+        let mut do_show_preferences = self.do_show_window_preferences; // to satisfy the borrow checker
 
         // .: Preferences :.
         // .:=============:.
         egui::Window::new("Preferences")
-            .open(&mut do_open_preferences)
+            .open(&mut do_show_preferences)
             .resizable(false)
             .show(ui.ctx(), |ui| {
                 ui.horizontal(|ui| {
@@ -78,27 +78,37 @@ impl App {
                 }
             });
 
-        self.do_show_window_preferences = do_open_preferences;
+        self.do_show_window_preferences = do_show_preferences;
 
         // .: Benchmark :.
         // .:===========:.
-        let mut do_open_benchmark = self.do_show_window_benchmark;
+        let mut do_show_benchmark = self.do_show_window_benchmark;
 
         egui::Window::new("Benchmark")
-            .open(&mut do_open_benchmark)
+            .open(&mut do_show_benchmark)
             .resizable(false)
+            .title_bar(!self.benchmark_data.is_running)
+            .anchor(egui::Align2::LEFT_TOP, [8.0, 25.0])
             .show(ui.ctx(), |ui| {
-                if !self.benchmark_data.is_benchmark_running {
+                if !self.benchmark_data.is_running {
+                    ui.label("Syntax highlight may affect performance:");
+                    self.widget_text_editor_preferred_combo(ui);
+                    self.widget_text_editor_syntax_highlight_checkbox(ui);
+
+                    ui.label("Choose one of the three benchmarks:");
                     const CHOICES: [&str; 3] = [
                         "Light",
                         "Heavy",
                         "Gradual",
                     ];
+                    egui::ComboBox::from_id_salt("BenchmarkTypeCombo")
+                        .selected_text(format!("{}", CHOICES[self.benchmark_data.type_choice_idx]))
+                        .show_ui(ui, |ui| {
+                            for i in 0..CHOICES.len() {
+                                ui.selectable_value(&mut self.benchmark_data.type_choice_idx, i, CHOICES[i]);
+                            }
+                        });
 
-                    ui.label("Syntax highlight may affect performance:");
-                    self.widget_text_editor_preferred_combo(ui);
-                    self.widget_text_editor_syntax_highlight_checkbox(ui);
-                    ui.label("Choose one of the three benchmarks:");
                     ui.separator();
                     ui.add_space(widget::TINYSKIP);
                     if self.is_source_dirty {
@@ -109,12 +119,14 @@ impl App {
                         ui.label("(If you don't wish to save this, select File → New → Discard.)");
                     } else {
                         if ui.button("Start benchmark").clicked() {
-                            //todo
+                            self.benchmark_start(ui.ctx());
                         }
                     }
                 } else {
-                    //todo
+                    self.benchmark_gui_update(ui);
                 }
             });
+
+        self.do_show_window_benchmark = do_show_benchmark;
     }
 }

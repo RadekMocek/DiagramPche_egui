@@ -13,22 +13,23 @@ This is part of a IMGUI paradigm research, [go back to main repo](https://github
   * [ ] Ctrl+Click to jump to node definition in text editor
 * Benchmark window:
   * Before the benchmark starts:
-    * [ ] Warn about benchmark discarding current document
-    * [ ] Allow disabling syntax highlight
-    * [ ] Choose between 3 different benchmarks
+    * [x] Warn about benchmark discarding current document
+    * [x] Allow disabling syntax highlight
+    * [x] Choose between 3 different benchmarks
   * Do this automatically on the benchmark start:
-    * [ ] Disable user interaction
-    * [ ] Reserve string space for gradual benchmark
-    * [ ] Change text/canvas layout ratio
-    * [ ] Maximize the window
-    * [ ] Move the bench-window top-left of the parent
+    * [x] Disable user interaction
+    * [x] Reserve string space for gradual benchmark
+    * [x] Change text/canvas layout ratio
+    * [x] Maximize the window
+    * [x] Move the bench-window top-left of the parent
   * During the benchmark:
-    * [ ] Set bench-window unclosable when bench running and show undetermined progress bar
+    * [x] Set bench-window unclosable when bench running and show undetermined progress bar
     * [ ] Don't mark the document as dirty
     * [ ] Show FPS, total nodes, app ram usage, system cpu usage; win+linux
     * [ ] Record shown data with timestamp
+  * [ ] __Do the actual benchmark logic__ 
   * Post:
-    * [ ] Export to CSV
+    * [ ] Export to CSV with proper filename
 
 ## Building locally
 
