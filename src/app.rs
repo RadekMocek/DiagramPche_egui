@@ -185,6 +185,10 @@ impl eframe::App for App {
         // Put your widgets into a `SidePanel`, `TopBottomPanel`, `CentralPanel`, `Window` or `Area`.
         // For inspiration and more examples, go to https://emilk.github.io/egui
 
+        if self.benchmark_data.is_running {
+            self.benchmark_update(&ctx);
+        }
+
         // Parse the TOML
         self.parser.parse(&self.source);
 
@@ -227,7 +231,7 @@ impl eframe::App for App {
             }
         }
 
-        // Draw GUI        
+        // Draw GUI
         self.gui_panel_top(&ctx);
         self.gui_panel_bottom(&ctx);
         self.gui_panel_central(&ctx); // Central called after bottom oterwise bottom would cover a little bit of central

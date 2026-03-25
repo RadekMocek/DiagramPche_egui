@@ -266,7 +266,8 @@ impl App {
         self.update_canvas_zoom();
     }
 
-    fn update_canvas_zoom(&mut self) {
+    /// Updates `zoom_level` to proper value after `canvas_font_size` is changed from code
+    pub fn update_canvas_zoom(&mut self) {
         self.zoom_level = self.canvas_font_size as f32 / config::FONT_SIZE_CANVAS_BASE as f32;
     }
 
