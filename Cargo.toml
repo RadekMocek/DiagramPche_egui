@@ -33,6 +33,9 @@ rfd = "0.17.2"
 showfile = "0.1.1"
 const_format = "0.2.35"
 
+# bench
+memory-stats = "1.2.0"
+
 # You only need serde if you want app persistence:
 #serde = { version = "1.0.219", features = ["derive"] }
 

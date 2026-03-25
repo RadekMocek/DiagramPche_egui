@@ -2,6 +2,7 @@ use crate::App;
 use crate::config;
 use crate::gui::widget;
 use crate::logic::app_file::FileExampleId;
+use memory_stats::memory_stats;
 use std::cmp::PartialEq;
 
 #[derive(Clone, PartialEq, Default)]
@@ -37,11 +38,13 @@ pub struct BenchmarkData {
     // In Dear ImGui this is used to change the zoom level, here we change it differently,
     // but still need this value to change colors and to know when to log to CSV.
     pub _notional_zoom_level: u32,
-    pub _stats_total_nodes: u32,
-    pub _stats_fps: u32,
     //
     pub __fps_cnt: u32,
     pub __fps_time: f32,
+    //
+    pub _stats_total_nodes: u32,
+    pub _stats_fps: u32,
+    pub _stats_mem_mib: f64,
 }
 
 // (In benchmark type GRADUAL, nodes are being added to the canvas (they are added as pairs connected by arrow))
@@ -72,7 +75,7 @@ const AUTO_SCROLL_STEP_X: f32 = 10.0;
 const AUTO_SCROLL_MODULO_X: f32 = 600.0;
 // How many zoom levels we iterate, this corresponds to the slider and MW behavior
 const ZOOM_LEVEL_MODULO: u32 = 6;
-// Precalculcated
+// Precalculated
 const BENCHMARK_LIGHT_N_NODES: u32 = 12;
 const BENCHMARK_HEAVY_N_NODES: u32 = 10780;
 
@@ -194,7 +197,10 @@ impl App {
                 self.benchmark_data._stats_total_nodes += 2 * N_NODES_IN_INTERVAL;
             }
             if self.benchmark_data._notional_zoom_level % 3 == 1 {
-                //todo
+                if let Some(usage) = memory_stats() {
+                    const MIBI: f64 = 1024.0 * 1024.0;
+                    self.benchmark_data._stats_mem_mib = usage.physical_mem as f64 / MIBI;
+                }
             }
 
             // End the benchmark check
@@ -217,6 +223,7 @@ impl App {
 
         ui.label(format!("    App framerate: {} FPS", bd._stats_fps));
         ui.label(format!("Total nodes drawn: {}", bd._stats_total_nodes));
+        ui.label(format!(" Working set size: {:.2} MiB", bd._stats_mem_mib));
 
         ui.separator();
         ui.add_space(widget::TINYSKIP);
