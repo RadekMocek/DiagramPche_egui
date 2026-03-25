@@ -24,10 +24,9 @@ This is part of a IMGUI paradigm research, [go back to main repo](https://github
     * [x] Move the bench-window top-left of the parent
   * During the benchmark:
     * [x] Set bench-window unclosable when bench running and show undetermined progress bar
-    * [ ] Don't mark the document as dirty
+    * [x] Don't mark the document as dirty
     * [ ] Show FPS, total nodes, app ram usage, system cpu usage; win+linux
     * [ ] Record shown data with timestamp
-  * [ ] __Do the actual benchmark logic__ 
   * Post:
     * [ ] Export to CSV with proper filename
 

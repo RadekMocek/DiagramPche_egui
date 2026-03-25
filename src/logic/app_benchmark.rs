@@ -37,6 +37,11 @@ pub struct BenchmarkData {
     // In Dear ImGui this is used to change the zoom level, here we change it differently,
     // but still need this value to change colors and to know when to log to CSV.
     pub _notional_zoom_level: u32,
+    pub _stats_total_nodes: u32,
+    pub _stats_fps: u32,
+    //
+    pub __fps_cnt: u32,
+    pub __fps_time: f32,
 }
 
 // (In benchmark type GRADUAL, nodes are being added to the canvas (they are added as pairs connected by arrow))
@@ -67,7 +72,7 @@ const AUTO_SCROLL_STEP_X: f32 = 10.0;
 const AUTO_SCROLL_MODULO_X: f32 = 600.0;
 // How many zoom levels we iterate, this corresponds to the slider and MW behavior
 const ZOOM_LEVEL_MODULO: u32 = 6;
-// Precalculated
+// Precalculcated
 const BENCHMARK_LIGHT_N_NODES: u32 = 12;
 const BENCHMARK_HEAVY_N_NODES: u32 = 10780;
 
@@ -95,9 +100,18 @@ impl App {
 
         // Prepare the source
         match btype {
-            BenchmarkType::Light => self.handle_open_example(FileExampleId::DebugBenchLight),
-            BenchmarkType::Heavy => self.handle_open_example(FileExampleId::DebugBenchHeavy),
-            BenchmarkType::Gradual => self.handle_regular_new(),
+            BenchmarkType::Light => {
+                self.handle_open_example(FileExampleId::DebugBenchLight);
+                self.benchmark_data._stats_total_nodes = BENCHMARK_LIGHT_N_NODES;
+            }
+            BenchmarkType::Heavy => {
+                self.handle_open_example(FileExampleId::DebugBenchHeavy);
+                self.benchmark_data._stats_total_nodes = BENCHMARK_HEAVY_N_NODES;
+            }
+            BenchmarkType::Gradual => {
+                self.handle_regular_new();
+                self.benchmark_data._stats_total_nodes = 0;
+            }
         }
 
         // Initialize helper variables
@@ -110,8 +124,19 @@ impl App {
     }
 
     pub fn benchmark_update(&mut self, ctx: &egui::Context) {
+        self.benchmark_data.__fps_cnt += 1;
+
         // Get delta time from egui
-        self.benchmark_data.time_counter += ctx.input(|i| i.unstable_dt);
+        let delta_time = ctx.input(|i| i.unstable_dt);
+        self.benchmark_data.time_counter += delta_time;
+
+        // Measure FPS DIY
+        self.benchmark_data.__fps_time += delta_time;
+        if self.benchmark_data.__fps_time >= 1.0 {
+            self.benchmark_data._stats_fps = self.benchmark_data.__fps_cnt;
+            self.benchmark_data.__fps_time -= 1.0;
+            self.benchmark_data.__fps_cnt = 0;
+        }
 
         // Do the next batch only when certain amount of time has passed
         if self.benchmark_data.time_counter > TIME_INTERVAL {
@@ -128,7 +153,7 @@ impl App {
             self.update_canvas_zoom();
 
             // Add a new batch of nodes
-            for i in 0..N_NODES_IN_INTERVAL {
+            for _ in 0..N_NODES_IN_INTERVAL {
                 if self.benchmark_data.running_type == BenchmarkType::Gradual {
                     let t = self.benchmark_data._node_counter_total_pairs;
                     let x = self.benchmark_data._x_cor;
@@ -165,7 +190,12 @@ impl App {
             }
 
             // Stats
-            //todo
+            if self.benchmark_data.running_type == BenchmarkType::Gradual {
+                self.benchmark_data._stats_total_nodes += 2 * N_NODES_IN_INTERVAL;
+            }
+            if self.benchmark_data._notional_zoom_level % 3 == 1 {
+                //todo
+            }
 
             // End the benchmark check
             if self.benchmark_data._y_cor > MAX_Y_COR {
@@ -180,6 +210,14 @@ impl App {
                 .animate(true)
                 .text("\tBenchmark is running..."),
         );
+        ui.add_space(widget::TINYSKIP);
+        ui.separator();
+
+        let bd = &self.benchmark_data;
+
+        ui.label(format!("    App framerate: {} FPS", bd._stats_fps));
+        ui.label(format!("Total nodes drawn: {}", bd._stats_total_nodes));
+
         ui.separator();
         ui.add_space(widget::TINYSKIP);
         if ui.button("Stop").clicked() {

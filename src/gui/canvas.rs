@@ -9,6 +9,8 @@ impl App {
     pub(super) fn gui_canvas(&mut self, ui: &mut egui::Ui) -> egui::Response {
         const CANVAS_SECONDARY_TOOLBAR_HEIGHT: f32 = 26.0;
 
+        let is_benchmark_running = self.benchmark_data.is_running;
+
         // .: Canvas init :.
         // .:=============:.
         // Painter is our canvas
@@ -22,7 +24,7 @@ impl App {
         // .: User interaction :.
         // .:==================:.
         // RMB to move canvas ("scrolling")
-        if response.dragged_by(egui::PointerButton::Secondary) {
+        if !is_benchmark_running && response.dragged_by(egui::PointerButton::Secondary) {
             self.scrolling += response.drag_delta();
             ui.ctx().set_cursor_icon(egui::CursorIcon::Grabbing);
         }
@@ -36,7 +38,7 @@ impl App {
             egui::Vec2::default()
         };
 
-        if response.hovered() {
+        if !is_benchmark_running && response.hovered() {
             // MW to zoom
             let scroll = ui.input(|i| {
                 i.events.iter().find_map(|e| match e {
@@ -219,40 +221,42 @@ impl App {
         // .: Secondary canvas toolbar :.
         // .:==========================:.
         if self.do_show_secondary_canvas_toolbar {
-            ui.horizontal(|ui| {
-                ui.add_space(widget::TINYSKIP);
+            ui.add_enabled_ui(!is_benchmark_running, |ui| {
+                ui.horizontal(|ui| {
+                    ui.add_space(widget::TINYSKIP);
 
-                // == Add node buttons ==
-                for tup in NODE_TYPES {
-                    let response = ui.button(tup.0).on_hover_text(format!(
-                        "Drag and drop me onto the canvas to add a '{}' node.",
-                        tup.2
-                    ));
+                    // == Add node buttons ==
+                    for tup in NODE_TYPES {
+                        let response = ui.button(tup.0).on_hover_text(format!(
+                            "Drag and drop me onto the canvas to add a '{}' node.",
+                            tup.2
+                        ));
 
-                    if !self.is_dragndropping_node && response.is_pointer_button_down_on() {
-                        self.dragndropping_node_type = tup.1;
-                        self.is_dragndropping_node = true;
+                        if !self.is_dragndropping_node && response.is_pointer_button_down_on() {
+                            self.dragndropping_node_type = tup.1;
+                            self.is_dragndropping_node = true;
+                        }
                     }
-                }
 
-                // == Zoom level slider ==
-                ui.with_layout(egui::Layout::right_to_left(egui::Align::Center), |ui| {
-                    let response = ui.add(
-                        egui::Slider::new(
-                            &mut self.canvas_font_size,
-                            config::FONT_SIZE_CANVAS_MIN..=config::FONT_SIZE_CANVAS_MAX,
-                        )
-                        .integer()
-                        .step_by(config::FONT_SIZE_CANVAS_STEP as f64)
-                        .custom_formatter(|_, _| format!("Zoom level: {:.2}", self.zoom_level)),
-                    );
+                    // == Zoom level slider ==
+                    ui.with_layout(egui::Layout::right_to_left(egui::Align::Center), |ui| {
+                        let response = ui.add(
+                            egui::Slider::new(
+                                &mut self.canvas_font_size,
+                                config::FONT_SIZE_CANVAS_MIN..=config::FONT_SIZE_CANVAS_MAX,
+                            )
+                            .integer()
+                            .step_by(config::FONT_SIZE_CANVAS_STEP as f64)
+                            .custom_formatter(|_, _| format!("Zoom level: {:.2}", self.zoom_level)),
+                        );
 
-                    if response.changed() {
-                        self.update_canvas_zoom();
-                    }
+                        if response.changed() {
+                            self.update_canvas_zoom();
+                        }
+                    });
+
+                    ui.add_space(widget::TINYSKIP);
                 });
-
-                ui.add_space(widget::TINYSKIP);
             });
         }
 
