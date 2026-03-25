@@ -81,8 +81,10 @@ pub struct App {
     // Benchmark
     pub do_show_window_benchmark: bool,
     pub benchmark_data: BenchmarkData,
+    pub system_info: sysinfo::System,
     // Misc
     pub no_node_hovered_string: String,
+    pub do_skip_text_edit: bool,
 }
 
 impl Default for App {
@@ -152,8 +154,10 @@ impl Default for App {
             // Benchmark
             do_show_window_benchmark: config::DO_OPEN_BENCHMARK_WINDOW_AT_STARTUP,
             benchmark_data: BenchmarkData::default(),
+            system_info: sysinfo::System::new(),
             // Misc
             no_node_hovered_string: String::from("(No node hovered)"),
+            do_skip_text_edit: false,
         }
     }
 }

@@ -1,9 +1,11 @@
 use crate::App;
 use crate::config;
 use crate::gui::widget;
+use crate::helper::benchmark_csv::BenchmarkLogResults;
 use crate::logic::app_file::FileExampleId;
 use memory_stats::memory_stats;
 use std::cmp::PartialEq;
+use std::time;
 
 #[derive(Clone, PartialEq, Default)]
 pub enum BenchmarkType {
@@ -24,12 +26,12 @@ impl BenchmarkType {
     }
 }
 
-#[derive(Default)]
 pub struct BenchmarkData {
     pub type_choice_idx: usize,
     pub is_running: bool,
     pub running_type: BenchmarkType,
     pub time_counter: f32,
+    pub timestamp_start: time::Instant,
     pub _node_counter_total_pairs: u32,
     pub _node_counter_row_pairs: u32,
     pub _x_cor: u32,
@@ -45,6 +47,34 @@ pub struct BenchmarkData {
     pub _stats_total_nodes: u32,
     pub _stats_fps: u32,
     pub _stats_mem_mib: f64,
+    pub _stats_system_cpu: f32,
+    //
+    pub log_results: BenchmarkLogResults,
+}
+
+impl Default for BenchmarkData {
+    fn default() -> Self {
+        Self {
+            type_choice_idx: 0,
+            is_running: false,
+            running_type: BenchmarkType::default(),
+            time_counter: 0.0,
+            timestamp_start: time::Instant::now(),
+            _node_counter_total_pairs: 0,
+            _node_counter_row_pairs: 0,
+            _x_cor: 0,
+            _y_cor: 0,
+            _color: (255, 255, 255),
+            _notional_zoom_level: 0,
+            __fps_cnt: 0,
+            __fps_time: 0.0,
+            _stats_total_nodes: 0,
+            _stats_fps: 0,
+            _stats_mem_mib: 0.0,
+            _stats_system_cpu: 0.0,
+            log_results: BenchmarkLogResults::default(),
+        }
+    }
 }
 
 // (In benchmark type GRADUAL, nodes are being added to the canvas (they are added as pairs connected by arrow))
@@ -116,6 +146,10 @@ impl App {
                 self.benchmark_data._stats_total_nodes = 0;
             }
         }
+
+        //
+        self.system_info.refresh_cpu_usage();
+        self.benchmark_data.log_results.clear();
 
         // Initialize helper variables
         self.benchmark_data._node_counter_total_pairs = 0;
@@ -197,15 +231,30 @@ impl App {
                 self.benchmark_data._stats_total_nodes += 2 * N_NODES_IN_INTERVAL;
             }
             if self.benchmark_data._notional_zoom_level % 3 == 1 {
+                let bd = &mut self.benchmark_data;
+                // RAM
                 if let Some(usage) = memory_stats() {
                     const MIBI: f64 = 1024.0 * 1024.0;
-                    self.benchmark_data._stats_mem_mib = usage.physical_mem as f64 / MIBI;
+                    bd._stats_mem_mib = usage.physical_mem as f64 / MIBI;
                 }
+                // CPU
+                self.system_info.refresh_cpu_usage();
+                bd._stats_system_cpu = self.system_info.global_cpu_usage();
+                // LOG
+                bd.log_results
+                    .timestamp
+                    .push(bd.timestamp_start.elapsed().as_millis());
+
+                bd.log_results.fps.push(bd._stats_fps);
+                bd.log_results.n_nodes.push(bd._stats_total_nodes);
+                bd.log_results.mem_mib.push(bd._stats_mem_mib);
+                bd.log_results.cpu_usage.push(bd._stats_system_cpu);
             }
 
             // End the benchmark check
             if self.benchmark_data._y_cor > MAX_Y_COR {
                 self.benchmark_data.is_running = false;
+                self.benchmark_data.log_results.write_to_csv();
             }
         }
     }
@@ -223,7 +272,8 @@ impl App {
 
         ui.label(format!("    App framerate: {} FPS", bd._stats_fps));
         ui.label(format!("Total nodes drawn: {}", bd._stats_total_nodes));
-        ui.label(format!(" Working set size: {:.2} MiB", bd._stats_mem_mib));
+        ui.label(format!(" Working set size: {:.1} MiB", bd._stats_mem_mib));
+        ui.label(format!(" System CPU usage: {:.1} %", bd._stats_system_cpu));
 
         ui.separator();
         ui.add_space(widget::TINYSKIP);

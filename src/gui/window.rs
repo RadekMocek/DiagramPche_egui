@@ -109,6 +109,9 @@ impl App {
                             }
                         });
 
+                    ui.label("¯\\_(-_-)_/¯");
+                    ui.checkbox(&mut self.do_skip_text_edit, "Hide text editor completely");
+
                     ui.separator();
                     ui.add_space(widget::TINYSKIP);
                     if self.is_source_dirty {

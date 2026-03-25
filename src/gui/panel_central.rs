@@ -69,16 +69,18 @@ impl App {
                 }
 
                 // Text editor
-                egui::ScrollArea::both()
-                    .id_salt("source")
-                    .auto_shrink(false)
-                    .show(&mut left_ui, |ui| {
-                        if !self.do_use_alt_editor {
-                            self.gui_text_editor(ui);
-                        } else {
-                            self.gui_text_editor_alt(ui);
-                        }
-                    });
+                if !self.do_skip_text_edit {
+                    egui::ScrollArea::both()
+                        .id_salt("source")
+                        .auto_shrink(false)
+                        .show(&mut left_ui, |ui| {
+                            if !self.do_use_alt_editor {
+                                self.gui_text_editor(ui);
+                            } else {
+                                self.gui_text_editor_alt(ui);
+                            }
+                        });
+                }
             });
 
             // Draw right panel (canvas)
