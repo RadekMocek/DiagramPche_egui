@@ -7,5 +7,6 @@ mod panel_central;
 pub(super) mod panel_top;
 mod text_editor;
 pub(super) mod text_editor_alt;
-pub(super) mod window;
 pub(super) mod widget;
+mod widgetbench;
+pub(super) mod window;

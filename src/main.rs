@@ -12,14 +12,18 @@ fn main() -> eframe::Result {
             .with_min_inner_size([300.0, 220.0])
             .with_icon(
                 eframe::icon_data::from_png_bytes(&include_bytes!("../assets/icon-256.png")[..])
-                    .expect("Failed to load icon"),
+                    .expect("Icon should be in the assets folder"),
             ),
         ..Default::default()
     };
+
+    // cmd args
+    let args: Vec<String> = std::env::args().collect();
+
     eframe::run_native(
         "DiagramPche :: egui",
         native_options,
-        Box::new(|cc| Ok(Box::new(diagram_pche_egui::App::new(cc)))),
+        Box::new(|cc| Ok(Box::new(diagram_pche_egui::App::new(cc, &args)))),
     )
 }
 

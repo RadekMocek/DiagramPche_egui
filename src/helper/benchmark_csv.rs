@@ -29,3 +29,31 @@ impl BenchmarkLogResults {
         std::fs::write(filename, result)
     }
 }
+
+#[derive(Default)]
+pub struct WidgetbenchLogResults {
+    pub n_batches: Vec<u32>,
+    pub batch_iter: Vec<u32>,
+    pub duration: Vec<u128>,
+    pub mem_mib: Vec<f64>,
+    pub cpu_usage: Vec<f32>,
+}
+
+impl WidgetbenchLogResults {
+    pub fn write_to_csv(&mut self, filename: &str) -> std::io::Result<()> {
+        let mut result = String::from("n_batches,iter,duration,mem_mib,cpu_usage\n");
+
+        for i in 0..self.n_batches.len() {
+            result.push_str(&format!(
+                "{},{},{},{},{}\n",
+                self.n_batches[i],
+                self.batch_iter[i],
+                self.duration[i],
+                self.mem_mib[i],
+                self.cpu_usage[i]
+            ));
+        }
+
+        std::fs::write(filename, result)
+    }
+}

@@ -116,8 +116,12 @@ impl App {
                             }
                         });
                         // . Benchmark .
-                        if ui.button("Benchmark").clicked() {
+                        if ui.button("Benchmark nodes").clicked() {
                             self.do_show_window_benchmark = true;
+                        }
+                        if ui.button("Benchmark widgets").clicked() {
+                            //self.is_widgetbench_start_queued = true;
+                            self.widgetbench_data.do_show_window = true;
                         }
                     });
                     // .: Help :.

@@ -216,6 +216,9 @@ impl App {
 
             // Modals logic
             self.gui_modal(&mut ui);
+
+            // Widget benchmark
+            self.gui_widgetbench(&mut ui);
         });
     }
 }

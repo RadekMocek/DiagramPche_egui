@@ -5,6 +5,7 @@ use crate::gui::text_editor_alt::AltEditorConfig;
 use crate::gui::window::PreferencesTab;
 use crate::logic::app_benchmark::BenchmarkData;
 use crate::logic::app_file::FileExampleId;
+use crate::logic::app_widgetbench::WidgetBenchData;
 use crate::logic::svg_exporter::Exporter;
 use crate::logic::toml::parser::Parser;
 use crate::model::canvas_node::CanvasNode;
@@ -82,9 +83,13 @@ pub struct App {
     pub do_show_window_benchmark: bool,
     pub benchmark_data: BenchmarkData,
     pub system_info: sysinfo::System,
+    //
+    pub widgetbench_data: WidgetBenchData,
+    pub is_widgetbench_start_queued: bool,
     // Misc
     pub no_node_hovered_string: String,
     pub do_skip_text_edit: bool,
+    pub do_start_benchmark_at_startup: bool,
 }
 
 impl Default for App {
@@ -152,19 +157,23 @@ impl Default for App {
             style_is_light_mode: true,
             style_do_force_light_canvas: true,
             // Benchmark
-            do_show_window_benchmark: config::DO_OPEN_BENCHMARK_WINDOW_AT_STARTUP,
+            do_show_window_benchmark: false,
             benchmark_data: BenchmarkData::default(),
             system_info: sysinfo::System::new(),
+            //
+            widgetbench_data: WidgetBenchData::default(),
+            is_widgetbench_start_queued: false,
             // Misc
             no_node_hovered_string: String::from("(No node hovered)"),
             do_skip_text_edit: false,
+            do_start_benchmark_at_startup: false,
         }
     }
 }
 
 impl App {
     /// Called once before the first frame.
-    pub fn new(cc: &eframe::CreationContext<'_>) -> Self {
+    pub fn new(cc: &eframe::CreationContext<'_>, args: &Vec<String>) -> Self {
         // This is also where you can customize the look and feel of egui
         crate::style::change_appearance_theme(&cc.egui_ctx, true);
         crate::style::replace_fonts(&cc.egui_ctx);
@@ -179,7 +188,43 @@ impl App {
             Default::default()
         }
         */
-        Default::default()
+
+        // Parse cmd args, this is not the main point of this GUI app, just to help me do the benchmarks, so if its working than thaths enough
+        if args.len() == 4
+            && args[1] == "b"
+            && let Ok(bench_type) = args[2].parse::<usize>()
+        {
+            // Syntax highlight OFF
+            if args[3] == "0" {
+                return Self {
+                    do_start_benchmark_at_startup: true,
+                    benchmark_data: BenchmarkData {
+                        type_choice_idx: bench_type,
+                        ..BenchmarkData::default()
+                    },
+                    do_use_alt_editor: false,
+                    do_syntax_highlight: false,
+                    ..Self::default()
+                };
+            // Syntax highlight ON
+            } else if args[3] == "1" {
+                return Self {
+                    do_start_benchmark_at_startup: true,
+                    benchmark_data: BenchmarkData {
+                        type_choice_idx: bench_type,
+                        ..BenchmarkData::default()
+                    },
+                    ..Self::default()
+                };
+            }
+        } else if args.len() == 2 && args[1] == "w" {
+            return Self {
+                is_widgetbench_start_queued: true,
+                ..Self::default()
+            };
+        }
+
+        Self::default()
     }
 }
 
@@ -294,6 +339,15 @@ impl eframe::App for App {
         }
         native_window_title.push_str(" – DiagramPche :: egui");
         ctx.send_viewport_cmd(egui::ViewportCommand::Title(native_window_title));
+
+        // Widget benchmark
+        self.handle_widgetbench(&ctx);
+
+        // cmd args
+        if self.do_start_benchmark_at_startup {
+            self.do_start_benchmark_at_startup = false;
+            self.benchmark_start(&ctx);
+        }
     }
 
     /*

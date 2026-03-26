@@ -255,7 +255,7 @@ impl App {
             if self.benchmark_data._y_cor > MAX_Y_COR {
                 self.benchmark_data.is_running = false;
 
-                // filename
+                // Filename
                 let os_id: String = std::env::consts::OS.chars().take(3).collect();
                 let bench_id = format!("b{}", self.benchmark_data.running_type.clone() as u8);
                 let sh_info = if self.do_syntax_highlight {
