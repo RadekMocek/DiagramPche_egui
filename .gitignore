@@ -1,5 +1,6 @@
 ## DIAGRAMPCHE ##
 *.svg
+*.csv
 
 ## EGUI EFRAME TEMPLATE ##
 # Mac stuff:

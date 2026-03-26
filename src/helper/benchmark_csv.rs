@@ -16,15 +16,16 @@ impl BenchmarkLogResults {
         self.cpu_usage.clear();
     }
 
-    pub fn write_to_csv(&self) {
-        //todo
+    pub fn write_to_csv(&self, filename: &str) -> std::io::Result<()> {
+        let mut result = String::from("timestamp,fps,n_nodes,mem_mib,cpu_usage\n");
+
         for i in 0..self.timestamp.len() {
-            print!("{} | ", self.timestamp[i]);
-            print!("{} | ", self.fps[i]);
-            print!("{} | ", self.n_nodes[i]);
-            print!("{} | ", self.mem_mib[i]);
-            print!("{}", self.cpu_usage[i]);
-            println!();
+            result.push_str(&format!(
+                "{},{},{},{},{}\n",
+                self.timestamp[i], self.fps[i], self.n_nodes[i], self.mem_mib[i], self.cpu_usage[i]
+            ));
         }
+
+        std::fs::write(filename, result)
     }
 }
