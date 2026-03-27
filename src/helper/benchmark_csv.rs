@@ -1,3 +1,5 @@
+use std::time;
+
 #[derive(Default)]
 pub struct BenchmarkLogResults {
     pub timestamp: Vec<u128>,
@@ -56,4 +58,15 @@ impl WidgetbenchLogResults {
 
         std::fs::write(filename, result)
     }
+}
+
+pub fn get_os_id() -> String {
+    std::env::consts::OS.chars().take(3).collect()
+}
+
+pub fn get_unix_timestamp()->u64 {
+    time::SystemTime::now()
+        .duration_since(time::UNIX_EPOCH)
+        .unwrap()
+        .as_secs()
 }

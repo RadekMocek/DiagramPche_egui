@@ -9,12 +9,7 @@ This is part of a IMGUI paradigm research, [go back to main repo](https://github
 
 ## TODO
 
-* [x] Accept cmd args to start benchmark immediatelly
 * [ ] Benchmark – Stable or Unstable DT?
-* [x] WB – Widget benchmark
-  * Maximize main window
-  * BenchWin must be as top left as possible
-  * Run from terminal
 
 ## Building locally
 
@@ -37,6 +32,8 @@ cargo build --release
 * [egui_code_editor](https://github.com/p4ymak/egui_code_editor) ([MIT](https://github.com/p4ymak/egui_code_editor/blob/main/LICENSE))
 * [IconFontCppHeaders](https://github.com/juliettef/IconFontCppHeaders) ([zlib](https://github.com/juliettef/IconFontCppHeaders/blob/main/licence.txt))
 * [const_format](https://github.com/rodrimati1992/const_format_crates/) ([zlib](https://github.com/rodrimati1992/const_format_crates/blob/master/LICENSE-ZLIB.md))
+* [memory-stats](https://github.com/Arc-blroth/memory-stats) ([MIT](https://github.com/Arc-blroth/memory-stats/blob/main/LICENSE-MIT))
+* [sysinfo](https://github.com/GuillaumeGomez/sysinfo) ([MIT](https://github.com/GuillaumeGomez/sysinfo/blob/main/LICENSE))
 
 <br>
 

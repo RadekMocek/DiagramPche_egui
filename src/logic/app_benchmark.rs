@@ -1,8 +1,8 @@
+use crate::App;
 use crate::config;
 use crate::gui::widget;
-use crate::helper::benchmark_csv::BenchmarkLogResults;
+use crate::helper::benchmark_csv::{BenchmarkLogResults, get_os_id, get_unix_timestamp};
 use crate::logic::app_file::FileExampleId;
-use crate::App;
 use memory_stats::memory_stats;
 use std::cmp::PartialEq;
 use std::time;
@@ -254,23 +254,21 @@ impl App {
             // End the benchmark check
             if self.benchmark_data._y_cor > MAX_Y_COR {
                 self.benchmark_data.is_running = false;
-
                 // Filename
-                let os_id: String = std::env::consts::OS.chars().take(3).collect();
                 let bench_id = format!("b{}", self.benchmark_data.running_type.clone() as u8);
                 let sh_info = if self.do_syntax_highlight {
                     "shon"
                 } else {
                     "shoff"
                 };
-                let timestamp = time::SystemTime::now()
-                    .duration_since(time::UNIX_EPOCH)
-                    .unwrap()
-                    .as_secs();
-
-                let filename =
-                    format!("./bnchres_egui_{os_id}_{bench_id}_{sh_info}_{timestamp}.csv");
-
+                let filename = format!(
+                    "./bnchres_egui_{}_{}_{}_{}.csv",
+                    get_os_id(),
+                    bench_id,
+                    sh_info,
+                    get_unix_timestamp()
+                );
+                // Save
                 if let Err(err) = self.benchmark_data.log_results.write_to_csv(&filename) {
                     self.show_error_modal(&err.to_string());
                 }

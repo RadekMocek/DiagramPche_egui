@@ -17,6 +17,8 @@ const N_BATCH_WIDGETS: u32 = N_BATCH_LABELS
 
 impl App {
     pub(super) fn gui_widgetbench(&mut self, ui: &mut egui::Ui) {
+        let mut is_close_requested = false;
+
         egui::Window::new(format!(
             "Widget spree {} x {}",
             self.widgetbench_data.n_batches, N_BATCH_WIDGETS
@@ -26,13 +28,18 @@ impl App {
         .collapsible(false)
         .anchor(egui::Align2::LEFT_TOP, egui::Vec2::default())
         .show(ui.ctx(), |ui| {
-            ui.label(
-                egui::RichText::new(
-                    "This benchmark is run from terminal: '.\\diagram_pche_egui.exe w'\n\
+            if !self.widgetbench_data.is_running {
+                ui.label(
+                    egui::RichText::new(
+                        "This benchmark is run from terminal: '.\\diagram_pche_egui.exe w'\n\
                 [!] epilepsy warning: this window will flicker during the benchmark",
-                )
-                .color(crate::config::COLOR_ERROR),
-            );
+                    )
+                    .color(crate::config::COLOR_ERROR),
+                );
+                if ui.button("Close").clicked() {
+                    is_close_requested = true;
+                }
+            }
 
             for _ in 0..self.widgetbench_data.n_batches {
                 ui.horizontal(|ui| {
@@ -71,6 +78,8 @@ impl App {
             }
         });
 
-        //self.widgetbench_data.do_show_window = do_show_window;
+        if is_close_requested {
+            self.widgetbench_data.do_show_window = false;
+        }
     }
 }

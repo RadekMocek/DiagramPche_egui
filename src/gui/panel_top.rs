@@ -122,6 +122,7 @@ impl App {
                         if ui.button("Benchmark widgets").clicked() {
                             //self.is_widgetbench_start_queued = true;
                             self.widgetbench_data.do_show_window = true;
+                            self.widgetbench_data.n_batches = 16;
                         }
                     });
                     // .: Help :.

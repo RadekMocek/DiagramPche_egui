@@ -234,6 +234,8 @@ impl eframe::App for App {
         // Put your widgets into a `SidePanel`, `TopBottomPanel`, `CentralPanel`, `Window` or `Area`.
         // For inspiration and more examples, go to https://emilk.github.io/egui
 
+        //println!("{:?}", sysinfo::MINIMUM_CPU_UPDATE_INTERVAL);
+
         if self.benchmark_data.is_running {
             self.benchmark_update(&ctx);
         }

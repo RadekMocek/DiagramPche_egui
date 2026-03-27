@@ -1,5 +1,5 @@
 use crate::App;
-use crate::helper::benchmark_csv::WidgetbenchLogResults;
+use crate::helper::benchmark_csv::{WidgetbenchLogResults, get_os_id, get_unix_timestamp};
 use memory_stats::memory_stats;
 use std::time;
 pub struct WidgetBenchData {
@@ -28,18 +28,17 @@ impl Default for WidgetBenchData {
     }
 }
 
+//const WIDGETBENCH_STOP: u32 = 262144;
+const WIDGETBENCH_STOP: u32 = 16;
+
 impl App {
     pub fn handle_widgetbench(&mut self, ctx: &egui::Context) {
-        if self.is_widgetbench_start_queued {
-            self.is_widgetbench_start_queued = false;
-            self.widgetbench_data = WidgetBenchData::default();
-            ctx.send_viewport_cmd(egui::ViewportCommand::Maximized(true));
-            self.widgetbench_data.is_running = true;
-        }
+        // RUNNING
         if self.widgetbench_data.is_running {
             if self.widgetbench_data.do_show_window {
                 // Window has been shown, do not show it in the next iteration, in which will set the var to show it again
                 self.widgetbench_data.do_show_window = false;
+                // --- --- --- --- --- --- --- --- --- --- --- ---
                 // LOG N "ROWS"
                 self.widgetbench_data
                     .log_results
@@ -70,6 +69,12 @@ impl App {
                     .log_results
                     .cpu_usage
                     .push(self.system_info.global_cpu_usage());
+                // --- --- --- --- --- --- --- --- --- --- --- ---
+                // Report progress
+                self.source = format!(
+                    "[node.\"{} {}\"]",
+                    self.widgetbench_data.n_batches, self.widgetbench_data.batch_iter
+                );
                 // Prepare batch for the next iter
                 self.widgetbench_data.batch_iter += 1;
                 if self.widgetbench_data.batch_iter > 10 {
@@ -77,8 +82,8 @@ impl App {
                     self.widgetbench_data.n_batches *= 2;
                 }
             } else {
-                // Widgetbench stop condition
-                if self.widgetbench_data.n_batches <= 2048 {
+                // Widgetbench keep-going condition
+                if self.widgetbench_data.n_batches <= WIDGETBENCH_STOP {
                     // This is where the widgetbench starts
                     // We'll set var to show the window next iter
                     self.widgetbench_data.timestamp_window_queued = time::Instant::now();
@@ -88,12 +93,11 @@ impl App {
                     // This is where the widgetbench ends
                     self.widgetbench_data.is_running = false;
                     // Filename
-                    let os_id: String = std::env::consts::OS.chars().take(3).collect();
-                    let timestamp = time::SystemTime::now()
-                        .duration_since(time::UNIX_EPOCH)
-                        .unwrap()
-                        .as_secs();
-                    let filename = format!("./widgetbechres_egui_{os_id}_{timestamp}.csv");
+                    let filename = format!(
+                        "./widgetbechres_egui_{}_{}.csv",
+                        get_os_id(),
+                        get_unix_timestamp()
+                    );
                     // Save
                     if let Err(err) = self.widgetbench_data.log_results.write_to_csv(&filename) {
                         self.show_error_modal(&err.to_string());
@@ -102,6 +106,17 @@ impl App {
                     self.source = String::from("[node.\"Widget benchmark done\"]");
                 }
             }
+        }
+        // INIT
+        if self.is_widgetbench_start_queued {
+            self.is_widgetbench_start_queued = false;
+            // (Re)set benchmark data
+            self.widgetbench_data = WidgetBenchData::default();
+            self.widgetbench_data.is_running = true;
+            // Maximize the window
+            ctx.send_viewport_cmd(egui::ViewportCommand::Maximized(true));
+            // Refresh CPU usage
+            self.system_info.refresh_cpu_usage();
         }
     }
 }

@@ -84,7 +84,7 @@ impl App {
         // .:===========:.
         let mut do_show_benchmark = self.do_show_window_benchmark;
 
-        egui::Window::new("Benchmark")
+        egui::Window::new("Benchmark nodes")
             .open(&mut do_show_benchmark)
             .resizable(false)
             .title_bar(!self.benchmark_data.is_running)
