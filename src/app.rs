@@ -11,6 +11,8 @@ use crate::logic::toml::parser::Parser;
 use crate::model::canvas_node::CanvasNode;
 use crate::model::draw_command::command::DrawCommandOrd;
 use crate::model::node_type::NodeType;
+use eframe::glow;
+use eframe::glow::HasContext;
 use std::collections::{BinaryHeap, HashMap};
 
 /// We derive Deserialize/Serialize so we can persist app state on shutdown.
@@ -83,6 +85,8 @@ pub struct App {
     pub do_show_window_benchmark: bool,
     pub benchmark_data: BenchmarkData,
     pub system_info: sysinfo::System,
+    pub cpu_time_counter: f32,
+    pub cpu_usage_measured: f32,
     //
     pub widgetbench_data: WidgetBenchData,
     pub is_widgetbench_start_queued: bool,
@@ -90,6 +94,7 @@ pub struct App {
     pub no_node_hovered_string: String,
     pub do_skip_text_edit: bool,
     pub do_start_benchmark_at_startup: bool,
+    pub gl_info_renderer: String,
 }
 
 impl Default for App {
@@ -160,6 +165,8 @@ impl Default for App {
             do_show_window_benchmark: false,
             benchmark_data: BenchmarkData::default(),
             system_info: sysinfo::System::new(),
+            cpu_time_counter: 1.0, // First trigger immediatelly
+            cpu_usage_measured: 0.0,
             //
             widgetbench_data: WidgetBenchData::default(),
             is_widgetbench_start_queued: false,
@@ -167,6 +174,7 @@ impl Default for App {
             no_node_hovered_string: String::from("(No node hovered)"),
             do_skip_text_edit: false,
             do_start_benchmark_at_startup: false,
+            gl_info_renderer: String::from("Unknown GPU"),
         }
     }
 }
@@ -189,42 +197,54 @@ impl App {
         }
         */
 
-        // Parse cmd args, this is not the main point of this GUI app, just to help me do the benchmarks, so if its working than thaths enough
+        let glow_gl_info_renderer = if let Some(gl) = &cc.gl {
+            unsafe {
+                let result = gl.get_parameter_string(glow::RENDERER);
+                result
+            }
+        } else {
+            String::from("Unknown GPU")
+        };
+
+        // Parse cmd args
+        let mut do_benchmark_nodes = false;
+        let mut benchmark_type_choice_idx = 0;
+        let mut do_syntax_highlight_and_alt_editor = true;
+        let mut do_benchmark_widgets = false;
+        let mut do_skip_textedit_completely = false;
+
         if args.len() == 4
             && args[1] == "b"
             && let Ok(bench_type) = args[2].parse::<usize>()
         {
+            // Setup benchmark startup and type
+            do_benchmark_nodes = true;
+            benchmark_type_choice_idx = bench_type;
+
             // Syntax highlight OFF
             if args[3] == "0" {
-                return Self {
-                    do_start_benchmark_at_startup: true,
-                    benchmark_data: BenchmarkData {
-                        type_choice_idx: bench_type,
-                        ..BenchmarkData::default()
-                    },
-                    do_use_alt_editor: false,
-                    do_syntax_highlight: false,
-                    ..Self::default()
-                };
-            // Syntax highlight ON
-            } else if args[3] == "1" {
-                return Self {
-                    do_start_benchmark_at_startup: true,
-                    benchmark_data: BenchmarkData {
-                        type_choice_idx: bench_type,
-                        ..BenchmarkData::default()
-                    },
-                    ..Self::default()
-                };
+                do_syntax_highlight_and_alt_editor = false;
+            // Text editor OFF
+            } else if args[3] == "2" {
+                do_skip_textedit_completely = true;
             }
         } else if args.len() == 2 && args[1] == "w" {
-            return Self {
-                is_widgetbench_start_queued: true,
-                ..Self::default()
-            };
+            do_benchmark_widgets = true;
         }
 
-        Self::default()
+        Self {
+            do_start_benchmark_at_startup: do_benchmark_nodes,
+            do_use_alt_editor: do_syntax_highlight_and_alt_editor,
+            do_syntax_highlight: do_syntax_highlight_and_alt_editor,
+            is_widgetbench_start_queued: do_benchmark_widgets,
+            do_skip_text_edit: do_skip_textedit_completely,
+            benchmark_data: BenchmarkData {
+                type_choice_idx: benchmark_type_choice_idx,
+                ..BenchmarkData::default()
+            },
+            gl_info_renderer: glow_gl_info_renderer,
+            ..Self::default()
+        }
     }
 }
 
@@ -234,7 +254,15 @@ impl eframe::App for App {
         // Put your widgets into a `SidePanel`, `TopBottomPanel`, `CentralPanel`, `Window` or `Area`.
         // For inspiration and more examples, go to https://emilk.github.io/egui
 
-        //println!("{:?}", sysinfo::MINIMUM_CPU_UPDATE_INTERVAL);
+        // Update CPU usage if benchmark is running, otherwise not needed
+        if self.benchmark_data.is_running || self.widgetbench_data.is_running {
+            self.cpu_time_counter += ctx.input(|i| i.unstable_dt);
+            if self.cpu_time_counter > 0.5 {
+                self.cpu_time_counter = 0.0;
+                self.system_info.refresh_cpu_usage();
+                self.cpu_usage_measured = self.system_info.global_cpu_usage();
+            }
+        }
 
         if self.benchmark_data.is_running {
             self.benchmark_update(&ctx);

@@ -64,11 +64,10 @@ impl App {
                         .push(usage.physical_mem as f64 / MIBI);
                 }
                 // LOG CPU
-                self.system_info.refresh_cpu_usage();
                 self.widgetbench_data
                     .log_results
                     .cpu_usage
-                    .push(self.system_info.global_cpu_usage());
+                    .push(self.cpu_usage_measured);
                 // --- --- --- --- --- --- --- --- --- --- --- ---
                 // Report progress
                 self.source = format!(
@@ -88,7 +87,6 @@ impl App {
                     // We'll set var to show the window next iter
                     self.widgetbench_data.timestamp_window_queued = time::Instant::now();
                     self.widgetbench_data.do_show_window = true;
-                    self.system_info.refresh_cpu_usage();
                 } else {
                     // This is where the widgetbench ends
                     self.widgetbench_data.is_running = false;
@@ -115,8 +113,6 @@ impl App {
             self.widgetbench_data.is_running = true;
             // Maximize the window
             ctx.send_viewport_cmd(egui::ViewportCommand::Maximized(true));
-            // Refresh CPU usage
-            self.system_info.refresh_cpu_usage();
         }
     }
 }

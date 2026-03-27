@@ -95,7 +95,7 @@ const MAX_NODES_ON_ROW: u32 = 220;
 // When we reach `MAX_NODES_ON_ROW`, we go on a new row, this is the offset of the new row
 const Y_COR_ADDITION: u32 = 100;
 // How many rows do we want? When we have this much of rows, benchmark ends
-const MAX_ROWS: u32 = 21;
+const MAX_ROWS: u32 = 26;
 // Used for the ending condition
 const MAX_Y_COR: u32 = Y_COR_ADDITION * MAX_ROWS;
 // (While benchmarking, we also scroll and zoom, so we have some movement)
@@ -107,7 +107,7 @@ const AUTO_SCROLL_MODULO_X: f32 = 600.0;
 const ZOOM_LEVEL_MODULO: u32 = 6;
 // Precalculated
 const BENCHMARK_LIGHT_N_NODES: u32 = 12;
-const BENCHMARK_HEAVY_N_NODES: u32 = 10780;
+const BENCHMARK_HEAVY_N_NODES: u32 = 13230;
 
 impl App {
     // This is called when user presses the 'Start benchmark' button
@@ -125,7 +125,7 @@ impl App {
 
         // Reserve string space
         if btype == BenchmarkType::Gradual {
-            self.source.reserve(1_000_000);
+            self.source.reserve(1_224_747);
         }
 
         // Maximize the window
@@ -147,11 +147,8 @@ impl App {
             }
         }
 
-        //
-        self.system_info.refresh_cpu_usage();
-        self.benchmark_data.log_results.clear();
-
         // Initialize helper variables
+        self.benchmark_data.log_results.clear();
         self.benchmark_data._node_counter_total_pairs = 0;
         self.benchmark_data._node_counter_row_pairs = 0;
         self.benchmark_data._x_cor = 0;
@@ -238,8 +235,7 @@ impl App {
                     bd._stats_mem_mib = usage.physical_mem as f64 / MIBI;
                 }
                 // CPU
-                self.system_info.refresh_cpu_usage();
-                bd._stats_system_cpu = self.system_info.global_cpu_usage();
+                bd._stats_system_cpu = self.cpu_usage_measured;
                 // LOG
                 bd.log_results
                     .timestamp
@@ -256,21 +252,26 @@ impl App {
                 self.benchmark_data.is_running = false;
                 // Filename
                 let bench_id = format!("b{}", self.benchmark_data.running_type.clone() as u8);
-                let sh_info = if self.do_syntax_highlight {
-                    "shon"
-                } else {
-                    "shoff"
+
+                let bench_info = match (self.do_syntax_highlight, self.do_skip_text_edit) {
+                    (false, false) => "shoff",
+                    (true, false) => "shon",
+                    _ => "txoff",
                 };
+
                 let filename = format!(
                     "./bnchres_egui_{}_{}_{}_{}.csv",
                     get_os_id(),
                     bench_id,
-                    sh_info,
+                    bench_info,
                     get_unix_timestamp()
                 );
                 // Save
                 if let Err(err) = self.benchmark_data.log_results.write_to_csv(&filename) {
                     self.show_error_modal(&err.to_string());
+                } else {
+                    // Let know
+                    self.source = format!("[node.\"Saved to {filename}\"]");
                 }
             }
         }
@@ -282,6 +283,7 @@ impl App {
                 .animate(true)
                 .text("\tBenchmark is running..."),
         );
+        ui.label(format!("(GL renderer: {})", self.gl_info_renderer));
         ui.add_space(widget::TINYSKIP);
         ui.separator();
 

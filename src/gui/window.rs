@@ -94,6 +94,7 @@ impl App {
                     ui.label("Syntax highlight may affect performance:");
                     self.widget_text_editor_preferred_combo(ui);
                     self.widget_text_editor_syntax_highlight_checkbox(ui);
+                    ui.add_space(widget::SMALLSKIP);
 
                     ui.label("Choose one of the three benchmarks:");
                     const CHOICES: [&str; 3] = [
@@ -108,9 +109,11 @@ impl App {
                                 ui.selectable_value(&mut self.benchmark_data.type_choice_idx, i, CHOICES[i]);
                             }
                         });
+                    ui.add_space(widget::SMALLSKIP);
 
-                    ui.label("¯\\_(-_-)_/¯");
-                    ui.checkbox(&mut self.do_skip_text_edit, "Hide text editor completely");
+                    ui.label("Or hide the text editor completely:");
+                    ui.checkbox(&mut self.do_skip_text_edit, "hide text editor");
+                    ui.add_space(widget::SMALLSKIP);
 
                     ui.separator();
                     ui.add_space(widget::TINYSKIP);
