@@ -1,4 +1,4 @@
-use crate::App;
+use crate::{config, App};
 use crate::helper::benchmark_csv::{WidgetbenchLogResults, get_os_id, get_unix_timestamp};
 use memory_stats::memory_stats;
 use std::time;
@@ -28,8 +28,7 @@ impl Default for WidgetBenchData {
     }
 }
 
-//const WIDGETBENCH_STOP: u32 = 262144;
-const WIDGETBENCH_STOP: u32 = 16;
+const DURATION_THRESHOLD_MS: u128 = 15_000;
 
 impl App {
     pub fn handle_widgetbench(&mut self, ctx: &egui::Context) {
@@ -49,12 +48,12 @@ impl App {
                     .batch_iter
                     .push(self.widgetbench_data.batch_iter);
                 // LOG DURATION
-                self.widgetbench_data.log_results.duration.push(
-                    self.widgetbench_data
-                        .timestamp_window_queued
-                        .elapsed()
-                        .as_millis(),
-                );
+                let duration_ms = self
+                    .widgetbench_data
+                    .timestamp_window_queued
+                    .elapsed()
+                    .as_millis();
+                self.widgetbench_data.log_results.duration.push(duration_ms);
                 // LOG RAM
                 if let Some(usage) = memory_stats() {
                     const MIBI: f64 = 1024.0 * 1024.0;
@@ -76,18 +75,12 @@ impl App {
                 );
                 // Prepare batch for the next iter
                 self.widgetbench_data.batch_iter += 1;
-                if self.widgetbench_data.batch_iter > 10 {
+                if self.widgetbench_data.batch_iter > 9 {
                     self.widgetbench_data.batch_iter = 0;
                     self.widgetbench_data.n_batches *= 2;
                 }
-            } else {
-                // Widgetbench keep-going condition
-                if self.widgetbench_data.n_batches <= WIDGETBENCH_STOP {
-                    // This is where the widgetbench starts
-                    // We'll set var to show the window next iter
-                    self.widgetbench_data.timestamp_window_queued = time::Instant::now();
-                    self.widgetbench_data.do_show_window = true;
-                } else {
+                // STOP CONDITION
+                if duration_ms > DURATION_THRESHOLD_MS {
                     // This is where the widgetbench ends
                     self.widgetbench_data.is_running = false;
                     // Filename
@@ -102,7 +95,17 @@ impl App {
                     }
                     // Let know
                     self.source = String::from("[node.\"Widget benchmark done\"]");
+                    // Exit actually
+                    if config::EXIT_AFTER_BENCHMARK_FROM_TERMINAL && self.is_benchmark_run_from_terminal
+                    {
+                        ctx.send_viewport_cmd(egui::ViewportCommand::Close);
+                    }
                 }
+            } else {
+                // This is where the widgetbench starts
+                // We'll set var to show the window next iter
+                self.widgetbench_data.timestamp_window_queued = time::Instant::now();
+                self.widgetbench_data.do_show_window = true;
             }
         }
         // INIT

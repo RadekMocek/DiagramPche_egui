@@ -1,5 +1,7 @@
 use egui::{Color32, Pos2, pos2};
 
+pub const EXIT_AFTER_BENCHMARK_FROM_TERMINAL: bool = true;
+
 pub const FONT_SIZE_DEFAULT: f32 = 20.0;
 pub const FONT_SIZE_MAIN_MENU_BAR: f32 = 18.0;
 

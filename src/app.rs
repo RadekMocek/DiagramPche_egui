@@ -87,6 +87,7 @@ pub struct App {
     pub system_info: sysinfo::System,
     pub cpu_time_counter: f32,
     pub cpu_usage_measured: f32,
+    pub is_benchmark_run_from_terminal: bool,
     //
     pub widgetbench_data: WidgetBenchData,
     pub is_widgetbench_start_queued: bool,
@@ -167,6 +168,7 @@ impl Default for App {
             system_info: sysinfo::System::new(),
             cpu_time_counter: 1.0, // First trigger immediatelly
             cpu_usage_measured: 0.0,
+            is_benchmark_run_from_terminal: false,
             //
             widgetbench_data: WidgetBenchData::default(),
             is_widgetbench_start_queued: false,
@@ -197,7 +199,7 @@ impl App {
         }
         */
 
-        let glow_gl_info_renderer = if let Some(gl) = &cc.gl {
+        let gl_info_renderer = if let Some(gl) = &cc.gl {
             unsafe {
                 let result = gl.get_parameter_string(glow::RENDERER);
                 result
@@ -207,42 +209,46 @@ impl App {
         };
 
         // Parse cmd args
-        let mut do_benchmark_nodes = false;
-        let mut benchmark_type_choice_idx = 0;
-        let mut do_syntax_highlight_and_alt_editor = true;
-        let mut do_benchmark_widgets = false;
-        let mut do_skip_textedit_completely = false;
+        let mut do_start_benchmark_at_startup = false;
+        let mut type_choice_idx = 0;
+        let mut do_syntax_highlight = true;
+        let mut is_widgetbench_start_queued = false;
+        let mut do_skip_text_edit = false;
+        let mut is_benchmark_run_from_terminal = false;
 
         if args.len() == 4
             && args[1] == "b"
             && let Ok(bench_type) = args[2].parse::<usize>()
         {
             // Setup benchmark startup and type
-            do_benchmark_nodes = true;
-            benchmark_type_choice_idx = bench_type;
+            do_start_benchmark_at_startup = true;
+            type_choice_idx = bench_type;
+            is_benchmark_run_from_terminal = true;
 
             // Syntax highlight OFF
             if args[3] == "0" {
-                do_syntax_highlight_and_alt_editor = false;
+                do_syntax_highlight = false;
             // Text editor OFF
             } else if args[3] == "2" {
-                do_skip_textedit_completely = true;
+                do_skip_text_edit = true;
             }
         } else if args.len() == 2 && args[1] == "w" {
-            do_benchmark_widgets = true;
+            is_widgetbench_start_queued = true;
+            is_benchmark_run_from_terminal = true;
         }
 
         Self {
-            do_start_benchmark_at_startup: do_benchmark_nodes,
-            do_use_alt_editor: do_syntax_highlight_and_alt_editor,
-            do_syntax_highlight: do_syntax_highlight_and_alt_editor,
-            is_widgetbench_start_queued: do_benchmark_widgets,
-            do_skip_text_edit: do_skip_textedit_completely,
+            do_start_benchmark_at_startup,
+            do_use_alt_editor: do_syntax_highlight,
+            do_syntax_highlight,
+            is_widgetbench_start_queued,
+            do_skip_text_edit,
             benchmark_data: BenchmarkData {
-                type_choice_idx: benchmark_type_choice_idx,
+                type_choice_idx,
                 ..BenchmarkData::default()
             },
-            gl_info_renderer: glow_gl_info_renderer,
+            gl_info_renderer,
+            is_benchmark_run_from_terminal,
             ..Self::default()
         }
     }

@@ -273,6 +273,11 @@ impl App {
                     // Let know
                     self.source = format!("[node.\"Saved to {filename}\"]");
                 }
+                // Exit?
+                if config::EXIT_AFTER_BENCHMARK_FROM_TERMINAL && self.is_benchmark_run_from_terminal
+                {
+                    ctx.send_viewport_cmd(egui::ViewportCommand::Close);
+                }
             }
         }
     }
