@@ -13,43 +13,43 @@ Set-Location target
 Set-Location release
 
 Write-Host "[${i}/${j}] BENCH NODES LIGHT NO_SYNTAX_HIGHLIGHT"
-.\diagram_pche_egui.exe b 0 0
+.\diagram_pche_egui.exe b 0 0 | Out-Null
 $i++
 
 Write-Host "[${i}/${j}] BENCH NODES LIGHT YES_SYNTAX_HIGHLIGHT"
-.\diagram_pche_egui.exe b 0 1
+.\diagram_pche_egui.exe b 0 1 | Out-Null
 $i++
 
 Write-Host "[${i}/${j}] BENCH NODES LIGHT NO_TEXT_EDITOR"
-.\diagram_pche_egui.exe b 0 2
+.\diagram_pche_egui.exe b 0 2 | Out-Null
 $i++
 
 Write-Host "[${i}/${j}] BENCH NODES HEAVY NO_SYNTAX_HIGHLIGHT"
-.\diagram_pche_egui.exe b 1 0
+.\diagram_pche_egui.exe b 1 0 | Out-Null
 $i++
 
 Write-Host "[${i}/${j}] BENCH NODES HEAVY YES_SYNTAX_HIGHLIGHT"
-.\diagram_pche_egui.exe b 1 1
+.\diagram_pche_egui.exe b 1 1 | Out-Null
 $i++
 
 Write-Host "[${i}/${j}] BENCH NODES HEAVY NO_TEXT_EDITOR"
-.\diagram_pche_egui.exe b 1 2
+.\diagram_pche_egui.exe b 1 2 | Out-Null
 $i++
 
 Write-Host "[${i}/${j}] BENCH NODES GRADUAL NO_SYNTAX_HIGHLIGHT"
-.\diagram_pche_egui.exe b 2 0
+.\diagram_pche_egui.exe b 2 0 | Out-Null
 $i++
 
 Write-Host "[${i}/${j}] BENCH NODES GRADUAL YES_SYNTAX_HIGHLIGHT"
-.\diagram_pche_egui.exe b 2 1
+.\diagram_pche_egui.exe b 2 1 | Out-Null
 $i++
 
 Write-Host "[${i}/${j}] BENCH NODES GRADUAL NO_TEXT_EDITOR"
-.\diagram_pche_egui.exe b 2 2
+.\diagram_pche_egui.exe b 2 2 | Out-Null
 $i++
 
 Write-Host "[${i}/${j}] BENCH WIDGETS"
-.\diagram_pche_egui.exe w
+.\diagram_pche_egui.exe w | Out-Null
 
 Write-Host "====================`nAll benchmarks done.`nPress enter to exit."
 Read-Host
