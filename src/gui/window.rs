@@ -97,10 +97,11 @@ impl App {
                     ui.add_space(widget::SMALLSKIP);
 
                     ui.label("Choose one of the three benchmarks:");
-                    const CHOICES: [&str; 3] = [
+                    const CHOICES: [&str; 4] = [
                         "Light",
                         "Heavy",
                         "Gradual",
+                        "Complete 3in1"
                     ];
                     egui::ComboBox::from_id_salt("BenchmarkTypeCombo")
                         .selected_text(format!("{}", CHOICES[self.benchmark_data.type_choice_idx]))

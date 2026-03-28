@@ -13,6 +13,7 @@ pub enum BenchmarkType {
     Light,
     Heavy,
     Gradual,
+    Complete,
 }
 
 impl BenchmarkType {
@@ -21,6 +22,7 @@ impl BenchmarkType {
             0 => Self::Light,
             1 => Self::Heavy,
             2 => Self::Gradual,
+            3 => Self::Complete,
             _ => Self::Light,
         }
     }
@@ -32,7 +34,8 @@ pub struct BenchmarkData {
     pub running_type: BenchmarkType,
     pub time_counter: f32,
     pub timestamp_start: time::Instant,
-    pub _node_counter_total_pairs: u32,
+    pub complete_bench_phase_n: u32,
+    pub _gradual_node_id: u32,
     pub _node_counter_row_pairs: u32,
     pub _x_cor: u32,
     pub _y_cor: u32,
@@ -60,7 +63,8 @@ impl Default for BenchmarkData {
             running_type: BenchmarkType::default(),
             time_counter: 0.0,
             timestamp_start: time::Instant::now(),
-            _node_counter_total_pairs: 0,
+            complete_bench_phase_n: 1,
+            _gradual_node_id: 0,
             _node_counter_row_pairs: 0,
             _x_cor: 0,
             _y_cor: 0,
@@ -124,7 +128,7 @@ impl App {
         self.central_split_ratio = TEXTEDIT_WIDTH_RATIO;
 
         // Reserve string space
-        if btype == BenchmarkType::Gradual {
+        if btype == BenchmarkType::Gradual || btype == BenchmarkType::Complete {
             self.source.reserve(1_224_747);
         }
 
@@ -145,11 +149,19 @@ impl App {
                 self.handle_regular_new();
                 self.benchmark_data._stats_total_nodes = 0;
             }
+            BenchmarkType::Complete => {
+                self.handle_regular_new();
+                self.source = String::from(
+                    "[node.\"Hang onto yer helmet!\\nThe complete benchmark has started...\"]\n",
+                );
+                self.benchmark_data._stats_total_nodes = 0;
+            }
         }
 
         // Initialize helper variables
         self.benchmark_data.log_results.clear();
-        self.benchmark_data._node_counter_total_pairs = 0;
+        self.benchmark_data.complete_bench_phase_n = 1; // Basically: 1 – Light, 2 – Gradual, 3 – Heavy
+        self.benchmark_data._gradual_node_id = 0;
         self.benchmark_data._node_counter_row_pairs = 0;
         self.benchmark_data._x_cor = 0;
         self.benchmark_data._y_cor = 0;
@@ -186,10 +198,14 @@ impl App {
             }
             self.update_canvas_zoom();
 
+            let is_gradual = self.benchmark_data.running_type == BenchmarkType::Gradual
+                || (self.benchmark_data.running_type == BenchmarkType::Complete
+                    && self.benchmark_data.complete_bench_phase_n == 2);
+
             // Add a new batch of nodes
             for _ in 0..N_NODES_IN_INTERVAL {
-                if self.benchmark_data.running_type == BenchmarkType::Gradual {
-                    let t = self.benchmark_data._node_counter_total_pairs;
+                if is_gradual {
+                    let t = self.benchmark_data._gradual_node_id;
                     let x = self.benchmark_data._x_cor;
                     let y = self.benchmark_data._y_cor;
                     let z = self.benchmark_data._node_counter_row_pairs % Z_MODULO;
@@ -199,9 +215,8 @@ impl App {
                         [node.\"B{t}\"]\nxy=[\"A{t}\",\"bottom-right\",10,10]\nz={z}\ntype=\"ellipse\"\n\
                         [[path]]\nstart=[\"A{t}\",\"left\",0,0]\nend=[\"B{t}\",\"right\",0,0]\n",
                     ));
+                    self.benchmark_data._gradual_node_id += 1;
                 }
-                // Update values for next iteration
-                self.benchmark_data._node_counter_total_pairs += 1;
                 self.benchmark_data._node_counter_row_pairs += 1;
                 self.benchmark_data._x_cor += X_COR_ADDITION;
                 benchmark_change_color(
@@ -224,9 +239,10 @@ impl App {
             }
 
             // Stats
-            if self.benchmark_data.running_type == BenchmarkType::Gradual {
+            if is_gradual {
                 self.benchmark_data._stats_total_nodes += 2 * N_NODES_IN_INTERVAL;
             }
+
             if self.benchmark_data._notional_zoom_level % 3 == 1 {
                 let bd = &mut self.benchmark_data;
                 // RAM
@@ -249,34 +265,43 @@ impl App {
 
             // End the benchmark check
             if self.benchmark_data._y_cor > MAX_Y_COR {
-                self.benchmark_data.is_running = false;
-                // Filename
-                let bench_id = format!("b{}", self.benchmark_data.running_type.clone() as u8);
-
-                let bench_info = match (self.do_syntax_highlight, self.do_skip_text_edit) {
-                    (false, false) => "shoff",
-                    (true, false) => "shon",
-                    _ => "txoff",
-                };
-
-                let filename = format!(
-                    "./bnchres_egui_{}_{}_{}_{}.csv",
-                    get_os_id(),
-                    bench_id,
-                    bench_info,
-                    get_unix_timestamp()
-                );
-                // Save
-                if let Err(err) = self.benchmark_data.log_results.write_to_csv(&filename) {
-                    self.show_error_modal(&err.to_string());
-                } else {
-                    // Let know
-                    self.source = format!("[node.\"Saved to {filename}\"]");
-                }
-                // Exit?
-                if config::EXIT_AFTER_BENCHMARK_FROM_TERMINAL && self.is_benchmark_run_from_terminal
+                if self.benchmark_data.running_type == BenchmarkType::Complete
+                    && self.benchmark_data.complete_bench_phase_n < 3
                 {
-                    ctx.send_viewport_cmd(egui::ViewportCommand::Close);
+                    self.benchmark_data.complete_bench_phase_n += 1;
+                    self.benchmark_data._x_cor = 0;
+                    self.benchmark_data._y_cor = 0;
+                } else {
+                    self.benchmark_data.is_running = false;
+                    // Filename
+                    let bench_id = format!("b{}", self.benchmark_data.running_type.clone() as u8);
+
+                    let bench_info = match (self.do_syntax_highlight, self.do_skip_text_edit) {
+                        (false, false) => "shoff",
+                        (true, false) => "shon",
+                        _ => "txoff",
+                    };
+
+                    let filename = format!(
+                        "./bnchres_egui_{}_{}_{}_{}.csv",
+                        get_os_id(),
+                        bench_id,
+                        bench_info,
+                        get_unix_timestamp()
+                    );
+                    // Save
+                    if let Err(err) = self.benchmark_data.log_results.write_to_csv(&filename) {
+                        self.show_error_modal(&err.to_string());
+                    } else {
+                        // Let know
+                        self.source = format!("[node.\"Saved to {filename}\"]");
+                    }
+                    // Exit?
+                    if config::EXIT_AFTER_BENCHMARK_FROM_TERMINAL
+                        && self.is_benchmark_run_from_terminal
+                    {
+                        ctx.send_viewport_cmd(egui::ViewportCommand::Close);
+                    }
                 }
             }
         }
