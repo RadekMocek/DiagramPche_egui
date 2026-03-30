@@ -32,11 +32,12 @@ impl App {
         // Origin ([0,0]) of the canvas in screen space coordinates, which painter uses
         let mut origin = response_rect.min + self.scrolling.to_vec2();
 
-        let mut pointer_pos_in_canvas = if let Some(pointer_pos) = response.hover_pos() {
-            pointer_pos - origin
-        } else {
-            egui::Vec2::default()
-        };
+        let (mut pointer_pos_in_canvas, is_pointer_in_canvas) =
+            if let Some(pointer_pos) = response.hover_pos() {
+                (pointer_pos - origin, true)
+            } else {
+                (egui::Vec2::default(), false)
+            };
 
         if !is_benchmark_running && response.hovered() {
             // MW to zoom
@@ -160,22 +161,27 @@ impl App {
             self.is_canvas_node_selected = false;
         }
         // Check for nodes under the pointer
-        let mut hovered_z_mul = -1;
-        self.selected_or_hovered_canvas_node_key = None;
-        for (key, value) in &self.canvas_nodes {
-            if value.z_mul > hovered_z_mul && value.is_point_inside_incl(pointer_pos_in_canvas) {
-                hovered_z_mul = value.z_mul;
-                self.selected_or_hovered_canvas_node_key = Some(String::from(key));
+        if is_pointer_in_canvas {
+            let mut hovered_z_mul = -1;
+            self.hovered_canvas_node_key = None;
+            for (key, value) in &self.canvas_nodes {
+                if value.z_mul > hovered_z_mul && value.is_point_inside_incl(pointer_pos_in_canvas)
+                {
+                    hovered_z_mul = value.z_mul;
+                    self.hovered_canvas_node_key = Some(String::from(key));
+                }
             }
-        }
-        // LMB to (de)select node
-        if response.clicked() {
-            if let Some(hover_key) = &self.selected_or_hovered_canvas_node_key {
-                self.is_canvas_node_selected = true;
-                self.selected_canvas_node_key = hover_key.clone();
-            } else {
-                self.is_canvas_node_selected = false;
+            // LMB to (de)select node
+            if response.clicked() {
+                if let Some(hover_key) = &self.hovered_canvas_node_key {
+                    self.is_canvas_node_selected = true;
+                    self.selected_canvas_node_key = hover_key.clone();
+                } else {
+                    self.is_canvas_node_selected = false;
+                }
             }
+        } else {
+            self.hovered_canvas_node_key = None;
         }
 
         // == Drag n drop new node logic ==
@@ -240,6 +246,8 @@ impl App {
 
                     // == Zoom level slider ==
                     ui.with_layout(egui::Layout::right_to_left(egui::Align::Center), |ui| {
+                        ui.add_space(widget::TINYSKIP);
+
                         let response = ui.add(
                             egui::Slider::new(
                                 &mut self.canvas_font_size,
@@ -254,8 +262,6 @@ impl App {
                             self.update_canvas_zoom();
                         }
                     });
-
-                    ui.add_space(widget::TINYSKIP);
                 });
             });
         }

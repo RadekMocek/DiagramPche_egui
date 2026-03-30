@@ -1,5 +1,5 @@
-use crate::{config, App};
 use crate::helper::benchmark_csv::{WidgetbenchLogResults, get_os_id, get_unix_timestamp};
+use crate::{App, config};
 use memory_stats::memory_stats;
 use std::time;
 pub struct WidgetBenchData {
@@ -55,12 +55,14 @@ impl App {
                     .as_millis();
                 self.widgetbench_data.log_results.duration.push(duration_ms);
                 // LOG RAM
+                let mut usage_to_report = 0.0;
                 if let Some(usage) = memory_stats() {
                     const MIBI: f64 = 1024.0 * 1024.0;
+                    usage_to_report = usage.physical_mem as f64 / MIBI;
                     self.widgetbench_data
                         .log_results
                         .mem_mib
-                        .push(usage.physical_mem as f64 / MIBI);
+                        .push(usage_to_report);
                 }
                 // LOG CPU
                 self.widgetbench_data
@@ -70,8 +72,10 @@ impl App {
                 // --- --- --- --- --- --- --- --- --- --- --- ---
                 // Report progress
                 self.source = format!(
-                    "[node.\"{} {}\"]",
-                    self.widgetbench_data.n_batches, self.widgetbench_data.batch_iter
+                    "[node.\"{} {}\\n\\n{:.1} MiB\"]",
+                    self.widgetbench_data.n_batches,
+                    self.widgetbench_data.batch_iter,
+                    usage_to_report
                 );
                 // Prepare batch for the next iter
                 self.widgetbench_data.batch_iter += 1;
@@ -96,7 +100,8 @@ impl App {
                     // Let know
                     self.source = String::from("[node.\"Widget benchmark done\"]");
                     // Exit actually
-                    if config::EXIT_AFTER_BENCHMARK_FROM_TERMINAL && self.is_benchmark_run_from_terminal
+                    if config::EXIT_AFTER_BENCHMARK_FROM_TERMINAL
+                        && self.is_benchmark_run_from_terminal
                     {
                         ctx.send_viewport_cmd(egui::ViewportCommand::Close);
                     }

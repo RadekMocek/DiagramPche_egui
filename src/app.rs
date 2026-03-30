@@ -52,7 +52,7 @@ pub struct App {
     pub draw_commands_ord: BinaryHeap<DrawCommandOrd>, // Commands for egui painter to do the drawing
     pub do_show_grid: bool,                            // Show canvas grid
     // - primary canvas toolbar related
-    pub selected_or_hovered_canvas_node_key: Option<String>,
+    pub hovered_canvas_node_key: Option<String>,
     pub is_canvas_node_selected: bool,
     pub selected_canvas_node_key: String,
     // - secondary canvas toolbar related
@@ -132,7 +132,7 @@ impl Default for App {
             draw_commands_ord: BinaryHeap::new(),
             do_show_grid: true,
             // - primary canvas toolbar related
-            selected_or_hovered_canvas_node_key: None,
+            hovered_canvas_node_key: None,
             is_canvas_node_selected: false,
             selected_canvas_node_key: String::new(),
             // - secondary canvas toolbar related

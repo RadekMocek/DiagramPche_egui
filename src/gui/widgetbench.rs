@@ -41,10 +41,22 @@ impl App {
                 }
             }
 
+            //  I tried showing widgets without any text but it makes no difference to the RAM usage
+            let no_text = false;
+
+            if no_text {
+                self.widgetbench_data.textedittext = String::new();
+            }
+
+            let label_label = if no_text { "" } else { "ABCČDĎEF" };
+            let button_label = if no_text { "" } else { "LMNŇOPQ" };
+            let checkbox_label = if no_text { "" } else { "R" };
+            let radio_label = if no_text { "" } else { "Ř" };
+
             for _ in 0..self.widgetbench_data.n_batches {
                 ui.horizontal(|ui| {
                     for _ in 0..N_BATCH_LABELS {
-                        ui.label("ABCČDĎEF");
+                        ui.label(label_label);
                     }
                 });
                 ui.horizontal(|ui| {
@@ -57,17 +69,17 @@ impl App {
                 });
                 ui.horizontal(|ui| {
                     for _ in 0..N_BATCH_BUTTONS {
-                        _ = ui.button("LMNŇOPQ");
+                        _ = ui.button(button_label);
                     }
                 });
                 ui.horizontal(|ui| {
                     for _ in 0..N_BATCH_CHECKBOXES {
-                        ui.checkbox(&mut true, "R");
+                        ui.checkbox(&mut true, checkbox_label);
                     }
                 });
                 ui.horizontal(|ui| {
                     for _ in 0..N_BATCH_RADIOS {
-                        _ = ui.radio(true, "Ř");
+                        _ = ui.radio(true, radio_label);
                     }
                 });
                 ui.horizontal(|ui| {

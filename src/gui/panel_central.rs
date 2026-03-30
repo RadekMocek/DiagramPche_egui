@@ -106,7 +106,7 @@ impl App {
                     node_type_span = &node.type_span;
                     label_value = &self.selected_canvas_node_key;
                 } else {
-                    if let Some(hover_key) = &self.selected_or_hovered_canvas_node_key
+                    if let Some(hover_key) = &self.hovered_canvas_node_key
                         && let Some(node) = self.parser.result_nodes.get(hover_key)
                     {
                         // Node is not selected, but is at least hovered, get info from it
@@ -190,7 +190,10 @@ impl App {
                             ui.separator();
 
                             // .: Node ID label :.
-                            ui.label(format!("ID: {}", label_value.replace('\n', " ")));
+                            ui.add(
+                                egui::Label::new(format!("ID: {}", label_value.replace('\n', " ")))
+                                    .truncate(),
+                            );
                         },
                     );
                 });
