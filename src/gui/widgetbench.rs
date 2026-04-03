@@ -1,4 +1,5 @@
 use crate::App;
+use crate::config;
 
 const N_BATCH_LABELS: u32 = 20;
 const N_BATCH_TEXTEDITS: u32 = 20;
@@ -34,7 +35,7 @@ impl App {
                         "This benchmark is run from terminal: '.\\diagram_pche_egui.exe w'\n\
                 [!] epilepsy warning: this window will flicker during the benchmark",
                     )
-                    .color(crate::config::COLOR_ERROR),
+                    .color(config::COLOR_ERROR),
                 );
                 if ui.button("Close").clicked() {
                     is_close_requested = true;

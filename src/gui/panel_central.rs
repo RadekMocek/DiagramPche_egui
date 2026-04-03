@@ -1,4 +1,5 @@
 use crate::App;
+use crate::config;
 use crate::gui::widget;
 use crate::model::color::get_rgba_hex_quoted_from_u8arr;
 use crate::model::node_type::NodeType;
@@ -205,7 +206,7 @@ impl App {
 
             egui::Frame::canvas(&right_ui.style())
                 .fill(if do_fill_canvas {
-                    crate::config::COLOR_CANVAS_BACKGROUND
+                    config::COLOR_CANVAS_BACKGROUND
                 } else {
                     egui::Color32::TRANSPARENT
                 })

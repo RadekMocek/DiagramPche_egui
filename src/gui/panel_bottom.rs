@@ -1,4 +1,5 @@
 use crate::App;
+use crate::config;
 
 impl App {
     pub fn gui_panel_bottom(&mut self, ctx: &egui::Context) {
@@ -7,7 +8,7 @@ impl App {
                 ui.add(
                     egui::Label::new(
                         egui::RichText::new(&self.parser.error_message.replace('\n', " "))
-                            .color(crate::config::COLOR_ERROR),
+                            .color(config::COLOR_ERROR),
                     )
                     .truncate(),
                 );

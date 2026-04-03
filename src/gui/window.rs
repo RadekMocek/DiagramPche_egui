@@ -1,4 +1,5 @@
 use crate::App;
+use crate::config;
 use crate::gui::widget;
 use crate::style::change_appearance_theme;
 
@@ -121,7 +122,7 @@ impl App {
                     if self.is_source_dirty {
                         ui.label(
                             egui::RichText::new("You have unsaved changes, save your work before running the benchmark.")
-                                .color(crate::config::COLOR_ERROR),
+                                .color(config::COLOR_ERROR),
                         );
                         ui.label("(If you don't wish to save this, select File → New → Discard.)");
                     } else {

@@ -1,4 +1,5 @@
 use crate::App;
+use crate::config;
 use crate::helper::draw_layer::{DLPriority, dl_user_channel_to_real_channel};
 use crate::model::canvas_node::CanvasNode;
 use crate::model::draw_command::command::DrawCommandOrd;
@@ -16,7 +17,7 @@ impl App {
         let n_nodes = self.parser.result_nodes.len() as i64;
         let mut node_n = 0;
 
-        let node_padding = crate::config::NODE_BORDER_OFFSET_BASE * self.zoom_level;
+        let node_padding = config::NODE_BORDER_OFFSET_BASE * self.zoom_level;
 
         while !self.parser.result_order.is_empty() {
             if let Some(order_pair) = self.parser.result_order.pop()
@@ -233,8 +234,8 @@ impl App {
         label: &str,
         pointer_pos: Pos2,
     ) -> Vec2 {
-        let node_padding = crate::config::NODE_BORDER_OFFSET_BASE * self.zoom_level;
-        let stroke = egui::Stroke::new(self.zoom_level, crate::config::COLOR_GHOST_EDGE);
+        let node_padding = config::NODE_BORDER_OFFSET_BASE * self.zoom_level;
+        let stroke = egui::Stroke::new(self.zoom_level, config::COLOR_GHOST_EDGE);
 
         let label_galley = painter.layout_no_wrap(
             String::from(label),
@@ -254,7 +255,7 @@ impl App {
                 painter.rect(
                     egui::Rect::from_center_size(pointer_pos, vec2(node_width, node_height)),
                     0.0,
-                    crate::config::COLOR_GHOST_FILL,
+                    config::COLOR_GHOST_FILL,
                     stroke,
                     egui::StrokeKind::Middle,
                 );
@@ -263,7 +264,7 @@ impl App {
                 painter.add(EllipseShape::filled(
                     pointer_pos,
                     vec2(half_width, half_height),
-                    crate::config::COLOR_GHOST_FILL,
+                    config::COLOR_GHOST_FILL,
                 ));
                 painter.add(EllipseShape::stroke(
                     pointer_pos,
@@ -279,7 +280,7 @@ impl App {
                         pos2(pointer_pos.x, pointer_pos.y - half_height), // Bottom
                         pos2(pointer_pos.x - half_width, pointer_pos.y),  // Left
                     ],
-                    crate::config::COLOR_GHOST_FILL,
+                    config::COLOR_GHOST_FILL,
                     stroke,
                 ));
             }
@@ -291,7 +292,7 @@ impl App {
         painter.galley(
             pointer_pos - vec2(label_size_x / 2.0, label_size_y / 2.0),
             label_galley,
-            crate::config::COLOR_GHOST_EDGE,
+            config::COLOR_GHOST_EDGE,
         );
 
         // Return

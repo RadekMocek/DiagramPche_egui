@@ -8,6 +8,7 @@ pub const FONT_SIZE_MAIN_MENU_BAR: f32 = 18.0;
 pub const FONT_SIZE_SOURCE_DEFAULT: u32 = 20;
 pub const FONT_SIZE_SOURCE_MIN: u32 = 8;
 pub const FONT_SIZE_SOURCE_MAX: u32 = 40;
+pub const FONT_SIZE_SOURCE_STEP: u32 = 2;
 
 pub const COLOR_ERROR: Color32 = Color32::from_rgb(211, 1, 2);
 pub const COLOR_ERROR_HIGHLIGHT: Color32 = Color32::from_rgba_unmultiplied_const(211, 1, 2, 80);

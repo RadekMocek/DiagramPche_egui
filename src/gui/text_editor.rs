@@ -1,4 +1,5 @@
 use crate::App;
+use crate::config;
 use egui::text_selection::CCursorRange;
 use egui::{Color32, FontFamily, FontId, Rect, Response, TextEdit, TextStyle, vec2};
 
@@ -55,7 +56,7 @@ impl App {
                     vec2(char_size.x * self.error_span_length as f32, char_size.y),
                 ),
                 0,
-                crate::config::COLOR_ERROR_HIGHLIGHT,
+                config::COLOR_ERROR_HIGHLIGHT,
             );
         }
     }
