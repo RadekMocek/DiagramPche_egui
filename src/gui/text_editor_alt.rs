@@ -12,7 +12,7 @@ impl App {
             .with_theme(if self.style_is_light_mode {
                 self.alt_editor_config.palette_light
             } else {
-                ColorTheme::SONOKAI
+                self.alt_editor_config.palette_dark
             })
             .with_syntax(self.alt_editor_config.syntax.clone())
             .with_numlines(false)
@@ -33,6 +33,7 @@ impl App {
 pub struct AltEditorConfig {
     syntax: Syntax,
     palette_light: ColorTheme,
+    palette_dark: ColorTheme,
     completer: Completer,
 }
 
@@ -41,6 +42,7 @@ impl Default for AltEditorConfig {
         Self {
             syntax: Self::get_syntax(),
             palette_light: Self::get_palette_light(),
+            palette_dark: Self::get_palette_dark(),
             completer: Completer::new_with_syntax(&Self::get_syntax()),
         }
     }
@@ -96,6 +98,14 @@ impl AltEditorConfig {
             strs: "#4d5901",
             types: "#107f76",
             special: "#ff0000",
+        }
+    }
+
+    fn get_palette_dark() -> ColorTheme {
+        ColorTheme {
+            name: "DiagramPchePaletteDark",
+            bg: "#101010",
+            ..ColorTheme::SONOKAI
         }
     }
 }
