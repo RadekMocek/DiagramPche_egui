@@ -6,6 +6,7 @@ use crate::logic::app_dialog::{open_toml_dialog, save_toml_dialog};
 pub enum FileExampleId {
     ExampleBlockDiag,
     ExampleEcoDiag,
+    ExampleBubbleDiag,
     DebugZAxis,
     DebugPathLabel,
     DebugBenchLight,
@@ -96,6 +97,9 @@ impl App {
             }
             FileExampleId::ExampleEcoDiag => {
                 String::from_utf8_lossy(include_bytes!("../../assets/example/Example2.toml"))
+            }
+            FileExampleId::ExampleBubbleDiag => {
+                String::from_utf8_lossy(include_bytes!("../../assets/example/Example3.toml"))
             }
             FileExampleId::DebugZAxis => {
                 String::from_utf8_lossy(include_bytes!("../../assets/example/debug/Z-axis.toml"))

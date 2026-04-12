@@ -160,7 +160,7 @@ impl App {
 
                 // Path label (`label=` && `label_bg=`)
                 let n_pathpoints = result_pathpoints.len();
-                if n_pathpoints > 2 && !path.label_value.is_empty() {
+                if n_pathpoints >= 2 && !path.label_value.is_empty() {
                     // Path label is set in TOML as [string(1), int(2), int(3), int(4)]
                     // (1) is the label's text
                     // (2) is the point of the path on which the label is placed, use modulo to not get out of bounds

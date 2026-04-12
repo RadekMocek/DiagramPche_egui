@@ -136,6 +136,10 @@ impl App {
                             if ui.button("Example 2: BPMN").clicked() {
                                 self.handle_open_example(FileExampleId::ExampleEcoDiag);
                             }
+                            // . Example 3 :: Simple bubble chart .
+                            if ui.button("Example 3: Simple bubble chart").clicked() {
+                                self.handle_open_example(FileExampleId::ExampleBubbleDiag);
+                            }
                         });
                         // . About .
                         if ui.button("About").clicked() {
