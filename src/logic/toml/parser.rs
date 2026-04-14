@@ -48,7 +48,7 @@ impl Parser {
                 .err()
                 .expect("toml_parsed_result is not Ok");
             self.report_error(err.message(), &err.span());
-            // By returning here, and filling PQ with nodes from previous iteration, last valid TOML will be drawn (better than everything dissappearing).
+            // By returning here and filling PQ with nodes from previous iteration, last valid TOML will be drawn (better than everything dissappearing)
             self.update_pq();
             return;
         };
@@ -74,7 +74,7 @@ impl Parser {
         // .:=======:.
         // This map is used to store nodes while they are being parsed (key == node ID)
         // and then for checking node references and updating their draw order (more info below).
-        // (After that, node IDs and their draw order is moved into priority queue, which is used by the canvas to draw Nodes in correct order.)
+        // (After that, node IDs and their draw order are pushed into priority queue, which is used by the canvas to draw Nodes in correct order.)
         self.result_nodes.clear();
 
         // Each node can have its coordinates defined absolutely (xy=[10,10]) or relatively (xy=["some_id","center",10,10]).

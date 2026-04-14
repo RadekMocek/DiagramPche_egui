@@ -255,12 +255,26 @@ impl App {
                             )
                             .integer()
                             .step_by(config::FONT_SIZE_CANVAS_STEP as f64)
-                            .custom_formatter(|_, _| format!("Zoom level: {:.2}", self.zoom_level)),
+                            .show_value(false)
+                            .trailing_fill(true),
                         );
 
                         if response.changed() {
                             self.update_canvas_zoom();
                         }
+
+                        ui.add(egui::Label::new(
+                            egui::RichText::new(format!("Zoom level: {:.2}", self.zoom_level))
+                                .color(egui::Color32::from_gray(
+                                    if !self.style_is_light_mode
+                                        && !self.style_do_force_light_canvas
+                                    {
+                                        233
+                                    } else {
+                                        27
+                                    },
+                                )),
+                        ));
                     });
                 });
             });
