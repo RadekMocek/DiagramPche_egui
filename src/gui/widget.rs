@@ -1,6 +1,7 @@
 use crate::App;
 use crate::config;
 
+// These are used in `ui.add_space` for common space sizes
 pub const TINYSKIP: f32 = 4.0;
 pub const SMALLSKIP: f32 = 9.0;
 pub const MEDSKIP: f32 = 13.0;
@@ -25,7 +26,7 @@ impl App {
                 self.source_font_size += config::FONT_SIZE_SOURCE_STEP;
             }
             // Make sure it's even (step size is 2, but we cannot set that to the DragValue)
-            self.source_font_size += self.source_font_size % 2;
+            self.source_font_size += self.source_font_size % config::FONT_SIZE_SOURCE_STEP;
             // Clamp (DragValue could do the clamping, but buttons are handled after it, so we would get a one frame delay)
             self.source_font_size = self
                 .source_font_size

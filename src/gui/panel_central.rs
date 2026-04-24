@@ -12,7 +12,13 @@ impl App {
             let split_position =
                 available_space.left() + available_space.width() * self.central_split_ratio;
 
-            const SEPARATOR_HALF_WIDTH: f32 = 8.0 / 2.0;
+            /// Width of the separator between left and right panel (textedit and canvas)
+            const SEPARATOR_WIDTH: f32 = 8.0;
+            const SEPARATOR_HALF_WIDTH: f32 = SEPARATOR_WIDTH / 2.0;
+
+            // Minimum and maximum width ratio between left and right panel (textedit and canvas)
+            const SEPARATOR_CLAMP_MIN: f32 = 0.15;
+            const SEPARATOR_CLAMP_MAX: f32 = 0.85;
 
             // Left panel :: text editor
             let left_rect = egui::Rect::from_min_max(
@@ -42,7 +48,7 @@ impl App {
                 if separator_response.dragged() {
                     self.central_split_ratio = (self.central_split_ratio
                         + separator_response.drag_delta().x / available_space.width())
-                    .clamp(0.1, 0.9);
+                    .clamp(SEPARATOR_CLAMP_MIN, SEPARATOR_CLAMP_MAX);
                 }
 
                 // Change cursor when hovering separator
@@ -54,14 +60,17 @@ impl App {
                 let mut left_ui = ui.new_child(egui::UiBuilder::new().max_rect(left_rect));
                 left_ui.set_clip_rect(left_rect);
 
-                // Left toolbar
+                // .: Left toolbar :.
+                // .:==============:.
                 if self.do_show_toolbar {
                     left_ui.horizontal(|mut ui| {
                         ui.add_space(widget::TINYSKIP);
+                        // "InputInt": font size for text editor
                         self.widget_text_editor_font_size_setup(&mut ui);
                         ui.separator();
+                        // Cursor position info
                         ui.label(format!(
-                            "Cursor pos: {}, {}",
+                            "Cursor pos: {},{}",
                             self.editor_cursor_line, self.editor_cursor_column
                         ));
                     });
@@ -69,7 +78,8 @@ impl App {
                     left_ui.add_space(widget::TINYSKIP);
                 }
 
-                // Text editor
+                // .: Text editor :.
+                // .:=============:.
                 if !self.do_skip_text_edit {
                     egui::ScrollArea::both()
                         .id_salt("source")
@@ -87,7 +97,8 @@ impl App {
             // Draw right panel (canvas)
             let mut right_ui = ui.new_child(egui::UiBuilder::new().max_rect(right_rect));
 
-            // Right toolbar
+            // .: Right toolbar :.
+            // .:===============:.
             if self.do_show_toolbar {
                 let node_span;
                 let mut color;
@@ -164,6 +175,7 @@ impl App {
                             let previous_choice_idx = node_type.as_usize();
                             let mut current_choice_idx = previous_choice_idx;
                             egui::ComboBox::from_id_salt("NodeTypeCombo")
+                                .width(160.0)
                                 .selected_text(NODE_TYPE_CHOICES[current_choice_idx])
                                 .show_ui(ui, |ui| {
                                     for (i, node_type) in NODE_TYPE_CHOICES.iter().enumerate() {
@@ -201,7 +213,8 @@ impl App {
                 right_ui.add_space(widget::TINYSKIP);
             }
 
-            // Canvas
+            // .: Canvas :.
+            // .:========:.
             let do_fill_canvas = self.style_is_light_mode || self.style_do_force_light_canvas;
 
             egui::Frame::canvas(&right_ui.style())

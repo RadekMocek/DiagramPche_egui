@@ -260,7 +260,7 @@ impl eframe::App for App {
         // Put your widgets into a `SidePanel`, `TopBottomPanel`, `CentralPanel`, `Window` or `Area`.
         // For inspiration and more examples, go to https://emilk.github.io/egui
 
-        // Update CPU usage if benchmark is running, otherwise not needed
+        // Update CPU usage if benchmark is running (nodes or widget), otherwise not needed
         if self.benchmark_data.is_running || self.widgetbench_data.is_running {
             self.cpu_time_counter += ctx.input(|i| i.unstable_dt);
             if self.cpu_time_counter > 0.5 {
@@ -270,6 +270,7 @@ impl eframe::App for App {
             }
         }
 
+        // Update nodes benchmark
         if self.benchmark_data.is_running {
             self.benchmark_update(&ctx);
         }
@@ -359,6 +360,7 @@ impl eframe::App for App {
             && ctx.input(|i| i.viewport().close_requested())
         {
             ctx.send_viewport_cmd(egui::ViewportCommand::CancelClose);
+            ctx.send_viewport_cmd(egui::ViewportCommand::Visible(true));
             self.action_unsavedwarn_type = ActionAfterUnsavedWarn::Exit;
             self.do_open_modal_unsavedwarn = true;
         }

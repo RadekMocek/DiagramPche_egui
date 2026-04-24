@@ -73,7 +73,7 @@ impl App {
             }
         }
 
-        // If we are creating a SVG this frame, we reset scrolling and zoom_level here so we don't have have to "revert it" in the SVG.
+        // If we are creating a SVG this frame, we reset scrolling and zoom level here so we don't have have to "revert it" in the SVG.
         // This is the place to do it because we already handled the user interaction this frame (RMB scroll and MW zoom).
         if self.do_svg_export_this_iter {
             self.reset_canvas_scrolling_and_zoom();
@@ -108,7 +108,13 @@ impl App {
         }
 
         // == Draw diagram ==
+
+        // This map is used to store some additional info about nodes.
+        // One thing we need to store is node's AABR (axis aligned bounding rectangle).
+        // Relative nodes, which are drawn later, can then use it to determine their position. Paths also need AABR info.
+        // Stored AABRs take zoom level into account, but not scrolling.
         self.canvas_nodes.clear();
+
         self.gui_canvas_prepare_nodes(&painter, &origin);
         self.gui_canvas_prepare_paths(&painter, &origin);
 
@@ -269,9 +275,9 @@ impl App {
                                     if !self.style_is_light_mode
                                         && !self.style_do_force_light_canvas
                                     {
-                                        233
+                                        233 // Dark mode with dark canvas => white font
                                     } else {
-                                        27
+                                        27 // Light/Dark mode with light canvas => black font
                                     },
                                 )),
                         ));

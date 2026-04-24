@@ -53,9 +53,9 @@ pub fn get_node_type_quoted_string_from_usize(num: usize) -> String {
 // For toolbar :: combobox to change node type
 pub const NODE_TYPE_CHOICES: [&str; 4] = [
     concatcp!(ICON_RECTANGLE_OUTLINE, " Rectangle"),
-    concatcp!(ICON_ELLIPSE_OUTLINE, " Ellipse  "),
-    concatcp!(ICON_RHOMBUS_OUTLINE, " Diamond  "),
-    concatcp!(ICON_FORMAT_TEXT_VARIANT, " Text     "),
+    concatcp!(ICON_ELLIPSE_OUTLINE, " Ellipse"),
+    concatcp!(ICON_RHOMBUS_OUTLINE, " Diamond"),
+    concatcp!(ICON_FORMAT_TEXT_VARIANT, " Text"),
 ];
 
 // For secondary canvas toolbar :: drag n drop buttons

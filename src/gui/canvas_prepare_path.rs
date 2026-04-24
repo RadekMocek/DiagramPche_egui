@@ -110,7 +110,7 @@ impl App {
                     // Apply the Pathpoint type for both coordinates
                     // X
                     match pathpoint.x_type {
-                        // AABRs in `self.canvas_nodes` are stored "zoomed and absolute", so they take zoom_level into account, but not origin.
+                        // AABRs in `self.canvas_nodes` are stored "zoomed and absolute", so they take zoom level into account, but not origin.
                         // So we have to add origin here, later code depends on "originated" Pathpoint.
                         PathpointType::Reference => {
                             if let Some(parent_node) = self.canvas_nodes.get(&pathpoint.x_parent_id)

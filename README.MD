@@ -38,10 +38,12 @@ cargo build --release
 
 ## Problems
 
-* (low) TextInput SingleLine: no equivalent to Dear ImGui's _ElideLeft_ flag
-* (low) [ComboBox, DragValue, and Button not aligned properly in a horizontal layout](https://github.com/emilk/egui/issues/7412)
-* (med) Canvas zooming on touchpad acts strange
-* (med) I don't know how to scroll textedit to certain line or cursor, [I am not the only one](https://github.com/emilk/egui/discussions/4176)
-* (med) TextEdit && TextEditAlt – cannot MW scroll while selecting text
-* (high) TextEdit && TextEditAlt – vkládání symbolů s diakritikou moc nefunguje (pouze na Linux Mint, na Windows OK)
-* (high) TextEdit && TextEditAlt – RAM usage on longer text
+* TextInput SingleLine: no equivalent to Dear ImGui's _ElideLeft_ flag
+* [ComboBox, DragValue, and Button not aligned properly in a horizontal layout](https://github.com/emilk/egui/issues/7412)
+* Canvas zooming on touchpad acts strange
+* I don't know how to scroll textedit to certain line or cursor, [I am not the only one](https://github.com/emilk/egui/discussions/4176)
+* I don't know how to change font color(s) in vanilla TextEdit
+* TextEdit && TextEditAlt:
+  * Cannot MW scroll while selecting text
+  * Vkládání symbolů s diakritikou u mě na Linux Mint moc nefunguje (na Windows 10 OK)
+  * RAM usage on longer text

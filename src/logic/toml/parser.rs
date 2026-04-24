@@ -13,12 +13,13 @@ pub struct Parser {
     pub is_error: bool,
     pub error_message: String,
     pub error_span: Option<Range<usize>>,
+
+    variables: HashMap<String, i64>,
     batch_nums: HashMap<String, i32>,
+
     pub result_nodes: HashMap<String, Node>,
     pub result_order: BinaryHeap<(i32, String)>,
     pub result_paths: Vec<Path>,
-
-    variables: HashMap<String, i64>,
 }
 
 impl Default for Parser {
@@ -27,12 +28,13 @@ impl Default for Parser {
             is_error: false,
             error_message: String::new(),
             error_span: None,
+
+            variables: HashMap::new(),
             batch_nums: HashMap::new(),
+
             result_nodes: HashMap::new(),
             result_order: BinaryHeap::new(),
             result_paths: Vec::new(),
-
-            variables: HashMap::new(),
         }
     }
 }

@@ -1,4 +1,3 @@
-use eframe::emath::Vec2;
 use std::fmt::Write;
 use svg::Node;
 
@@ -38,7 +37,7 @@ pub fn add_text_to_svg_document(
     }
 }
 
-pub fn egui_pos2_vec_to_svg_points_string(points: &Vec<egui::Pos2>, offset: Vec2) -> String {
+pub fn egui_pos2_vec_to_svg_points_string(points: &Vec<egui::Pos2>, offset: egui::Vec2) -> String {
     let mut result = String::from("");
     for point in points {
         if let Err(err) = write!(result, "{},{} ", point.x - offset.x, point.y - offset.y) {
@@ -51,7 +50,7 @@ pub fn egui_pos2_vec_to_svg_points_string(points: &Vec<egui::Pos2>, offset: Vec2
 
 // == Exporter struct ==
 pub struct Exporter {
-    // Boundaries take origin/scrolling and zoom_level into account, it will be "corrected" just before creating the svg,
+    // Boundaries take origin/scrolling and zoom level into account, it will be "corrected" just before creating the svg,
     // so we don't have to subtract and divide with each `update_boundaries` call.
     boundaries_min: (f32, f32),
     boundaries_max: (f32, f32),
