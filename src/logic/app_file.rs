@@ -20,6 +20,7 @@ impl App {
         self.source.clear();
         self.source_filename = None;
         self.is_source_dirty = false;
+        self.reset_canvas_scrolling_and_zoom();
     }
 
     pub fn handle_regular_open(&mut self) {

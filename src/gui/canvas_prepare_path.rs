@@ -190,6 +190,7 @@ impl App {
                         Box::new(NodeRectangleDrawCommand::new(
                             label_rect_top_left,
                             label_rect_bottom_right,
+                            path.color.to_egui_color(),
                             path.label_bg_color.to_egui_color(),
                             egui::Color32::TRANSPARENT,
                             self.zoom_level,

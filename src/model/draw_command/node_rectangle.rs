@@ -7,6 +7,7 @@ use svg::{Document, Node};
 pub struct NodeRectangleDrawCommand {
     top_left: Pos2,
     bottom_right: Pos2,
+    color_text: Color32,
     color_fill: Color32,
     color_edge: Color32,
     zoom_level: f32,
@@ -18,6 +19,7 @@ impl NodeRectangleDrawCommand {
     pub fn new(
         top_left: Pos2,
         bottom_right: Pos2,
+        color_text: Color32,
         color_fill: Color32,
         color_edge: Color32,
         zoom_level: f32,
@@ -27,6 +29,7 @@ impl NodeRectangleDrawCommand {
         Self {
             top_left,
             bottom_right,
+            color_text,
             color_fill,
             color_edge,
             zoom_level,
@@ -49,7 +52,7 @@ impl DrawCommand for NodeRectangleDrawCommand {
         painter.galley(
             self.label_position,
             self.label_galley.clone(),
-            Color32::BLACK,
+            self.color_text,
         );
     }
 
@@ -83,6 +86,7 @@ impl DrawCommand for NodeRectangleDrawCommand {
         add_text_to_svg_document(
             document,
             self.label_position,
+            self.color_text,
             offset,
             Arc::clone(&self.label_galley),
         );

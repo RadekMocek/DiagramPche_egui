@@ -7,13 +7,15 @@ use svg::Document;
 pub struct NodeTextDrawCommand {
     label_position: Pos2,
     label_galley: Arc<Galley>,
+    color_text: Color32,
 }
 
 impl NodeTextDrawCommand {
-    pub fn new(label_position: Pos2, label_galley: Arc<Galley>) -> Self {
+    pub fn new(label_position: Pos2, label_galley: Arc<Galley>, color_text: Color32) -> Self {
         Self {
             label_position,
             label_galley,
+            color_text,
         }
     }
 }
@@ -23,7 +25,7 @@ impl DrawCommand for NodeTextDrawCommand {
         painter.galley(
             self.label_position,
             self.label_galley.clone(),
-            Color32::BLACK,
+            self.color_text,
         );
     }
 
@@ -31,6 +33,7 @@ impl DrawCommand for NodeTextDrawCommand {
         add_text_to_svg_document(
             document,
             self.label_position,
+            self.color_text,
             offset,
             Arc::clone(&self.label_galley),
         );

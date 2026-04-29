@@ -8,6 +8,7 @@ use svg::{Document, Node};
 
 pub struct NodeDiamondDrawCommand {
     points: [Pos2; 4],
+    color_text: Color32,
     color_fill: Color32,
     color_edge: Color32,
     zoom_level: f32,
@@ -18,6 +19,7 @@ pub struct NodeDiamondDrawCommand {
 impl NodeDiamondDrawCommand {
     pub fn new(
         points: [Pos2; 4],
+        color_text: Color32,
         color_fill: Color32,
         color_edge: Color32,
         zoom_level: f32,
@@ -26,6 +28,7 @@ impl NodeDiamondDrawCommand {
     ) -> Self {
         Self {
             points,
+            color_text,
             color_fill,
             color_edge,
             zoom_level,
@@ -46,7 +49,7 @@ impl DrawCommand for NodeDiamondDrawCommand {
         painter.galley(
             self.label_position,
             self.label_galley.clone(),
-            Color32::BLACK,
+            self.color_text,
         );
     }
 
@@ -75,6 +78,7 @@ impl DrawCommand for NodeDiamondDrawCommand {
         add_text_to_svg_document(
             document,
             self.label_position,
+            self.color_text,
             offset,
             Arc::clone(&self.label_galley),
         );

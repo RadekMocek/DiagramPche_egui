@@ -17,6 +17,7 @@ pub fn egui_pos2_to_svg_point(v: egui::Pos2) -> String {
 pub fn add_text_to_svg_document(
     document: &mut svg::Document,
     label_position: egui::Pos2,
+    label_color: egui::Color32,
     offset: egui::Vec2,
     label_galley: std::sync::Arc<egui::Galley>,
 ) {
@@ -31,7 +32,12 @@ pub fn add_text_to_svg_document(
                 .set("x", label_x)
                 .set("y", label_y)
                 .set("font-size", SVG_FONT_SIZE)
-                .set("font-family", "Inconsolata"),
+                .set("font-family", "Inconsolata")
+                .set("fill", egui_color32_to_svg_rgb(label_color))
+                .set(
+                    "style",
+                    format!("fill-opacity:{}", label_color.a() as f32 / 255.0),
+                ),
         );
         label_y += SVG_FONT_SIZE as f32;
     }

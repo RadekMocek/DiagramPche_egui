@@ -165,6 +165,7 @@ impl App {
                             Box::new(NodeRectangleDrawCommand::new(
                                 draw_top_left,
                                 draw_bottom_right,
+                                egui::Color32::BLACK,
                                 node.color.to_egui_color(),
                                 node.color_border.to_egui_color(),
                                 self.zoom_level,
@@ -179,6 +180,7 @@ impl App {
                             Box::new(NodeEllipseDrawCommand::new(
                                 draw_center,
                                 vec2(node_width / 2.0, node_height / 2.0),
+                                egui::Color32::BLACK,
                                 node.color.to_egui_color(),
                                 node.color_border.to_egui_color(),
                                 self.zoom_level,
@@ -205,6 +207,7 @@ impl App {
                                     canvas_node.get_exact_point_from_pivot(&Pivot::Left)
                                         + origin.to_vec2(),
                                 ],
+                                egui::Color32::BLACK,
                                 node.color.to_egui_color(),
                                 node.color_border.to_egui_color(),
                                 self.zoom_level,
@@ -216,7 +219,11 @@ impl App {
                     NodeType::Text => {
                         self.draw_commands_ord.push(DrawCommandOrd::new(
                             dl_user_channel_to_real_channel(node.z, DLPriority::Node),
-                            Box::new(NodeTextDrawCommand::new(draw_label_position, label_galley)),
+                            Box::new(NodeTextDrawCommand::new(
+                                draw_label_position,
+                                label_galley,
+                                egui::Color32::BLACK,
+                            )),
                         ));
                     }
                 }

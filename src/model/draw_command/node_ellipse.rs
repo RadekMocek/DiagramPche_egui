@@ -8,6 +8,7 @@ use svg::{Document, Node};
 pub struct NodeEllipseDrawCommand {
     center: Pos2,
     radius: Vec2,
+    color_text: Color32,
     color_fill: Color32,
     color_edge: Color32,
     zoom_level: f32,
@@ -19,6 +20,7 @@ impl NodeEllipseDrawCommand {
     pub fn new(
         center: Pos2,
         radius: Vec2,
+        color_text: Color32,
         color_fill: Color32,
         color_edge: Color32,
         zoom_level: f32,
@@ -28,6 +30,7 @@ impl NodeEllipseDrawCommand {
         Self {
             center,
             radius,
+            color_text,
             color_fill,
             color_edge,
             zoom_level,
@@ -54,7 +57,7 @@ impl DrawCommand for NodeEllipseDrawCommand {
         painter.galley(
             self.label_position,
             self.label_galley.clone(),
-            Color32::BLACK,
+            self.color_text,
         );
     }
 
@@ -86,6 +89,7 @@ impl DrawCommand for NodeEllipseDrawCommand {
         add_text_to_svg_document(
             document,
             self.label_position,
+            self.color_text,
             offset,
             Arc::clone(&self.label_galley),
         );
