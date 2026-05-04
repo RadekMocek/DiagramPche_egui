@@ -119,7 +119,8 @@ impl App {
         self.gui_canvas_prepare_paths(&painter, &origin);
 
         if self.do_svg_export_this_iter {
-            self.svg_exporter.apply_boundaries();
+            self.svg_exporter
+                .apply_boundaries(self.modal_export_svg_padding);
         }
 
         while !self.draw_commands_ord.is_empty() {

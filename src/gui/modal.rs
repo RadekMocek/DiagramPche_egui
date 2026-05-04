@@ -76,6 +76,13 @@ impl App {
                     ui.checkbox(&mut self.modal_export_do_overwrite, "Overwrite");
                 });
 
+                // . SVG padding .
+                widget::header(ui, widget::MEDSKIP, "SVG padding");
+                ui.add(egui::Slider::new(
+                    &mut self.modal_export_svg_padding,
+                    0..=100,
+                ));
+
                 // . Action after export .
                 widget::header(ui, widget::MEDSKIP, "Action after export");
                 ui.horizontal(|ui| {

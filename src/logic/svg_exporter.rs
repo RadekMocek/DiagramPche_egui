@@ -1,7 +1,6 @@
 use std::fmt::Write;
 use svg::Node;
 
-pub const SVG_PADDING: f32 = 25.0;
 const SVG_FONT_SIZE: u32 = 18;
 
 // == Helper functions and values ==
@@ -97,7 +96,7 @@ impl Exporter {
         }
     }
 
-    pub fn apply_boundaries(&mut self) {
+    pub fn apply_boundaries(&mut self, padding: u32) {
         let x_min = self.boundaries_min.0;
         let x_max = self.boundaries_max.0;
         let y_min = self.boundaries_min.1;
@@ -107,14 +106,16 @@ impl Exporter {
         self.svg_document.assign("width", width);
         self.svg_document.assign("height", height);
 
+        let svg_padding = padding as f32;
+
         self.svg_document.assign(
             "viewBox",
             format!(
                 "{} {} {} {}",
-                -SVG_PADDING,
-                -SVG_PADDING,
-                width + 2.0 * SVG_PADDING,
-                height + 2.0 * SVG_PADDING
+                -svg_padding,
+                -svg_padding,
+                width + 2.0 * svg_padding,
+                height + 2.0 * svg_padding
             ),
         );
 

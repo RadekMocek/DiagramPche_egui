@@ -74,6 +74,7 @@ pub struct App {
     // - svg modal
     pub modal_export_path: String,
     pub modal_export_do_overwrite: bool,
+    pub modal_export_svg_padding: u32,
     pub modal_export_action_choice: ActionAfterExport,
     // Modeless windows
     pub do_show_window_preferences: bool,
@@ -154,6 +155,7 @@ impl Default for App {
             // - svg modal
             modal_export_path: crate::logic::app_file::get_default_svg_path(),
             modal_export_do_overwrite: false,
+            modal_export_svg_padding: 25,
             modal_export_action_choice: ActionAfterExport::DoNothing,
             // Modeless windows
             // - preferences
