@@ -47,5 +47,6 @@ cargo build --release
 * I don't know how to change font color(s) in vanilla TextEdit
 * TextEdit && TextEditAlt:
   * Cannot MW scroll while selecting text
+  * <kbd>Ctrl</kbd> + <kbd>Home</kbd> or <kbd>Ctrl</kbd> + <kbd>End</kbd> won't scroll the ScrollArea if needed
   * Vkládání symbolů s diakritikou u mě na Linux Mint moc nefunguje (na Windows 10 OK)
   * RAM usage on longer text
